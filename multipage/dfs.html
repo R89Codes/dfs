@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DFS Search Guide</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="guide-page" data-mode="dfs">
+  <div class="guide-shell">
+    <header class="page-hero">
+      <div>
+        <p class="guide-kicker">Graph Algorithms Studio</p>
+        <h1>DFS Search</h1>
+        <p class="guide-copy">This page focuses on the branch-by-branch recursion story: adjacency order, stack depth, discovery times, and the DFS forest.</p>
+      </div>
+      <nav class="guide-nav">
+        <a href="index.html">Home</a>
+        <a href="dfs.html" class="active">DFS</a>
+        <a href="topo.html">Topo</a>
+        <a href="cycle.html">Cycle</a>
+      </nav>
+    </header>
+
+    <main class="page-layout">
+      <section class="guide-panel controls-col">
+        <div class="panel-title">
+          <h2>Controls</h2>
+          <p>Use presets or paste your own adjacency list.</p>
+        </div>
+        <div class="control-block">
+          <label for="presetSelect">Preset graph</label>
+          <select id="presetSelect"></select>
+        </div>
+        <div class="control-block">
+          <label for="graphInput">Adjacency list</label>
+          <textarea id="graphInput" spellcheck="false"></textarea>
+        </div>
+        <div class="two-up">
+          <div class="control-block">
+            <label for="startNode">Start node</label>
+            <select id="startNode"></select>
+          </div>
+          <div class="control-block">
+            <label for="speed">Playback speed <span id="speedLabel">1.00x</span></label>
+            <input id="speed" type="range" min="0.25" max="4" step="0.05" value="1">
+          </div>
+        </div>
+        <div class="button-row">
+          <button id="buildBtn">Build</button>
+          <button id="stepBtn">Step</button>
+          <button id="playBtn">Play</button>
+          <button id="pauseBtn" class="secondary">Pause</button>
+          <button id="resetBtn" class="secondary">Reset</button>
+        </div>
+        <div class="status-grid">
+          <div class="status-pill"><span>Status</span><strong id="statusText">Idle</strong></div>
+          <div class="status-pill"><span>Step</span><strong id="stepCounter">0 / 0</strong></div>
+          <div class="status-pill"><span>Visited</span><strong id="visitedText">0</strong></div>
+          <div class="status-pill"><span>Edges</span><strong id="edgesText">0</strong></div>
+        </div>
+        <div class="guide-note" id="modeNote"></div>
+      </section>
+
+      <section class="guide-panel main-col">
+        <div class="panel-title">
+          <h2>Graph View</h2>
+          <p>Directed graph with timestamps and live node states.</p>
+        </div>
+        <svg id="graphSvg" viewBox="0 0 920 460" preserveAspectRatio="xMidYMid meet">
+          <defs>
+            <marker id="arrow-default" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><polygon points="0 0,10 4,0 8"></polygon></marker>
+            <marker id="arrow-tree" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><polygon points="0 0,10 4,0 8"></polygon></marker>
+            <marker id="arrow-back" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><polygon points="0 0,10 4,0 8"></polygon></marker>
+            <marker id="arrow-forward" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><polygon points="0 0,10 4,0 8"></polygon></marker>
+            <marker id="arrow-cross" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><polygon points="0 0,10 4,0 8"></polygon></marker>
+            <marker id="arrow-active" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><polygon points="0 0,10 4,0 8"></polygon></marker>
+          </defs>
+        </svg>
+        <div class="two-up panel-gap">
+          <section class="mini-panel">
+            <h3>Recursion Stack</h3>
+            <div id="stackList" class="stack-list"></div>
+          </section>
+          <section class="mini-panel">
+            <h3>Step Explanation</h3>
+            <div id="stepExplain" class="step-explain">Build the page to begin.</div>
+          </section>
+        </div>
+      </section>
+
+      <section class="guide-panel full-span">
+        <div class="panel-title">
+          <h2 id="diagramTitle">Depth Ladder</h2>
+          <p id="diagramText">X shows depth, Y shows discovery order.</p>
+        </div>
+        <div class="diagram-layout">
+          <svg id="diagramSvg" viewBox="0 0 960 260" preserveAspectRatio="xMidYMid meet"></svg>
+          <div class="diagram-side">
+            <div class="mini-panel">
+              <h3>Active Scan</h3>
+              <div id="scanSummary" class="guide-note">Start stepping to inspect adjacency order.</div>
+              <div id="scanRow" class="scan-row"></div>
+            </div>
+            <div class="mini-panel">
+              <h3>Timestamps</h3>
+              <table class="stamp-table">
+                <thead>
+                  <tr><th>Node</th><th>d</th><th>f</th><th>Depth</th></tr>
+                </thead>
+                <tbody id="stampBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

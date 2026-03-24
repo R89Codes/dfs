@@ -1,0 +1,3249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DFS, Topological Sort, and Cycle Detection Visualizer</title>
+  <style>
+:root {
+  --bg: #08111d;
+  --bg-soft: #12243a;
+  --panel: rgba(11, 20, 34, 0.92);
+  --panel-alt: rgba(16, 30, 48, 0.9);
+  --line: rgba(164, 197, 255, 0.16);
+  --text: #eef4ff;
+  --muted: #9bb0ce;
+  --accent: #66d9c7;
+  --accent-strong: #9af0e3;
+  --warm: #ffc857;
+  --danger: #ff6b6b;
+  --tree: #5ea5ff;
+  --back: #ff6b6b;
+  --forward: #66d9c7;
+  --cross: #ffc857;
+  --active: #ff9f43;
+  --white-node: rgba(255, 255, 255, 0.08);
+  --gray-node: rgba(255, 200, 87, 0.88);
+  --black-node: rgba(102, 217, 199, 0.76);
+  --shadow: 0 18px 40px rgba(0, 0, 0, 0.32);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  color: var(--text);
+  font-family: "Avenir Next", "Trebuchet MS", "Segoe UI", sans-serif;
+  background:
+    radial-gradient(circle at top left, rgba(102, 217, 199, 0.16), transparent 32%),
+    radial-gradient(circle at top right, rgba(94, 165, 255, 0.18), transparent 28%),
+    linear-gradient(180deg, #07111d 0%, #09131f 32%, #050a11 100%);
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+code {
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+}
+
+.shell {
+  width: min(1440px, calc(100vw - 24px));
+  margin: 16px auto 28px;
+}
+
+.hero {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 22px 24px;
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  background:
+    linear-gradient(135deg, rgba(12, 27, 45, 0.95), rgba(7, 17, 29, 0.9)),
+    radial-gradient(circle at 20% 20%, rgba(255, 200, 87, 0.08), transparent 30%);
+  box-shadow: var(--shadow);
+}
+
+.eyebrow {
+  margin: 0 0 8px;
+  color: var(--accent-strong);
+  font-size: 0.78rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.hero h1 {
+  margin: 0 0 10px;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(2rem, 3.8vw, 3.2rem);
+  line-height: 1.02;
+}
+
+.hero-copy {
+  max-width: 780px;
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.65;
+}
+
+.hero-badges {
+  display: flex;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  gap: 10px;
+  max-width: 300px;
+}
+
+.hero-badges span {
+  padding: 10px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(154, 240, 227, 0.2);
+  background: rgba(102, 217, 199, 0.08);
+  color: var(--accent-strong);
+  font-size: 0.83rem;
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: minmax(320px, 420px) minmax(0, 1fr);
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.panel {
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  background:
+    linear-gradient(180deg, rgba(16, 30, 48, 0.94), rgba(7, 15, 25, 0.94));
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+.controls-panel,
+.viz-panel,
+.full-span {
+  animation: slide-up 0.55s ease both;
+}
+
+.panel-head {
+  padding: 18px 20px 14px;
+  border-bottom: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.panel-head h2 {
+  margin: 0 0 6px;
+  font-size: 1.08rem;
+}
+
+.panel-head p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.controls-panel {
+  padding-bottom: 16px;
+}
+
+.mode-row,
+.preset-grid,
+.button-grid,
+.stats-grid,
+.info-grid,
+.code-layout,
+.complexity-grid,
+.split {
+  display: grid;
+  gap: 12px;
+}
+
+.mode-row,
+.split {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.preset-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.button-grid {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
+.stats-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.info-grid,
+.code-layout,
+.complexity-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.field,
+.overview,
+.legend,
+.subpanel,
+.history-wrap {
+  margin: 0 20px;
+}
+
+.field {
+  margin-top: 16px;
+}
+
+.field label {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--muted);
+  font-size: 0.87rem;
+}
+
+.field-note,
+.preset-note {
+  margin: 8px 0 0;
+  color: var(--muted);
+  font-size: 0.83rem;
+  line-height: 1.5;
+}
+
+textarea,
+select,
+input[type="range"],
+button {
+  width: 100%;
+}
+
+textarea,
+select,
+input[type="range"] {
+  border-radius: 16px;
+  border: 1px solid rgba(164, 197, 255, 0.18);
+  background: rgba(5, 10, 18, 0.58);
+  color: var(--text);
+}
+
+textarea,
+select {
+  padding: 12px 14px;
+}
+
+textarea {
+  min-height: 132px;
+  resize: vertical;
+  line-height: 1.55;
+}
+
+input[type="range"] {
+  accent-color: var(--accent);
+}
+
+button {
+  padding: 11px 12px;
+  border-radius: 16px;
+  border: 1px solid rgba(94, 165, 255, 0.25);
+  background:
+    linear-gradient(180deg, rgba(94, 165, 255, 0.2), rgba(94, 165, 255, 0.08));
+  color: var(--text);
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.16s ease, background 0.2s ease, border-color 0.2s ease;
+}
+
+button:hover {
+  transform: translateY(-1px);
+  border-color: rgba(94, 165, 255, 0.42);
+  background:
+    linear-gradient(180deg, rgba(94, 165, 255, 0.28), rgba(94, 165, 255, 0.1));
+}
+
+button.secondary {
+  border-color: rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+button.secondary:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+button.danger {
+  border-color: rgba(255, 107, 107, 0.2);
+  background: rgba(255, 107, 107, 0.12);
+}
+
+button.danger:hover {
+  background: rgba(255, 107, 107, 0.22);
+}
+
+button.mode-btn,
+button.preset-btn {
+  padding: 10px 12px;
+}
+
+button.mode-btn.active,
+button.preset-btn.active {
+  border-color: rgba(154, 240, 227, 0.35);
+  background: rgba(102, 217, 199, 0.16);
+  color: var(--accent-strong);
+}
+
+.stat-pill {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: rgba(3, 9, 16, 0.4);
+}
+
+.stat-pill span {
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+.stat-pill strong {
+  font-size: 0.95rem;
+}
+
+.overview {
+  margin-top: 18px;
+}
+
+.overview details {
+  margin-bottom: 10px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: rgba(4, 11, 18, 0.42);
+  overflow: hidden;
+}
+
+.overview summary {
+  padding: 12px 14px;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.overview .detail-body {
+  padding: 0 14px 14px;
+  color: var(--muted);
+  line-height: 1.62;
+}
+
+.overview .detail-body p,
+.overview .detail-body ul {
+  margin: 10px 0 0;
+}
+
+.overview .detail-body strong {
+  color: var(--text);
+}
+
+.viz-panel {
+  padding-bottom: 20px;
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 16px;
+  padding-top: 16px;
+  color: var(--muted);
+  font-size: 0.83rem;
+}
+
+.legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.viz-note {
+  margin: 12px 20px 0;
+}
+
+.swatch,
+.line {
+  display: inline-block;
+}
+
+.swatch {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.line {
+  width: 22px;
+  height: 4px;
+  border-radius: 999px;
+}
+
+.node-white { background: var(--white-node); }
+.node-gray { background: var(--gray-node); }
+.node-black { background: var(--black-node); }
+.tree-line { background: var(--tree); }
+.back-line { background: var(--back); }
+.forward-line { background: var(--forward); }
+.cross-line { background: var(--cross); }
+.active-line { background: var(--active); }
+
+#graphSvg,
+#complexitySvg,
+#intervalSvg {
+  display: block;
+  width: calc(100% - 40px);
+  margin: 14px 20px 0;
+  border-radius: 20px;
+  border: 1px solid var(--line);
+  background:
+    linear-gradient(180deg, rgba(4, 11, 18, 0.85), rgba(6, 13, 22, 0.96));
+}
+
+#graphSvg {
+  height: 470px;
+}
+
+#complexitySvg {
+  height: 280px;
+}
+
+#intervalSvg {
+  height: 220px;
+  margin: 0;
+  width: 100%;
+}
+
+#depthSvg {
+  display: block;
+  width: 100%;
+  height: 240px;
+  margin: 0;
+}
+
+.subpanel {
+  margin-top: 16px;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background: rgba(4, 11, 18, 0.46);
+  overflow: hidden;
+}
+
+.subpanel-head {
+  padding: 14px 16px 10px;
+  border-bottom: 1px solid rgba(164, 197, 255, 0.1);
+}
+
+.subpanel-head h3 {
+  margin: 0 0 4px;
+  font-size: 0.98rem;
+}
+
+.subpanel-head p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.5;
+  font-size: 0.83rem;
+}
+
+.topo-row,
+.stack-list,
+.dag-summary,
+.pseudocode,
+.explanation,
+.metric-list,
+.complexity-note,
+.callout {
+  padding: 14px 16px 16px;
+}
+
+.topo-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-height: 70px;
+}
+
+.topo-chip {
+  min-width: 42px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  text-align: center;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.04);
+  font-family: "SFMono-Regular", Consolas, monospace;
+  font-weight: 700;
+}
+
+.topo-chip.filled {
+  background: rgba(102, 217, 199, 0.18);
+  border-color: rgba(102, 217, 199, 0.28);
+}
+
+.topo-chip.latest {
+  background: rgba(255, 200, 87, 0.2);
+  border-color: rgba(255, 200, 87, 0.28);
+}
+
+.callout {
+  color: var(--muted);
+  line-height: 1.62;
+}
+
+.callout.alert {
+  color: #ffe0e0;
+  background: rgba(255, 107, 107, 0.08);
+}
+
+.stack-list {
+  display: grid;
+  gap: 8px;
+  min-height: 90px;
+}
+
+.stack-frame {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(164, 197, 255, 0.12);
+  background: rgba(255, 255, 255, 0.03);
+  font-family: "SFMono-Regular", Consolas, monospace;
+}
+
+.stack-frame small {
+  color: var(--muted);
+}
+
+.dag-summary,
+.explanation,
+.complexity-note {
+  color: var(--muted);
+  line-height: 1.65;
+}
+
+.scan-summary {
+  padding: 14px 16px 0;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.scan-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 12px 16px 16px;
+  min-height: 70px;
+}
+
+.scan-chip {
+  min-width: 52px;
+  padding: 9px 10px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.04);
+  font-family: "SFMono-Regular", Consolas, monospace;
+  font-size: 0.82rem;
+  text-align: center;
+}
+
+.scan-chip.current {
+  border-color: rgba(255, 159, 67, 0.4);
+  background: rgba(255, 159, 67, 0.12);
+  color: #ffe0ba;
+}
+
+.scan-chip.white {
+  color: #eef4ff;
+}
+
+.scan-chip.gray {
+  color: #1d1400;
+  background: rgba(255, 200, 87, 0.86);
+  border-color: rgba(255, 200, 87, 0.42);
+}
+
+.scan-chip.black {
+  color: #08211b;
+  background: rgba(102, 217, 199, 0.76);
+  border-color: rgba(102, 217, 199, 0.32);
+}
+
+.scan-chip.edge-tree {
+  box-shadow: inset 0 0 0 1px rgba(94, 165, 255, 0.42);
+}
+
+.scan-chip.edge-back {
+  box-shadow: inset 0 0 0 1px rgba(255, 107, 107, 0.48);
+}
+
+.scan-chip.edge-forward {
+  box-shadow: inset 0 0 0 1px rgba(102, 217, 199, 0.48);
+}
+
+.scan-chip.edge-cross {
+  box-shadow: inset 0 0 0 1px rgba(255, 200, 87, 0.48);
+}
+
+.dag-summary strong,
+.explanation strong,
+.complexity-note strong {
+  color: var(--text);
+}
+
+.pseudocode {
+  display: grid;
+  gap: 4px;
+  max-height: 420px;
+  overflow: auto;
+  font-family: "SFMono-Regular", Consolas, monospace;
+  font-size: 0.88rem;
+}
+
+.code-line {
+  padding: 7px 10px;
+  border-radius: 10px;
+  white-space: pre;
+  color: #dae6ff;
+  cursor: default;
+  transition: background 0.16s ease, transform 0.16s ease, border-color 0.16s ease;
+  border-left: 3px solid transparent;
+}
+
+.code-line:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.code-line.active {
+  background: rgba(255, 200, 87, 0.12);
+  border-left-color: var(--warm);
+  color: #fff4d7;
+}
+
+.history-wrap {
+  margin-top: 0;
+  padding-bottom: 18px;
+  overflow: auto;
+}
+
+.history-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.history-table th,
+.history-table td {
+  padding: 12px 14px;
+  text-align: left;
+  border-bottom: 1px solid rgba(164, 197, 255, 0.08);
+  vertical-align: top;
+}
+
+.history-table th {
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.history-table tbody tr {
+  cursor: pointer;
+  transition: background 0.16s ease;
+}
+
+.history-table tbody tr:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.history-table tbody tr.active-row {
+  background: rgba(94, 165, 255, 0.12);
+}
+
+.history-type {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.chart-controls {
+  margin: 16px 20px 0;
+}
+
+.metric-list {
+  display: grid;
+  gap: 10px;
+}
+
+.metric-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(164, 197, 255, 0.08);
+}
+
+.metric-row span {
+  color: var(--muted);
+}
+
+.metric-row strong {
+  color: var(--text);
+}
+
+.full-span {
+  grid-column: 1 / -1;
+}
+
+.dag-panel.hidden,
+#topoPanel.hidden {
+  display: none;
+}
+
+.controls-panel .split,
+.controls-panel .button-grid,
+.controls-panel .stats-grid {
+  margin: 16px 20px 0;
+}
+
+svg text {
+  font-family: "Avenir Next", "Trebuchet MS", "Segoe UI", sans-serif;
+}
+
+#arrow-default polygon { fill: rgba(255, 255, 255, 0.3); }
+#arrow-tree polygon { fill: #5ea5ff; }
+#arrow-back polygon { fill: #ff6b6b; }
+#arrow-forward polygon { fill: #66d9c7; }
+#arrow-cross polygon { fill: #ffc857; }
+#arrow-active polygon { fill: #ff9f43; }
+
+.axis-label {
+  fill: var(--muted);
+  font-size: 12px;
+}
+
+.chart-label {
+  fill: var(--text);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 1080px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+
+  .hero {
+    flex-direction: column;
+  }
+
+  .hero-badges {
+    max-width: none;
+  }
+}
+
+@media (max-width: 760px) {
+  .shell {
+    width: min(100vw - 16px, 1440px);
+    margin: 8px auto 20px;
+  }
+
+  .hero,
+  .panel {
+    border-radius: 18px;
+  }
+
+  .mode-row,
+  .preset-grid,
+  .button-grid,
+  .stats-grid,
+  .info-grid,
+  .code-layout,
+  .complexity-grid,
+  .split {
+    grid-template-columns: 1fr;
+  }
+
+  .hero {
+    padding: 18px;
+  }
+
+  .panel-head,
+  .field,
+  .legend,
+  .subpanel,
+  .history-wrap,
+  .controls-panel .split,
+  .controls-panel .button-grid,
+  .controls-panel .stats-grid,
+  .chart-controls,
+  #graphSvg,
+  #complexitySvg {
+    margin-left: 14px;
+    margin-right: 14px;
+  }
+
+  #graphSvg,
+  #complexitySvg {
+    width: calc(100% - 28px);
+  }
+}
+
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header class="hero">
+      <div>
+        <p class="eyebrow">BCS 309 Interactive Teaching Tool</p>
+        <h1>DFS, Topological Sort, and Cycle Detection</h1>
+        <p class="hero-copy">
+          One DFS engine, three ideas: search deeply, classify edges, detect cycles,
+          and produce a topological order when the graph is a DAG.
+        </p>
+      </div>
+      <div class="hero-badges">
+        <span>Pure HTML/CSS/JS</span>
+        <span>Single-file deploy target</span>
+        <span>GitHub Pages ready</span>
+      </div>
+    </header>
+
+    <main class="layout">
+      <section class="panel controls-panel">
+        <div class="panel-head">
+          <h2>Controls</h2>
+          <p>Build a graph, choose the learning mode, and walk through DFS one state at a time.</p>
+        </div>
+
+        <div class="mode-row" id="modeRow"></div>
+
+        <div class="field">
+          <label for="graphInput">Directed graph adjacency list</label>
+          <textarea id="graphInput" spellcheck="false"></textarea>
+          <p class="field-note">Format: <code>Node: Neighbor1 Neighbor2</code>. One node per line.</p>
+        </div>
+
+        <div class="field">
+          <label>Preset graphs</label>
+          <div class="preset-grid" id="presetGrid"></div>
+          <div class="preset-note" id="presetNote"></div>
+        </div>
+
+        <div class="split">
+          <div class="field">
+            <label for="speed">Playback speed <span id="speedLabel">1.00x</span></label>
+            <input id="speed" type="range" min="0.25" max="4" step="0.05" value="1">
+          </div>
+          <div class="field">
+            <label for="startNode">Preferred start node</label>
+            <select id="startNode"></select>
+          </div>
+        </div>
+
+        <div class="button-grid">
+          <button id="buildBtn">Build Steps</button>
+          <button id="stepBackBtn" class="secondary">Step Back</button>
+          <button id="stepBtn">Step</button>
+          <button id="playBtn">Play</button>
+          <button id="pauseBtn" class="secondary">Pause</button>
+          <button id="skipBtn" class="secondary">Skip End</button>
+          <button id="resetBtn" class="danger">Reset</button>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stat-pill"><span>Step</span><strong id="stepCounter">0 / 0</strong></div>
+          <div class="stat-pill"><span>Status</span><strong id="statusText">Idle</strong></div>
+          <div class="stat-pill"><span>Nodes Visited</span><strong id="nodesVisited">0</strong></div>
+          <div class="stat-pill"><span>Edges Explored</span><strong id="edgesExplored">0</strong></div>
+          <div class="stat-pill"><span>Tree Edges</span><strong id="treeEdges">0</strong></div>
+          <div class="stat-pill"><span>Back Edges</span><strong id="backEdges">0</strong></div>
+          <div class="stat-pill"><span>Components</span><strong id="componentCount">0</strong></div>
+          <div class="stat-pill"><span>Timer</span><strong id="timerValue">0</strong></div>
+        </div>
+
+        <div class="overview" id="overview"></div>
+      </section>
+
+      <section class="panel viz-panel">
+        <div class="panel-head">
+          <h2>Visualization</h2>
+          <p>Follow node colors, recursion frames, timestamps, and edge classifications live.</p>
+        </div>
+
+        <div class="legend">
+          <span><i class="swatch node-white"></i>WHITE</span>
+          <span><i class="swatch node-gray"></i>GRAY</span>
+          <span><i class="swatch node-black"></i>BLACK</span>
+          <span><i class="line tree-line"></i>Tree</span>
+          <span><i class="line back-line"></i>Back</span>
+          <span><i class="line forward-line"></i>Forward</span>
+          <span><i class="line cross-line"></i>Cross</span>
+          <span><i class="line active-line"></i>Active</span>
+          <span><strong>Lk</strong> = DFS depth level</span>
+          <span><strong>1-5</strong> = branch priority</span>
+        </div>
+
+        <div class="field-note viz-note">
+          DFS selection rule for this teaching view: each build assigns randomized branch priorities <code>1-5</code>, orders <code>Adj[u]</code> by that priority, then DFS recurses into the first neighbor that is still WHITE.
+        </div>
+
+        <svg id="graphSvg" viewBox="0 0 900 470" preserveAspectRatio="xMidYMid meet" aria-label="Directed graph visualization">
+          <defs>
+            <marker id="arrow-default" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
+              <polygon points="0 0, 10 4, 0 8"></polygon>
+            </marker>
+            <marker id="arrow-tree" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
+              <polygon points="0 0, 10 4, 0 8"></polygon>
+            </marker>
+            <marker id="arrow-back" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
+              <polygon points="0 0, 10 4, 0 8"></polygon>
+            </marker>
+            <marker id="arrow-forward" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
+              <polygon points="0 0, 10 4, 0 8"></polygon>
+            </marker>
+            <marker id="arrow-cross" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
+              <polygon points="0 0, 10 4, 0 8"></polygon>
+            </marker>
+            <marker id="arrow-active" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
+              <polygon points="0 0, 10 4, 0 8"></polygon>
+            </marker>
+          </defs>
+        </svg>
+
+        <div class="info-grid">
+          <div class="subpanel" id="topoPanel">
+            <div class="subpanel-head">
+              <h3>Topological Order</h3>
+              <p>Vertices are added to the front as they finish.</p>
+            </div>
+            <div class="topo-row" id="topoRow"></div>
+          </div>
+
+          <div class="subpanel" id="cyclePanel">
+            <div class="subpanel-head">
+              <h3>Cycle Detection Proof</h3>
+              <p>A directed cycle exists exactly when DFS finds a back edge to a GRAY ancestor.</p>
+            </div>
+            <div class="callout" id="cycleCallout">No back edge has been found yet.</div>
+          </div>
+        </div>
+
+        <div class="info-grid">
+          <div class="subpanel">
+            <div class="subpanel-head">
+              <h3>DFS Recursion Stack</h3>
+              <p id="stackDepthLabel">Depth 0</p>
+            </div>
+            <div class="stack-list" id="stackList"></div>
+          </div>
+
+          <div class="subpanel">
+            <div class="subpanel-head">
+              <h3>Depth Map</h3>
+              <p id="depthSummary">The x-axis shows recursion depth. The y-axis shows discovery order.</p>
+            </div>
+            <svg id="depthSvg" viewBox="0 0 420 240" preserveAspectRatio="xMidYMid meet"></svg>
+          </div>
+        </div>
+
+        <div class="info-grid">
+          <div class="subpanel">
+            <div class="subpanel-head">
+              <h3>Adjacency Scan</h3>
+              <p>DFS picks the first WHITE neighbor in adjacency-list order, then recurses immediately.</p>
+            </div>
+            <div class="scan-summary" id="scanSummary">Build steps to inspect the active adjacency list.</div>
+            <div class="scan-row" id="scanRow"></div>
+          </div>
+
+          <div class="subpanel">
+            <div class="subpanel-head">
+              <h3>Parenthesis Theorem</h3>
+              <p>Intervals are either nested or disjoint. They never partially overlap.</p>
+            </div>
+            <svg id="intervalSvg" viewBox="0 0 420 220" preserveAspectRatio="xMidYMid meet"></svg>
+          </div>
+        </div>
+
+        <div class="subpanel dag-panel" id="dagPanel">
+          <div class="subpanel-head">
+            <h3>DAG Dynamic Programming</h3>
+            <p>Topological order lets us solve longest path on a DAG by processing prerequisites first.</p>
+          </div>
+          <div class="dag-summary" id="dagSummary">Run topological sort on a DAG to populate this panel.</div>
+        </div>
+
+        <div class="code-layout">
+          <div class="subpanel code-panel">
+            <div class="subpanel-head">
+              <h3>Pseudocode</h3>
+              <p id="codeHoverTip">Hover a line for the teaching note. The active line is highlighted during playback.</p>
+            </div>
+            <div class="pseudocode" id="pseudocode"></div>
+          </div>
+          <div class="subpanel explanation-panel">
+            <div class="subpanel-head">
+              <h3>Step Explanation</h3>
+              <p>Plain-English explanation with the actual values from the current step.</p>
+            </div>
+            <div class="explanation" id="explanationBox">Build steps to begin.</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel full-span">
+        <div class="panel-head">
+          <h2>Step History</h2>
+          <p>Last 25 steps. Click any row to jump directly to that saved state.</p>
+        </div>
+        <div class="history-wrap">
+          <table class="history-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Type</th>
+                <th>Focus</th>
+                <th>Explanation</th>
+              </tr>
+            </thead>
+            <tbody id="historyBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="panel full-span">
+        <div class="panel-head">
+          <h2>Complexity Analysis</h2>
+          <p>CLO-1: show why DFS stays linear in the size of the graph, and compare its growth with BFS.</p>
+        </div>
+
+        <div class="split chart-controls">
+          <div class="field">
+            <label for="vertexSlider">Vertices V <span id="vertexLabel">8</span></label>
+            <input id="vertexSlider" type="range" min="2" max="32" value="8">
+          </div>
+          <div class="field">
+            <label for="edgeSlider">Edges E <span id="edgeLabel">10</span></label>
+            <input id="edgeSlider" type="range" min="1" max="120" value="10">
+          </div>
+        </div>
+
+        <svg id="complexitySvg" viewBox="0 0 960 280" preserveAspectRatio="xMidYMid meet"></svg>
+
+        <div class="complexity-grid">
+          <div class="subpanel">
+            <div class="subpanel-head">
+              <h3>Current Estimates</h3>
+              <p>Based on the sliders above.</p>
+            </div>
+            <div class="metric-list" id="complexityMetrics"></div>
+          </div>
+          <div class="subpanel">
+            <div class="subpanel-head">
+              <h3>Why DFS and BFS Match Asymptotically</h3>
+              <p>They scan the same vertices and edges, but maintain different frontier structures.</p>
+            </div>
+            <div class="complexity-note">
+              DFS marks each vertex once and scans each adjacency list once, so its work is <code>O(V + E)</code>.
+              BFS does the same counting with a queue, so it is also <code>O(V + E)</code>. The difference is not growth order;
+              it is the search pattern and the frontier data structure.
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+const APP_CONTENT = {
+  presets: [
+    {
+      id: "classic",
+      label: "Classic DFS",
+      defaultMode: "dfs",
+      graph: "A: B D\nB: C E\nC: F\nD: B\nE: D F\nF:",
+      note: "Balanced example for DFS search and edge classification. It shows tree, forward, and cross edges cleanly."
+    },
+    {
+      id: "topo-clothes",
+      label: "DAG / Topo",
+      defaultMode: "topo",
+      graph: "Undershorts: Pants Shoes\nPants: Belt Shoes\nBelt: Jacket\nShirt: Belt Tie\nTie: Jacket\nSocks: Shoes\nShoes:\nWatch:\nJacket:",
+      note: "Classic dressing-order DAG. Reverse finish time gives a legal topological order."
+    },
+    {
+      id: "cycle",
+      label: "Has Cycle",
+      defaultMode: "cycle",
+      graph: "A: B C\nB: D\nC: E\nD: A\nE:",
+      note: "Contains the cycle A -> B -> D -> A. DFS should discover a back edge to a GRAY ancestor."
+    },
+    {
+      id: "disconnected",
+      label: "Disconnected",
+      defaultMode: "dfs",
+      graph: "A: B C\nB: D\nC:\nD:\nE: F G\nF: H\nG:\nH:",
+      note: "Shows why DFS must loop over every vertex, not just the chosen start node."
+    },
+    {
+      id: "clrs",
+      label: "CLRS 22.4",
+      defaultMode: "dfs",
+      graph: "u: v x\nv: y\nx: v\ny: x\nw: y z\nz:",
+      note: "Useful for discovery and finish times, interval nesting, and the parenthesis theorem."
+    },
+    {
+      id: "worst-case",
+      label: "Worst Case",
+      defaultMode: "dfs",
+      graph: "A: B C D E F\nB: C D E F\nC: D E F\nD: E F\nE: F\nF: G\nG: H\nH:",
+      note: "Dense-ish directed graph that pushes edge scans toward the worst case for O(V + E) analysis."
+    }
+  ],
+
+  modes: {
+    dfs: {
+      label: "DFS",
+      overviewTitle: "Depth-First Search",
+      pseudocode: [
+        "DFS(G):",
+        "  for each vertex u in G.V:",
+        "    color[u] = WHITE",
+        "    parent[u] = NIL",
+        "  time = 0",
+        "  for each vertex u in G.V:",
+        "    if color[u] == WHITE:",
+        "      DFS-VISIT(u)",
+        "",
+        "DFS-VISIT(u):",
+        "  time = time + 1",
+        "  d[u] = time",
+        "  color[u] = GRAY",
+        "  for each v in Adj[u]:",
+        "    classify (u -> v)",
+        "    if color[v] == WHITE:",
+        "      parent[v] = u",
+        "      DFS-VISIT(v)",
+        "  color[u] = BLACK",
+        "  time = time + 1",
+        "  f[u] = time"
+      ],
+      tips: {
+        0: "DFS explores the entire graph, not just one connected component.",
+        1: "Initialize every vertex first so disconnected components still get processed.",
+        2: "WHITE means undiscovered.",
+        3: "The parent pointer stores the DFS tree.",
+        4: "One global timer produces unique discovery and finish timestamps.",
+        5: "The outer loop is what lets DFS build a forest for disconnected graphs.",
+        6: "Start a new DFS tree only from a WHITE vertex.",
+        7: "DFS-VISIT recursively explores everything reachable from the root.",
+        9: "This procedure drives search, timestamps, and edge classification.",
+        10: "Discovery event: the vertex is encountered for the first time.",
+        11: "d[u] marks when u became active.",
+        12: "GRAY means u is currently on the recursion stack.",
+        13: "Every outgoing edge is examined once, which is where the E term comes from.",
+        14: "Edge type depends on the state of the neighbor when the edge is seen.",
+        15: "Only WHITE neighbors create new recursive calls.",
+        16: "Tree edges build the DFS forest.",
+        17: "Recursive descent is the depth-first step.",
+        18: "BLACK means the vertex is fully processed.",
+        19: "Finish event: all outgoing edges are done.",
+        20: "f[u] closes the interval [d[u], f[u]]."
+      }
+    },
+
+    topo: {
+      label: "Topo Sort",
+      overviewTitle: "Topological Sort",
+      pseudocode: [
+        "TOPOLOGICAL-SORT(G):",
+        "  order = empty list",
+        "  for each vertex u in G.V:",
+        "    color[u] = WHITE",
+        "  time = 0",
+        "  for each vertex u in G.V:",
+        "    if color[u] == WHITE:",
+        "      DFS-VISIT(u)",
+        "  return order",
+        "",
+        "DFS-VISIT(u):",
+        "  time = time + 1; d[u] = time",
+        "  color[u] = GRAY",
+        "  for each v in Adj[u]:",
+        "    if color[v] == WHITE:",
+        "      DFS-VISIT(v)",
+        "  color[u] = BLACK",
+        "  time = time + 1; f[u] = time",
+        "  prepend u to order"
+      ],
+      tips: {
+        0: "Topological sort is DFS plus one extra action when a vertex finishes.",
+        1: "The order list is built from finish events.",
+        2: "Initialization is still regular DFS.",
+        3: "WHITE means not yet used in any DFS tree.",
+        4: "The timer supports finish-time reasoning.",
+        5: "Disconnected DAGs still need the outer loop.",
+        6: "Each WHITE vertex can start a new DFS tree.",
+        7: "DFS-VISIT handles the recursive part of the DAG.",
+        8: "The returned order is valid only if no cycle exists.",
+        10: "Discovery timestamps still matter because finish times drive the order.",
+        11: "GRAY means the vertex is active on the stack.",
+        12: "Explore every outgoing prerequisite edge.",
+        13: "Only unvisited neighbors trigger recursion.",
+        14: "Go deeper so descendants finish first.",
+        15: "After descendants are done, u becomes BLACK.",
+        16: "Finish times tell us which vertex must come earlier in the output.",
+        17: "Prepending u means later finish times move toward the front."
+      }
+    },
+
+    cycle: {
+      label: "Cycle Detect",
+      overviewTitle: "Cycle Detection",
+      pseudocode: [
+        "HAS-CYCLE(G):",
+        "  for each vertex u in G.V:",
+        "    color[u] = WHITE",
+        "  for each vertex u in G.V:",
+        "    if color[u] == WHITE:",
+        "      DFS-VISIT(u)",
+        "  return false",
+        "",
+        "DFS-VISIT(u):",
+        "  time = time + 1; d[u] = time",
+        "  color[u] = GRAY",
+        "  for each v in Adj[u]:",
+        "    if color[v] == GRAY:",
+        "      return true",
+        "    if color[v] == WHITE:",
+        "      DFS-VISIT(v)",
+        "  color[u] = BLACK",
+        "  time = time + 1; f[u] = time"
+      ],
+      tips: {
+        0: "Cycle detection watches the DFS traversal for back edges.",
+        1: "Every vertex starts WHITE.",
+        2: "WHITE means undiscovered and safe to enter.",
+        3: "The outer loop keeps working across components.",
+        4: "Only WHITE roots start fresh DFS trees.",
+        5: "DFS-VISIT is where the proof happens.",
+        6: "If no back edge is ever found, the graph is acyclic.",
+        8: "The timestamp is not the proof, but it supports explanation and interval reasoning.",
+        9: "GRAY means on the recursion stack right now.",
+        10: "Every outgoing edge is checked against the neighbor color.",
+        11: "A GRAY neighbor is an ancestor still on the stack.",
+        12: "That back edge closes a directed cycle.",
+        13: "WHITE neighbors are tree edges and recurse normally.",
+        14: "Keep searching deeper if the neighbor is unvisited.",
+        15: "BLACK means the vertex is finished and no longer on the stack.",
+        16: "Finish times still close the interval."
+      }
+    }
+  },
+
+  overview(mode) {
+    const blocks = {
+      dfs: [
+        {
+          title: "Core Idea",
+          open: true,
+          body:
+            "<div class=\"detail-body\"><p><strong>Depth-first search</strong> explores as far as possible before backtracking. Every vertex moves through WHITE -> GRAY -> BLACK, and each active call stays on the recursion stack until all outgoing edges are scanned.</p></div>"
+        },
+        {
+          title: "CLO-1: Complexity and Timestamps",
+          open: false,
+          body:
+            "<div class=\"detail-body\"><p>DFS is <strong>O(V + E)</strong> because each vertex is discovered once and each directed edge is examined once from its adjacency list. Discovery and finish times create intervals <code>[d[u], f[u]]</code> that are either nested or disjoint. That is the parenthesis theorem.</p></div>"
+        },
+        {
+          title: "Worked Example",
+          open: false,
+          body:
+            "<div class=\"detail-body\"><p>Use the <strong>CLRS 22.4</strong> preset and step through it. Watch how <code>[d[v], f[v]]</code> sits inside <code>[d[u], f[u]]</code> when <code>u</code> is an ancestor of <code>v</code>.</p></div>"
+        }
+      ],
+      topo: [
+        {
+          title: "Core Idea",
+          open: true,
+          body:
+            "<div class=\"detail-body\"><p><strong>Topological sort</strong> outputs vertices in reverse finish-time order. If the graph is a DAG, every edge <code>u -> v</code> goes from an earlier vertex in the ordering to a later one.</p></div>"
+        },
+        {
+          title: "CLO-3: Design Paradigm",
+          open: false,
+          body:
+            "<div class=\"detail-body\"><p>DFS decomposes the graph into dependency-respecting pieces. Once you have a topological order, dynamic programming on a DAG becomes natural because every state is processed after its prerequisites. This tool shows that with longest path on a DAG.</p></div>"
+        },
+        {
+          title: "Important Restriction",
+          open: false,
+          body:
+            "<div class=\"detail-body\"><p>Topological sort only makes sense on a DAG. If DFS discovers a back edge, the graph has a directed cycle and no valid topological order exists.</p></div>"
+        }
+      ],
+      cycle: [
+        {
+          title: "Core Theorem",
+          open: true,
+          body:
+            "<div class=\"detail-body\"><p>A directed graph contains a cycle <strong>if and only if</strong> DFS finds a back edge to a GRAY ancestor. GRAY is the key state because it means the ancestor is still on the active recursion stack.</p></div>"
+        },
+        {
+          title: "Proof Sketch",
+          open: false,
+          body:
+            "<div class=\"detail-body\"><p>If DFS sees <code>u -> v</code> while <code>v</code> is GRAY, then the stack already contains a path <code>v -> ... -> u</code>. Adding <code>u -> v</code> closes a cycle. If no back edge exists, DFS never closes such a loop.</p></div>"
+        },
+        {
+          title: "Worked Example",
+          open: false,
+          body:
+            "<div class=\"detail-body\"><p>Use the <strong>Has Cycle</strong> preset. When DFS reaches <code>D -> A</code>, vertex <code>A</code> is still GRAY, so the tool can show the proof path <code>A -> B -> D -> A</code>.</p></div>"
+        }
+      ]
+    };
+
+    return blocks[mode]
+      .map((block) => {
+        const openAttr = block.open ? " open" : "";
+        return `<details${openAttr}><summary>${block.title}</summary>${block.body}</details>`;
+      })
+      .join("");
+  }
+};
+
+'use strict';
+
+(() => {
+  const NS = 'http://www.w3.org/2000/svg';
+  const MAX_HISTORY = 25;
+  const NODE_RADIUS = 24;
+  const PLAY_BASE_MS = 900;
+
+  const state = {
+    mode: 'dfs',
+    selectedPresetId: APP_CONTENT.presets[0].id,
+    graph: null,
+    nodePositions: {},
+    steps: [],
+    stepIndex: -1,
+    playing: false,
+    playToken: 0,
+    history: [],
+    status: 'Idle',
+    codeHoverTip: 'Hover a line for the teaching note. The active line is highlighted during playback.',
+    visuals: createEmptyVisuals()
+  };
+
+  const dom = {
+    modeRow: document.getElementById('modeRow'),
+    graphInput: document.getElementById('graphInput'),
+    presetGrid: document.getElementById('presetGrid'),
+    presetNote: document.getElementById('presetNote'),
+    speed: document.getElementById('speed'),
+    speedLabel: document.getElementById('speedLabel'),
+    startNode: document.getElementById('startNode'),
+    buildBtn: document.getElementById('buildBtn'),
+    stepBackBtn: document.getElementById('stepBackBtn'),
+    stepBtn: document.getElementById('stepBtn'),
+    playBtn: document.getElementById('playBtn'),
+    pauseBtn: document.getElementById('pauseBtn'),
+    skipBtn: document.getElementById('skipBtn'),
+    resetBtn: document.getElementById('resetBtn'),
+    overview: document.getElementById('overview'),
+    graphSvg: document.getElementById('graphSvg'),
+    topoPanel: document.getElementById('topoPanel'),
+    topoRow: document.getElementById('topoRow'),
+    cycleCallout: document.getElementById('cycleCallout'),
+    stackDepthLabel: document.getElementById('stackDepthLabel'),
+    stackList: document.getElementById('stackList'),
+    depthSvg: document.getElementById('depthSvg'),
+    depthSummary: document.getElementById('depthSummary'),
+    scanSummary: document.getElementById('scanSummary'),
+    scanRow: document.getElementById('scanRow'),
+    intervalSvg: document.getElementById('intervalSvg'),
+    dagPanel: document.getElementById('dagPanel'),
+    dagSummary: document.getElementById('dagSummary'),
+    pseudocode: document.getElementById('pseudocode'),
+    codeHoverTip: document.getElementById('codeHoverTip'),
+    explanationBox: document.getElementById('explanationBox'),
+    historyBody: document.getElementById('historyBody'),
+    complexitySvg: document.getElementById('complexitySvg'),
+    complexityMetrics: document.getElementById('complexityMetrics'),
+    vertexSlider: document.getElementById('vertexSlider'),
+    edgeSlider: document.getElementById('edgeSlider'),
+    vertexLabel: document.getElementById('vertexLabel'),
+    edgeLabel: document.getElementById('edgeLabel'),
+    stepCounter: document.getElementById('stepCounter'),
+    statusText: document.getElementById('statusText'),
+    nodesVisited: document.getElementById('nodesVisited'),
+    edgesExplored: document.getElementById('edgesExplored'),
+    treeEdges: document.getElementById('treeEdges'),
+    backEdges: document.getElementById('backEdges'),
+    componentCount: document.getElementById('componentCount'),
+    timerValue: document.getElementById('timerValue')
+  };
+
+  const edgeEls = new Map();
+  const nodeEls = new Map();
+
+  function createEmptyVisuals() {
+    return {
+      nodeColors: {},
+      discovery: {},
+      finish: {},
+      parents: {},
+      depths: {},
+      edgeTypes: {},
+      activeNode: null,
+      activeEdge: null,
+      stack: [],
+      topoOrder: [],
+      cycleFound: false,
+      cycleEdge: null,
+      cyclePath: [],
+      timer: 0,
+      nodesVisited: 0,
+      edgesExplored: 0,
+      treeEdges: 0,
+      backEdges: 0,
+      components: 0,
+      maxDepth: 0,
+      currentStepType: 'idle',
+      dagDp: null
+    };
+  }
+
+  function svgEl(tag, attrs = {}) {
+    const el = document.createElementNS(NS, tag);
+    Object.entries(attrs).forEach(([key, value]) => el.setAttribute(key, value));
+    return el;
+  }
+
+  function cloneVisuals(visuals) {
+    return {
+      nodeColors: { ...visuals.nodeColors },
+      discovery: { ...visuals.discovery },
+      finish: { ...visuals.finish },
+      parents: { ...visuals.parents },
+      depths: { ...visuals.depths },
+      edgeTypes: { ...visuals.edgeTypes },
+      activeNode: visuals.activeNode,
+      activeEdge: visuals.activeEdge ? { ...visuals.activeEdge } : null,
+      stack: [...visuals.stack],
+      topoOrder: [...visuals.topoOrder],
+      cycleFound: visuals.cycleFound,
+      cycleEdge: visuals.cycleEdge ? { ...visuals.cycleEdge } : null,
+      cyclePath: [...visuals.cyclePath],
+      timer: visuals.timer,
+      nodesVisited: visuals.nodesVisited,
+      edgesExplored: visuals.edgesExplored,
+      treeEdges: visuals.treeEdges,
+      backEdges: visuals.backEdges,
+      components: visuals.components,
+      maxDepth: visuals.maxDepth,
+      currentStepType: visuals.currentStepType,
+      dagDp: visuals.dagDp
+        ? {
+            source: visuals.dagDp.source,
+            topoOrder: [...visuals.dagDp.topoOrder],
+            distances: { ...visuals.dagDp.distances },
+            parents: { ...visuals.dagDp.parents },
+            bestEnd: visuals.dagDp.bestEnd,
+            bestPath: [...visuals.dagDp.bestPath],
+            bestDistance: visuals.dagDp.bestDistance
+          }
+        : null
+    };
+  }
+
+  function init() {
+    buildModeButtons();
+    buildPresetButtons();
+    bindEvents();
+    loadPreset(APP_CONTENT.presets[0].id, true);
+    renderOverview();
+    renderPseudocode();
+    updateSpeedLabel();
+    drawComplexityChart();
+    buildSteps();
+  }
+
+  function buildModeButtons() {
+    dom.modeRow.innerHTML = '';
+    Object.entries(APP_CONTENT.modes).forEach(([modeId, config]) => {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = `mode-btn${modeId === state.mode ? ' active' : ''}`;
+      button.textContent = config.label;
+      button.addEventListener('click', () => setMode(modeId));
+      dom.modeRow.appendChild(button);
+    });
+  }
+
+  function buildPresetButtons() {
+    dom.presetGrid.innerHTML = '';
+    APP_CONTENT.presets.forEach((preset) => {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = `preset-btn${preset.id === state.selectedPresetId ? ' active' : ''}`;
+      button.textContent = preset.label;
+      button.addEventListener('click', () => loadPreset(preset.id, false));
+      dom.presetGrid.appendChild(button);
+    });
+  }
+
+  function bindEvents() {
+    dom.buildBtn.addEventListener('click', buildSteps);
+    dom.stepBackBtn.addEventListener('click', stepBack);
+    dom.stepBtn.addEventListener('click', stepForward);
+    dom.playBtn.addEventListener('click', play);
+    dom.pauseBtn.addEventListener('click', pause);
+    dom.skipBtn.addEventListener('click', skipToEnd);
+    dom.resetBtn.addEventListener('click', resetPlayback);
+    dom.speed.addEventListener('input', updateSpeedLabel);
+    dom.vertexSlider.addEventListener('input', drawComplexityChart);
+    dom.edgeSlider.addEventListener('input', drawComplexityChart);
+    dom.graphInput.addEventListener('input', () => {
+      state.selectedPresetId = '';
+      buildPresetButtons();
+      dom.presetNote.textContent = 'Custom graph detected. Build steps when you are ready.';
+      syncStartNodesFromText();
+    });
+  }
+
+  function updateSpeedLabel() {
+    dom.speedLabel.textContent = `${Number(dom.speed.value).toFixed(2)}x`;
+  }
+
+  function setMode(modeId) {
+    if (modeId === state.mode) {
+      return;
+    }
+    state.mode = modeId;
+    buildModeButtons();
+    renderOverview();
+    renderPseudocode();
+    updateModePanels();
+    state.status = `Mode switched to ${APP_CONTENT.modes[modeId].label}`;
+    updateStats();
+    buildSteps();
+  }
+
+  function loadPreset(presetId, silentModeChange) {
+    const preset = APP_CONTENT.presets.find((item) => item.id === presetId);
+    if (!preset) {
+      return;
+    }
+
+    state.selectedPresetId = preset.id;
+    dom.graphInput.value = preset.graph;
+    dom.presetNote.textContent = preset.note;
+
+    if (!silentModeChange && preset.defaultMode !== state.mode) {
+      state.mode = preset.defaultMode;
+      buildModeButtons();
+      renderOverview();
+      renderPseudocode();
+    }
+
+    buildPresetButtons();
+    syncStartNodesFromText();
+  }
+
+  function syncStartNodesFromText() {
+    const parsed = parseGraph(dom.graphInput.value);
+    populateStartNodes(parsed.nodes);
+  }
+
+  function populateStartNodes(nodes) {
+    const previous = dom.startNode.value;
+    dom.startNode.innerHTML = '';
+
+    if (!nodes.length) {
+      const option = document.createElement('option');
+      option.value = '';
+      option.textContent = 'No nodes';
+      dom.startNode.appendChild(option);
+      return;
+    }
+
+    nodes.forEach((node) => {
+      const option = document.createElement('option');
+      option.value = node;
+      option.textContent = node;
+      dom.startNode.appendChild(option);
+    });
+
+    if (nodes.includes(previous)) {
+      dom.startNode.value = previous;
+    }
+  }
+
+  function parseGraph(text) {
+    const lines = text
+      .split(/\r?\n/)
+      .map((line) => line.trim())
+      .filter(Boolean);
+
+    const nodeSet = new Set();
+    const adjacency = {};
+    const edges = [];
+    const edgeSet = new Set();
+
+    function ensureNode(node) {
+      if (!nodeSet.has(node)) {
+        nodeSet.add(node);
+        adjacency[node] = [];
+      }
+    }
+
+    lines.forEach((line) => {
+      const splitAt = line.indexOf(':');
+      if (splitAt === -1) {
+        return;
+      }
+
+      const source = line.slice(0, splitAt).trim();
+      if (!source) {
+        return;
+      }
+
+      ensureNode(source);
+      const rhs = line.slice(splitAt + 1).trim();
+      if (!rhs) {
+        return;
+      }
+
+      rhs
+        .split(/[\s,]+/)
+        .map((token) => token.trim())
+        .filter(Boolean)
+        .forEach((target) => {
+          ensureNode(target);
+          const key = `${source}->${target}`;
+          if (!edgeSet.has(key)) {
+            edgeSet.add(key);
+            adjacency[source].push(target);
+            edges.push({ from: source, to: target });
+          }
+        });
+    });
+
+    const nodes = Array.from(nodeSet);
+    nodes.forEach((node) => {
+      adjacency[node].sort();
+    });
+    edges.sort((a, b) => `${a.from}->${a.to}`.localeCompare(`${b.from}->${b.to}`));
+
+    const bidirectional = new Set();
+    edges.forEach((edge) => {
+      if (edgeSet.has(`${edge.to}->${edge.from}`) && edge.from !== edge.to) {
+        bidirectional.add(`${edge.from}->${edge.to}`);
+      }
+    });
+
+    return {
+      nodes,
+      adjacency,
+      edges,
+      bidirectional,
+      branchPriority: {}
+    };
+  }
+
+  function assignBranchPriorities(graph) {
+    if (!graph || !graph.nodes.length) {
+      return graph;
+    }
+
+    graph.branchPriority = {};
+    graph.nodes.forEach((node) => {
+      graph.adjacency[node].forEach((neighbor) => {
+        graph.branchPriority[edgeKey(node, neighbor)] = 1 + Math.floor(Math.random() * 5);
+      });
+      graph.adjacency[node].sort((left, right) => {
+        const leftPriority = graph.branchPriority[edgeKey(node, left)];
+        const rightPriority = graph.branchPriority[edgeKey(node, right)];
+        return leftPriority - rightPriority || left.localeCompare(right);
+      });
+    });
+
+    return graph;
+  }
+
+  function computeLayout(graph) {
+    const topoAttempt = kahnTopo(graph);
+    if (topoAttempt.acyclic) {
+      return layeredLayout(graph, topoAttempt.order);
+    }
+    return circularLayout(graph.nodes);
+  }
+
+  function kahnTopo(graph) {
+    const indegree = {};
+    graph.nodes.forEach((node) => {
+      indegree[node] = 0;
+    });
+    graph.edges.forEach((edge) => {
+      indegree[edge.to] += 1;
+    });
+
+    const queue = graph.nodes.filter((node) => indegree[node] === 0).sort();
+    const order = [];
+
+    while (queue.length) {
+      const node = queue.shift();
+      order.push(node);
+      graph.adjacency[node].forEach((neighbor) => {
+        indegree[neighbor] -= 1;
+        if (indegree[neighbor] === 0) {
+          queue.push(neighbor);
+          queue.sort();
+        }
+      });
+    }
+
+    return {
+      acyclic: order.length === graph.nodes.length,
+      order
+    };
+  }
+
+  function layeredLayout(graph, order) {
+    const level = {};
+    graph.nodes.forEach((node) => {
+      level[node] = 0;
+    });
+
+    order.forEach((node) => {
+      graph.adjacency[node].forEach((neighbor) => {
+        level[neighbor] = Math.max(level[neighbor], level[node] + 1);
+      });
+    });
+
+    const buckets = new Map();
+    order.forEach((node) => {
+      const bucket = level[node];
+      if (!buckets.has(bucket)) {
+        buckets.set(bucket, []);
+      }
+      buckets.get(bucket).push(node);
+    });
+
+    const maxLevel = Math.max(...Array.from(buckets.keys()), 0);
+    const width = 900;
+    const height = 470;
+    const positions = {};
+
+    Array.from(buckets.entries()).forEach(([bucket, nodes]) => {
+      const x = maxLevel === 0 ? width / 2 : 90 + (bucket / maxLevel) * (width - 180);
+      const gap = height / (nodes.length + 1);
+      nodes.forEach((node, index) => {
+        positions[node] = {
+          x,
+          y: gap * (index + 1)
+        };
+      });
+    });
+
+    return positions;
+  }
+
+  function circularLayout(nodes) {
+    const width = 900;
+    const height = 470;
+    const cx = width / 2;
+    const cy = height / 2;
+    const rx = Math.min(310, 120 + nodes.length * 16);
+    const ry = Math.min(170, 90 + nodes.length * 10);
+    const positions = {};
+
+    nodes.forEach((node, index) => {
+      const angle = (-Math.PI / 2) + (index / nodes.length) * Math.PI * 2;
+      positions[node] = {
+        x: cx + Math.cos(angle) * rx,
+        y: cy + Math.sin(angle) * ry
+      };
+    });
+
+    return positions;
+  }
+
+  function buildSteps() {
+    pause();
+
+    const graph = assignBranchPriorities(parseGraph(dom.graphInput.value));
+    state.graph = graph;
+    state.nodePositions = computeLayout(graph);
+    syncComplexitySlidersToGraph(graph);
+    populateStartNodes(graph.nodes);
+
+    if (!graph.nodes.length) {
+      state.steps = [];
+      state.stepIndex = -1;
+      state.history = [];
+      state.visuals = createEmptyVisuals();
+      state.status = 'No graph loaded';
+      renderGraph();
+      updateStats();
+      renderHistory();
+      renderPseudocode();
+      renderOverview();
+      dom.explanationBox.textContent = 'Enter an adjacency list to build steps.';
+      renderAuxiliaryPanels();
+      drawComplexityChart();
+      return;
+    }
+
+    state.steps = generateSteps(graph, state.mode, dom.startNode.value || graph.nodes[0]);
+    state.stepIndex = 0;
+    state.history = [];
+    renderGraph();
+    applyStep(0);
+    state.status = `Built ${state.steps.length} steps for ${APP_CONTENT.modes[state.mode].label}`;
+    updateStats();
+    drawComplexityChart();
+  }
+
+  function generateSteps(graph, mode, requestedStartNode) {
+    const visuals = createEmptyVisuals();
+    graph.nodes.forEach((node) => {
+      visuals.nodeColors[node] = 'WHITE';
+      visuals.parents[node] = null;
+    });
+
+    const steps = [];
+    const startOrder = graph.nodes.includes(requestedStartNode)
+      ? [requestedStartNode, ...graph.nodes.filter((node) => node !== requestedStartNode)]
+      : [...graph.nodes];
+
+    pushStep(steps, {
+      type: 'init',
+      codeLine: 0,
+      focus: graph.nodes.length ? graph.nodes[0] : '',
+      explanation: `Initialize ${graph.nodes.length} vertices to WHITE, clear parents, and set the DFS timer to 0.`,
+      visuals
+    });
+
+    function visit(node, depth) {
+      visuals.stack.push(node);
+      visuals.timer += 1;
+      visuals.discovery[node] = visuals.timer;
+      visuals.depths[node] = depth;
+      visuals.maxDepth = Math.max(visuals.maxDepth, depth);
+      visuals.nodeColors[node] = 'GRAY';
+      visuals.nodesVisited += 1;
+      visuals.activeNode = node;
+      visuals.activeEdge = null;
+      visuals.currentStepType = 'discover';
+
+      pushStep(steps, {
+        type: 'discover',
+        codeLine: mode === 'topo' ? 11 : mode === 'cycle' ? 9 : 10,
+        focus: node,
+        explanation: `Discover ${node}: timer becomes ${visuals.timer}, so d[${node}] = ${visuals.discovery[node]}. ${node} turns GRAY and is pushed onto the recursion stack at depth ${depth}.`,
+        visuals
+      });
+
+      graph.adjacency[node].forEach((neighbor, neighborIndex) => {
+        visuals.activeNode = node;
+        visuals.activeEdge = { from: node, to: neighbor };
+        visuals.edgesExplored += 1;
+        visuals.currentStepType = 'edge';
+
+        pushStep(steps, {
+          type: 'examine-edge',
+          codeLine: mode === 'topo' ? 13 : mode === 'cycle' ? 11 : 13,
+          focus: `${node} -> ${neighbor}`,
+          explanation: `Examine edge ${node} -> ${neighbor}. Adj[${node}] is ordered as [${graph.adjacency[node].map((item) => `${item}(P${graph.branchPriority[edgeKey(node, item)]})`).join(', ')}]. ${neighbor} is position ${neighborIndex + 1} with priority P${graph.branchPriority[edgeKey(node, neighbor)]} and current color ${visuals.nodeColors[neighbor]}.`,
+          visuals
+        });
+
+        const edgeType = classifyEdge(visuals, node, neighbor);
+        visuals.edgeTypes[edgeKey(node, neighbor)] = edgeType;
+        if (edgeType === 'tree') {
+          visuals.treeEdges += 1;
+        }
+        if (edgeType === 'back') {
+          visuals.backEdges += 1;
+          visuals.cycleFound = true;
+          visuals.cycleEdge = { from: node, to: neighbor };
+          visuals.cyclePath = extractCyclePath(visuals.stack, neighbor).concat(neighbor);
+        }
+        visuals.currentStepType = 'classify';
+
+        pushStep(steps, {
+          type: 'classify-edge',
+          codeLine: mode === 'topo' ? 13 : mode === 'cycle' ? 12 : 14,
+          focus: `${node} -> ${neighbor}`,
+          explanation: edgeExplanation(visuals, node, neighbor, edgeType),
+          visuals
+        });
+
+        if (edgeType === 'tree') {
+          visuals.parents[neighbor] = node;
+          visuals.currentStepType = 'recurse';
+          pushStep(steps, {
+            type: 'recurse',
+            codeLine: mode === 'topo' ? 15 : mode === 'cycle' ? 15 : 17,
+            focus: `${node} -> ${neighbor}`,
+            explanation: `${neighbor} is WHITE, so ${node} -> ${neighbor} is a tree edge. Set parent[${neighbor}] = ${node} and recurse deeper.`,
+            visuals
+          });
+          visit(neighbor, depth + 1);
+          visuals.activeNode = node;
+          visuals.activeEdge = { from: node, to: neighbor };
+        }
+      });
+
+      visuals.nodeColors[node] = 'BLACK';
+      visuals.timer += 1;
+      visuals.finish[node] = visuals.timer;
+      visuals.activeNode = node;
+      visuals.activeEdge = null;
+      visuals.currentStepType = 'finish';
+
+      if (mode === 'topo') {
+        visuals.topoOrder.unshift(node);
+      }
+
+      pushStep(steps, {
+        type: 'finish',
+        codeLine: mode === 'topo' ? 18 : mode === 'cycle' ? 16 : 18,
+        focus: node,
+        explanation: finishExplanation(mode, visuals, node),
+        visuals
+      });
+
+      visuals.stack.pop();
+      visuals.activeNode = visuals.stack[visuals.stack.length - 1] || null;
+    }
+
+    startOrder.forEach((node) => {
+      if (visuals.nodeColors[node] !== 'WHITE') {
+        return;
+      }
+
+      visuals.components += 1;
+      visuals.activeNode = node;
+      visuals.activeEdge = null;
+      visuals.currentStepType = 'component';
+
+      pushStep(steps, {
+        type: 'component-root',
+        codeLine: mode === 'topo' ? 6 : mode === 'cycle' ? 4 : 6,
+        focus: node,
+        explanation: `Start DFS tree ${visuals.components} at root ${node}. This outer-loop step is why DFS still covers disconnected graphs.`,
+        visuals
+      });
+
+      visit(node, 0);
+    });
+
+    visuals.activeNode = null;
+    visuals.activeEdge = null;
+    visuals.currentStepType = 'done';
+    if (mode === 'topo' && !visuals.cycleFound) {
+      visuals.dagDp = computeDagLongestPath(graph, visuals.topoOrder, dom.startNode.value || graph.nodes[0]);
+    }
+
+    pushStep(steps, {
+      type: 'done',
+      codeLine: 0,
+      focus: mode === 'topo' ? visuals.topoOrder.join(' -> ') : '',
+      explanation: finalExplanation(mode, visuals, graph),
+      visuals
+    });
+
+    return steps;
+  }
+
+  function pushStep(steps, payload) {
+    steps.push({
+      ...payload,
+      snapshot: cloneVisuals(payload.visuals)
+    });
+  }
+
+  function classifyEdge(visuals, from, to) {
+    const neighborColor = visuals.nodeColors[to];
+    if (neighborColor === 'WHITE') {
+      return 'tree';
+    }
+    if (neighborColor === 'GRAY') {
+      return 'back';
+    }
+
+    const du = visuals.discovery[from];
+    const dv = visuals.discovery[to];
+    const fu = visuals.finish[from];
+    const fv = visuals.finish[to];
+    if (du < dv && (!fu || fv < fu || fu === undefined)) {
+      return 'forward';
+    }
+    return 'cross';
+  }
+
+  function edgeExplanation(visuals, from, to, type) {
+    if (type === 'tree') {
+      return `${from} -> ${to} is a tree edge because ${to} is WHITE. DFS will discover ${to} for the first time through ${from}.`;
+    }
+    if (type === 'back') {
+      const cycleText = visuals.cyclePath.length ? visuals.cyclePath.join(' -> ') : `${to} -> ... -> ${from} -> ${to}`;
+      return `${from} -> ${to} is a back edge because ${to} is GRAY and still on the stack. That closes the directed cycle ${cycleText}.`;
+    }
+    if (type === 'forward') {
+      return `${from} -> ${to} is a forward edge. ${to} is already BLACK and was discovered after ${from}, so it is a descendant reached earlier in the DFS tree.`;
+    }
+    return `${from} -> ${to} is a cross edge. ${to} is BLACK, but it is not a descendant of ${from}; the edge connects across DFS subtrees or finished branches.`;
+  }
+
+  function finishExplanation(mode, visuals, node) {
+    const interval = `[${visuals.discovery[node]}, ${visuals.finish[node]}]`;
+    if (mode === 'topo') {
+      return `Finish ${node}: set f[${node}] = ${visuals.finish[node]}, color it BLACK, and prepend it to the topological order. Current order: ${visuals.topoOrder.join(' -> ')}. Interval ${interval}.`;
+    }
+    if (mode === 'cycle') {
+      return `Finish ${node}: it leaves the recursion stack and turns BLACK. Interval ${interval}. BLACK vertices cannot create new cycle proofs because they are no longer active ancestors.`;
+    }
+    return `Finish ${node}: set f[${node}] = ${visuals.finish[node]} and turn it BLACK. Its DFS interval is ${interval}. Any descendant interval must lie completely inside this range.`;
+  }
+
+  function finalExplanation(mode, visuals, graph) {
+    if (mode === 'topo') {
+      if (visuals.cycleFound) {
+        return `DFS found a back edge, so the graph is not a DAG. A valid topological order does not exist.`;
+      }
+      return `Topological sort complete. Reverse finish order is ${visuals.topoOrder.join(' -> ')}. Every directed edge points from an earlier vertex to a later one.`;
+    }
+    if (mode === 'cycle') {
+      if (visuals.cycleFound) {
+        return `Cycle detected. Back edge ${visuals.cycleEdge.from} -> ${visuals.cycleEdge.to} proves the directed cycle ${visuals.cyclePath.join(' -> ')}.`;
+      }
+      return `No back edge was found in any DFS tree, so this directed graph is acyclic.`;
+    }
+    return `DFS complete: visited ${visuals.nodesVisited} vertices, examined ${visuals.edgesExplored} directed edges, and stamped discovery/finish times for all ${graph.nodes.length} vertices.`;
+  }
+
+  function extractCyclePath(stack, ancestor) {
+    const index = stack.indexOf(ancestor);
+    if (index === -1) {
+      return [];
+    }
+    return stack.slice(index);
+  }
+
+  function computeDagLongestPath(graph, topoOrder, source) {
+    const start = graph.nodes.includes(source) ? source : topoOrder[0];
+    const distances = {};
+    const parents = {};
+
+    graph.nodes.forEach((node) => {
+      distances[node] = Number.NEGATIVE_INFINITY;
+      parents[node] = null;
+    });
+    distances[start] = 0;
+
+    topoOrder.forEach((node) => {
+      if (distances[node] === Number.NEGATIVE_INFINITY) {
+        return;
+      }
+      graph.adjacency[node].forEach((neighbor) => {
+        const candidate = distances[node] + 1;
+        if (candidate > distances[neighbor]) {
+          distances[neighbor] = candidate;
+          parents[neighbor] = node;
+        }
+      });
+    });
+
+    let bestEnd = start;
+    graph.nodes.forEach((node) => {
+      if (distances[node] > distances[bestEnd]) {
+        bestEnd = node;
+      }
+    });
+
+    const bestPath = [];
+    let cursor = bestEnd;
+    while (cursor) {
+      bestPath.unshift(cursor);
+      cursor = parents[cursor];
+    }
+
+    return {
+      source: start,
+      topoOrder,
+      distances,
+      parents,
+      bestEnd,
+      bestPath,
+      bestDistance: distances[bestEnd]
+    };
+  }
+
+  function renderGraph() {
+    while (dom.graphSvg.lastChild && dom.graphSvg.lastChild.tagName !== 'defs') {
+      dom.graphSvg.removeChild(dom.graphSvg.lastChild);
+    }
+    edgeEls.clear();
+    nodeEls.clear();
+
+    if (!state.graph || !state.graph.nodes.length) {
+      return;
+    }
+
+    const edgeLayer = svgEl('g');
+    const nodeLayer = svgEl('g');
+    dom.graphSvg.appendChild(edgeLayer);
+    dom.graphSvg.appendChild(nodeLayer);
+
+    state.graph.edges.forEach((edge) => {
+      const group = svgEl('g');
+      const path = svgEl('path', {
+        fill: 'none',
+        'stroke-linecap': 'round'
+      });
+      const labelBg = svgEl('rect', {
+        rx: 6,
+        ry: 6,
+        opacity: 0
+      });
+      const label = svgEl('text', {
+        'text-anchor': 'middle',
+        'font-size': 11,
+        'font-weight': 700,
+        opacity: 0
+      });
+      const orderBg = svgEl('rect', {
+        rx: 7,
+        ry: 7,
+        opacity: 1
+      });
+      const orderLabel = svgEl('text', {
+        'text-anchor': 'middle',
+        'font-size': 10,
+        'font-weight': 700,
+        opacity: 1
+      });
+      group.appendChild(path);
+      group.appendChild(orderBg);
+      group.appendChild(orderLabel);
+      group.appendChild(labelBg);
+      group.appendChild(label);
+      edgeLayer.appendChild(group);
+      edgeEls.set(edgeKey(edge.from, edge.to), { path, orderBg, orderLabel, labelBg, label });
+    });
+
+    state.graph.nodes.forEach((node) => {
+      const pos = state.nodePositions[node];
+      const group = svgEl('g');
+      const halo = svgEl('circle', {
+        cx: pos.x,
+        cy: pos.y,
+        r: NODE_RADIUS + 10,
+        fill: 'none',
+        stroke: 'none'
+      });
+      const circle = svgEl('circle', {
+        cx: pos.x,
+        cy: pos.y,
+        r: NODE_RADIUS,
+        stroke: 'rgba(255,255,255,0.15)',
+        'stroke-width': 1.5
+      });
+      const label = svgEl('text', {
+        x: pos.x,
+        y: pos.y + 5,
+        'text-anchor': 'middle',
+        'font-size': node.length > 5 ? 10 : node.length > 3 ? 11 : 13,
+        'font-weight': 700,
+        fill: '#eef4ff'
+      });
+      label.textContent = node;
+      const depthBadge = svgEl('text', {
+        x: pos.x,
+        y: pos.y - NODE_RADIUS - 14,
+        'text-anchor': 'middle',
+        'font-size': 11,
+        'font-weight': 700,
+        fill: '#ffcf7a'
+      });
+      const stamp = svgEl('text', {
+        x: pos.x,
+        y: pos.y + NODE_RADIUS + 18,
+        'text-anchor': 'middle',
+        'font-size': 11,
+        fill: '#9bb0ce'
+      });
+      const stampSub = svgEl('text', {
+        x: pos.x,
+        y: pos.y + NODE_RADIUS + 33,
+        'text-anchor': 'middle',
+        'font-size': 10,
+        fill: '#ffcf7a'
+      });
+      group.appendChild(halo);
+      group.appendChild(circle);
+      group.appendChild(depthBadge);
+      group.appendChild(label);
+      group.appendChild(stamp);
+      group.appendChild(stampSub);
+      nodeLayer.appendChild(group);
+      nodeEls.set(node, { halo, circle, label, depthBadge, stamp, stampSub });
+    });
+
+    updateGraphVisuals();
+  }
+
+  function edgeKey(from, to) {
+    return `${from}->${to}`;
+  }
+
+  function edgeOrderIndex(from, to) {
+    if (!state.graph || !state.graph.branchPriority) {
+      return '';
+    }
+    return state.graph.branchPriority[edgeKey(from, to)] || '';
+  }
+
+  function getEdgeGeometry(from, to) {
+    const start = state.nodePositions[from];
+    const end = state.nodePositions[to];
+    if (!start || !end) {
+      return null;
+    }
+
+    if (from === to) {
+      return {
+        selfLoop: true,
+        path: `M ${start.x} ${start.y - NODE_RADIUS} C ${start.x + 40} ${start.y - 74}, ${start.x - 40} ${start.y - 74}, ${start.x} ${start.y - NODE_RADIUS}`,
+        labelX: start.x,
+        labelY: start.y - 82
+      };
+    }
+
+    const dx = end.x - start.x;
+    const dy = end.y - start.y;
+    const length = Math.hypot(dx, dy);
+    const ux = dx / length;
+    const uy = dy / length;
+    const px = -uy;
+    const py = ux;
+    const isBidirectional = state.graph.bidirectional.has(edgeKey(from, to));
+    const curve = isBidirectional ? 26 : 0;
+
+    const sx = start.x + ux * NODE_RADIUS + px * curve * 0.25;
+    const sy = start.y + uy * NODE_RADIUS + py * curve * 0.25;
+    const ex = end.x - ux * NODE_RADIUS + px * curve * 0.25;
+    const ey = end.y - uy * NODE_RADIUS + py * curve * 0.25;
+    const mx = (sx + ex) / 2 + px * curve;
+    const my = (sy + ey) / 2 + py * curve;
+
+    const path = curve
+      ? `M ${sx} ${sy} Q ${mx} ${my} ${ex} ${ey}`
+      : `M ${sx} ${sy} L ${ex} ${ey}`;
+
+    return {
+      selfLoop: false,
+      path,
+      labelX: curve ? mx : (sx + ex) / 2,
+      labelY: curve ? my : (sy + ey) / 2
+    };
+  }
+
+  function updateGraphVisuals() {
+    if (!state.graph) {
+      return;
+    }
+
+    const visuals = state.visuals;
+    state.graph.edges.forEach((edge) => {
+      const key = edgeKey(edge.from, edge.to);
+      const els = edgeEls.get(key);
+      const geometry = getEdgeGeometry(edge.from, edge.to);
+      if (!els || !geometry) {
+        return;
+      }
+
+      const type = visuals.edgeTypes[key];
+      const isActive = visuals.activeEdge && visuals.activeEdge.from === edge.from && visuals.activeEdge.to === edge.to;
+      const stroke = isActive ? colorForEdge('active') : colorForEdge(type || 'default');
+      const marker = isActive ? 'url(#arrow-active)' : markerForEdge(type || 'default');
+      const lineWidth = isActive ? 4 : type ? 3 : 2;
+      const order = edgeOrderIndex(edge.from, edge.to);
+
+      els.path.setAttribute('d', geometry.path);
+      els.path.setAttribute('stroke', stroke);
+      els.path.setAttribute('stroke-width', lineWidth);
+      els.path.setAttribute('opacity', type || isActive ? 1 : 0.35);
+      els.path.setAttribute('marker-end', geometry.selfLoop ? '' : marker);
+
+      const sourcePos = state.nodePositions[edge.from];
+      const targetPos = state.nodePositions[edge.to];
+      if (sourcePos && targetPos) {
+        const orderX = sourcePos.x + (targetPos.x - sourcePos.x) * 0.28;
+        const orderY = sourcePos.y + (targetPos.y - sourcePos.y) * 0.28 - 10;
+        els.orderBg.setAttribute('x', orderX - 8);
+        els.orderBg.setAttribute('y', orderY - 8);
+        els.orderBg.setAttribute('width', 16);
+        els.orderBg.setAttribute('height', 16);
+        els.orderBg.setAttribute('fill', isActive ? 'rgba(255,159,67,0.86)' : 'rgba(4,11,18,0.86)');
+        els.orderBg.setAttribute('stroke', 'rgba(255,255,255,0.12)');
+        els.orderLabel.setAttribute('x', orderX);
+        els.orderLabel.setAttribute('y', orderY + 4);
+        els.orderLabel.setAttribute('fill', isActive ? '#1d1200' : '#ffcf7a');
+        els.orderLabel.textContent = String(order);
+      }
+
+      if (type) {
+        els.label.textContent = type[0].toUpperCase();
+        els.label.setAttribute('x', geometry.labelX);
+        els.label.setAttribute('y', geometry.labelY + 4);
+        els.label.setAttribute('fill', stroke);
+        els.label.setAttribute('opacity', 1);
+        els.labelBg.setAttribute('x', geometry.labelX - 10);
+        els.labelBg.setAttribute('y', geometry.labelY - 8);
+        els.labelBg.setAttribute('width', 20);
+        els.labelBg.setAttribute('height', 16);
+        els.labelBg.setAttribute('fill', 'rgba(4, 11, 18, 0.86)');
+        els.labelBg.setAttribute('opacity', 1);
+      } else {
+        els.label.setAttribute('opacity', 0);
+        els.labelBg.setAttribute('opacity', 0);
+      }
+    });
+
+    state.graph.nodes.forEach((node) => {
+      const els = nodeEls.get(node);
+      if (!els) {
+        return;
+      }
+
+      const color = visuals.nodeColors[node] || 'WHITE';
+      const isActive = visuals.activeNode === node;
+      const fill = colorForNode(color, isActive);
+      const stroke = color === 'GRAY' ? '#ffcf66' : color === 'BLACK' ? '#66d9c7' : 'rgba(255,255,255,0.15)';
+      const cycleHighlight = visuals.cycleEdge && (visuals.cycleEdge.from === node || visuals.cycleEdge.to === node);
+
+      els.circle.setAttribute('fill', fill);
+      els.circle.setAttribute('stroke', stroke);
+      els.halo.setAttribute('stroke', isActive ? 'rgba(255, 159, 67, 0.5)' : cycleHighlight ? 'rgba(255, 107, 107, 0.46)' : 'none');
+      els.halo.setAttribute('stroke-width', isActive || cycleHighlight ? 4 : 0);
+      els.halo.setAttribute('stroke-dasharray', cycleHighlight && !isActive ? '6 5' : '');
+
+      if (visuals.discovery[node] !== undefined) {
+        const finish = visuals.finish[node];
+        const depth = visuals.depths[node];
+        const timeText = finish === undefined ? `d/f: ${visuals.discovery[node]}/...` : `d/f: ${visuals.discovery[node]}/${finish}`;
+        els.stamp.textContent = timeText;
+        els.stampSub.textContent = depth === undefined ? '' : `depth: L${depth}`;
+        els.depthBadge.textContent = depth === undefined ? '' : `L${depth}`;
+        els.depthBadge.setAttribute('opacity', '1');
+      } else {
+        els.stamp.textContent = '';
+        els.stampSub.textContent = '';
+        els.depthBadge.textContent = '';
+        els.depthBadge.setAttribute('opacity', '0');
+      }
+    });
+  }
+
+  function colorForNode(color, isActive) {
+    if (isActive) {
+      return 'rgba(255, 159, 67, 0.92)';
+    }
+    if (color === 'GRAY') {
+      return 'rgba(255, 200, 87, 0.88)';
+    }
+    if (color === 'BLACK') {
+      return 'rgba(102, 217, 199, 0.76)';
+    }
+    return 'rgba(255, 255, 255, 0.08)';
+  }
+
+  function colorForEdge(type) {
+    return {
+      default: 'rgba(255,255,255,0.24)',
+      tree: '#5ea5ff',
+      back: '#ff6b6b',
+      forward: '#66d9c7',
+      cross: '#ffc857',
+      active: '#ff9f43'
+    }[type];
+  }
+
+  function markerForEdge(type) {
+    return {
+      default: 'url(#arrow-default)',
+      tree: 'url(#arrow-tree)',
+      back: 'url(#arrow-back)',
+      forward: 'url(#arrow-forward)',
+      cross: 'url(#arrow-cross)'
+    }[type];
+  }
+
+  function applyStep(index) {
+    if (!state.steps.length) {
+      return;
+    }
+
+    const boundedIndex = Math.max(0, Math.min(index, state.steps.length - 1));
+    const step = state.steps[boundedIndex];
+    state.stepIndex = boundedIndex;
+    state.visuals = cloneVisuals(step.snapshot);
+    state.visuals.currentStepType = step.type;
+    state.status = statusForStep(step);
+
+    updateGraphVisuals();
+    highlightCode(step.codeLine);
+    dom.explanationBox.textContent = step.explanation;
+    captureHistory(step);
+    renderHistory();
+    renderAuxiliaryPanels();
+    updateStats();
+  }
+
+  function captureHistory(step) {
+    const existingIndex = state.history.findIndex((entry) => entry.index === state.stepIndex);
+    if (existingIndex !== -1) {
+      state.history.splice(existingIndex, 1);
+    }
+
+    state.history.push({
+      index: state.stepIndex,
+      type: step.type,
+      focus: step.focus,
+      explanation: step.explanation
+    });
+
+    if (state.history.length > MAX_HISTORY) {
+      state.history.splice(0, state.history.length - MAX_HISTORY);
+    }
+  }
+
+  function statusForStep(step) {
+    const labels = {
+      init: 'Initialized',
+      'component-root': 'Starting new DFS tree',
+      discover: 'Discovering vertex',
+      'examine-edge': 'Examining edge',
+      'classify-edge': 'Classifying edge',
+      recurse: 'Recursing',
+      finish: 'Finishing vertex',
+      done: 'Complete'
+    };
+    return labels[step.type] || 'Ready';
+  }
+
+  function renderAuxiliaryPanels() {
+    renderTopoPanel();
+    renderCyclePanel();
+    renderStackPanel();
+    renderDepthPanel();
+    renderScanPanel();
+    renderIntervalPanel();
+    renderDagPanel();
+  }
+
+  function renderTopoPanel() {
+    const showTopo = state.mode === 'topo';
+    dom.topoPanel.classList.toggle('hidden', !showTopo);
+    dom.topoRow.innerHTML = '';
+    if (!showTopo || !state.graph) {
+      return;
+    }
+
+    const topo = state.visuals.topoOrder;
+    state.graph.nodes.forEach((_, index) => {
+      const chip = document.createElement('div');
+      chip.className = 'topo-chip';
+      if (topo[index]) {
+        chip.textContent = topo[index];
+        chip.classList.add('filled');
+        if (index === 0) {
+          chip.classList.add('latest');
+        }
+      } else {
+        chip.textContent = '...';
+      }
+      dom.topoRow.appendChild(chip);
+    });
+  }
+
+  function renderCyclePanel() {
+    const visuals = state.visuals;
+    if (visuals.cycleFound && visuals.cycleEdge) {
+      dom.cycleCallout.classList.add('alert');
+      dom.cycleCallout.innerHTML =
+        `<strong>Back edge found:</strong> ${visuals.cycleEdge.from} -> ${visuals.cycleEdge.to}. ` +
+        `Because ${visuals.cycleEdge.to} is still GRAY on the stack, the active path ` +
+        `<strong>${visuals.cyclePath.join(' -> ')}</strong> is a directed cycle.`;
+      return;
+    }
+
+    dom.cycleCallout.classList.remove('alert');
+    dom.cycleCallout.textContent =
+      state.mode === 'cycle'
+        ? 'No back edge has been found yet.'
+        : 'Watch this panel while stepping. If DFS sees an edge to a GRAY ancestor, the graph is cyclic.';
+  }
+
+  function renderStackPanel() {
+    dom.stackList.innerHTML = '';
+    const stack = state.visuals.stack;
+    dom.stackDepthLabel.textContent = `Depth ${stack.length}`;
+
+    if (!stack.length) {
+      const frame = document.createElement('div');
+      frame.className = 'stack-frame';
+      frame.innerHTML = '<span>Stack empty</span><small>No active recursive call</small>';
+      dom.stackList.appendChild(frame);
+      return;
+    }
+
+    [...stack].reverse().forEach((node, index) => {
+      const frame = document.createElement('div');
+      frame.className = 'stack-frame';
+      const depth = stack.length - 1 - index;
+      frame.innerHTML = `<span>DFS-VISIT(${node})</span><small>depth ${depth}</small>`;
+      dom.stackList.appendChild(frame);
+    });
+  }
+
+  function renderDepthPanel() {
+    while (dom.depthSvg.firstChild) {
+      dom.depthSvg.removeChild(dom.depthSvg.firstChild);
+    }
+
+    if (!state.graph || !state.graph.nodes.length) {
+      dom.depthSummary.textContent = 'The x-axis shows recursion depth. The y-axis shows discovery order.';
+      return;
+    }
+
+    const discoveredNodes = state.graph.nodes.filter((node) => state.visuals.discovery[node] !== undefined);
+    const activeBranch = state.visuals.stack.length ? state.visuals.stack.join(' -> ') : 'none yet';
+    dom.depthSummary.textContent =
+      `Active branch: ${activeBranch}. X = recursion depth level, Y = discovery time, so deeper recursive calls move right.`;
+
+    if (!discoveredNodes.length) {
+      return;
+    }
+
+    const width = 420;
+    const height = 240;
+    const left = 56;
+    const right = 18;
+    const top = 18;
+    const bottom = 28;
+    const usableWidth = width - left - right;
+    const usableHeight = height - top - bottom;
+    const maxDepth = Math.max(state.visuals.maxDepth, 1);
+    const maxDiscovery = Math.max(state.visuals.timer, 2);
+
+    for (let depth = 0; depth <= maxDepth; depth += 1) {
+      const x = left + (depth / maxDepth) * usableWidth;
+      const grid = svgEl('line', {
+        x1: x,
+        y1: top,
+        x2: x,
+        y2: height - bottom,
+        stroke: 'rgba(255,255,255,0.08)',
+        'stroke-width': 1
+      });
+      const label = svgEl('text', {
+        x,
+        y: height - 8,
+        'text-anchor': 'middle',
+        class: 'axis-label'
+      });
+      label.textContent = `L${depth}`;
+      dom.depthSvg.appendChild(grid);
+      dom.depthSvg.appendChild(label);
+    }
+
+    for (let tick = 1; tick <= maxDiscovery; tick += 1) {
+      const y = top + ((tick - 1) / Math.max(maxDiscovery - 1, 1)) * usableHeight;
+      const grid = svgEl('line', {
+        x1: left,
+        y1: y,
+        x2: width - right,
+        y2: y,
+        stroke: 'rgba(255,255,255,0.08)',
+        'stroke-width': 1
+      });
+      const label = svgEl('text', {
+        x: 34,
+        y: y + 4,
+        'text-anchor': 'end',
+        class: 'axis-label'
+      });
+      label.textContent = String(tick);
+      dom.depthSvg.appendChild(grid);
+      dom.depthSvg.appendChild(label);
+    }
+
+    const xAxis = svgEl('line', {
+      x1: left,
+      y1: height - bottom,
+      x2: width - right,
+      y2: height - bottom,
+      stroke: 'rgba(255,255,255,0.22)',
+      'stroke-width': 1.5
+    });
+    const yAxis = svgEl('line', {
+      x1: left,
+      y1: top,
+      x2: left,
+      y2: height - bottom,
+      stroke: 'rgba(255,255,255,0.22)',
+      'stroke-width': 1.5
+    });
+    dom.depthSvg.appendChild(xAxis);
+    dom.depthSvg.appendChild(yAxis);
+
+    const plotPoint = (node) => {
+      const depth = state.visuals.depths[node];
+      const discovery = state.visuals.discovery[node];
+      return {
+        x: left + ((depth || 0) / maxDepth) * usableWidth,
+        y: top + ((discovery - 1) / Math.max(maxDiscovery - 1, 1)) * usableHeight
+      };
+    };
+
+    state.graph.nodes.forEach((node) => {
+      const parent = state.visuals.parents[node];
+      if (!parent || state.visuals.discovery[parent] === undefined || state.visuals.discovery[node] === undefined) {
+        return;
+      }
+      const from = plotPoint(parent);
+      const to = plotPoint(node);
+      const line = svgEl('line', {
+        x1: from.x,
+        y1: from.y,
+        x2: to.x,
+        y2: to.y,
+        stroke: '#5ea5ff',
+        'stroke-width': 2.5,
+        opacity: 0.9
+      });
+      dom.depthSvg.appendChild(line);
+    });
+
+    discoveredNodes.forEach((node) => {
+      const point = plotPoint(node);
+      const fill = colorForNode(state.visuals.nodeColors[node] || 'WHITE', state.visuals.activeNode === node);
+      const circle = svgEl('circle', {
+        cx: point.x,
+        cy: point.y,
+        r: state.visuals.activeNode === node ? 9 : 7,
+        fill,
+        stroke: 'rgba(255,255,255,0.28)',
+        'stroke-width': 1.5
+      });
+      const label = svgEl('text', {
+        x: point.x + 12,
+        y: point.y + 4,
+        class: 'axis-label'
+      });
+      label.textContent = `${node} (L${state.visuals.depths[node]})`;
+      dom.depthSvg.appendChild(circle);
+      dom.depthSvg.appendChild(label);
+    });
+  }
+
+  function renderScanPanel() {
+    dom.scanRow.innerHTML = '';
+
+    if (!state.graph || !state.graph.nodes.length) {
+      dom.scanSummary.textContent = 'Build steps to inspect the active adjacency list.';
+      return;
+    }
+
+    const scanNode = state.visuals.activeEdge
+      ? state.visuals.activeEdge.from
+      : state.visuals.activeNode || state.visuals.stack[state.visuals.stack.length - 1];
+
+    if (!scanNode) {
+      dom.scanSummary.textContent = 'No active vertex yet. Start stepping to see adjacency order.';
+      return;
+    }
+
+    const neighbors = state.graph.adjacency[scanNode] || [];
+    const activeNeighbor = state.visuals.activeEdge ? state.visuals.activeEdge.to : null;
+    if (!neighbors.length) {
+      dom.scanSummary.textContent = `${scanNode} has no outgoing edges, so DFS must backtrack.`;
+    } else if (activeNeighbor) {
+      const position = neighbors.indexOf(activeNeighbor) + 1;
+      const color = state.visuals.nodeColors[activeNeighbor];
+      const edgeType = state.visuals.edgeTypes[edgeKey(scanNode, activeNeighbor)];
+      const decision = describeBranchDecision(scanNode, state.visuals);
+      dom.scanSummary.textContent =
+        `Adj[${scanNode}] = [${neighbors.map((neighbor) => `${neighbor}(P${state.graph.branchPriority[edgeKey(scanNode, neighbor)]})`).join(', ')}]. ` +
+        `DFS is on position ${position}: ${activeNeighbor} with priority P${state.graph.branchPriority[edgeKey(scanNode, activeNeighbor)]}. ` +
+        `Current color is ${color}; edge type is ${edgeType || 'pending'}. ${decision}`;
+    } else {
+      dom.scanSummary.textContent =
+        `Adj[${scanNode}] = [${neighbors.map((neighbor) => `${neighbor}(P${state.graph.branchPriority[edgeKey(scanNode, neighbor)]})`).join(', ')}]. ` +
+        `${describeBranchDecision(scanNode, state.visuals)}`;
+    }
+
+    if (!neighbors.length) {
+      return;
+    }
+
+    neighbors.forEach((neighbor) => {
+      const chip = document.createElement('div');
+      const color = (state.visuals.nodeColors[neighbor] || 'WHITE').toLowerCase();
+      const type = state.visuals.edgeTypes[edgeKey(scanNode, neighbor)];
+      chip.className = `scan-chip ${color}${type ? ` edge-${type}` : ''}${neighbor === activeNeighbor ? ' current' : ''}`;
+      chip.textContent = `${neighbor} P${state.graph.branchPriority[edgeKey(scanNode, neighbor)]} ${state.visuals.nodeColors[neighbor] || 'WHITE'}`;
+      dom.scanRow.appendChild(chip);
+    });
+  }
+
+  function describeBranchDecision(node, visuals) {
+    if (!state.graph) {
+      return '';
+    }
+
+    const neighbors = state.graph.adjacency[node] || [];
+    const skipped = [];
+    let chosen = null;
+
+    neighbors.forEach((neighbor) => {
+      const color = visuals.nodeColors[neighbor] || 'WHITE';
+      const priority = state.graph.branchPriority[edgeKey(node, neighbor)];
+      if (!chosen && color === 'WHITE') {
+        chosen = `${neighbor}(P${priority})`;
+      } else {
+        skipped.push(`${neighbor}(P${priority}) is ${color}`);
+      }
+    });
+
+    const chosenText = chosen
+      ? `DFS will choose ${chosen} because it is the first WHITE neighbor in priority order.`
+      : 'No WHITE neighbor remains, so DFS will finish this node and backtrack.';
+    const skippedText = skipped.length ? ` Other branches now visible: ${skipped.join(', ')}.` : '';
+    return chosenText + skippedText;
+  }
+
+  function renderIntervalPanel() {
+    while (dom.intervalSvg.firstChild) {
+      dom.intervalSvg.removeChild(dom.intervalSvg.firstChild);
+    }
+
+    if (!state.graph || !state.graph.nodes.length) {
+      return;
+    }
+
+    const nodes = state.graph.nodes.filter((node) => state.visuals.discovery[node] !== undefined);
+    if (!nodes.length) {
+      return;
+    }
+
+    const maxTime = Math.max(state.visuals.timer + 1, 2);
+    const width = 420;
+    const height = 220;
+    const left = 72;
+    const top = 24;
+    const usableWidth = width - left - 24;
+    const rowGap = Math.max(28, Math.floor((height - top - 18) / nodes.length));
+
+    const axis = svgEl('line', {
+      x1: left,
+      y1: 18,
+      x2: width - 20,
+      y2: 18,
+      stroke: 'rgba(255,255,255,0.2)',
+      'stroke-width': 1.5
+    });
+    dom.intervalSvg.appendChild(axis);
+
+    for (let t = 1; t <= maxTime; t += 1) {
+      const x = left + (t / maxTime) * usableWidth;
+      const tick = svgEl('line', {
+        x1: x,
+        y1: 14,
+        x2: x,
+        y2: 22,
+        stroke: 'rgba(255,255,255,0.2)',
+        'stroke-width': 1
+      });
+      const label = svgEl('text', {
+        x,
+        y: 11,
+        'text-anchor': 'middle',
+        class: 'axis-label'
+      });
+      label.textContent = String(t);
+      dom.intervalSvg.appendChild(tick);
+      dom.intervalSvg.appendChild(label);
+    }
+
+    nodes.forEach((node, index) => {
+      const y = top + rowGap * index;
+      const d = state.visuals.discovery[node];
+      const f = state.visuals.finish[node] || state.visuals.timer + 0.65;
+      const x1 = left + (d / maxTime) * usableWidth;
+      const x2 = left + (f / maxTime) * usableWidth;
+
+      const name = svgEl('text', {
+        x: 18,
+        y: y + 4,
+        class: 'axis-label'
+      });
+      name.textContent = node;
+
+      const line = svgEl('line', {
+        x1,
+        y1: y,
+        x2,
+        y2: y,
+        stroke: state.visuals.finish[node] !== undefined ? '#66d9c7' : '#ffc857',
+        'stroke-width': 5,
+        'stroke-linecap': 'round'
+      });
+
+      const leftCap = svgEl('circle', {
+        cx: x1,
+        cy: y,
+        r: 5,
+        fill: '#ffc857'
+      });
+
+      const rightCap = svgEl('circle', {
+        cx: x2,
+        cy: y,
+        r: 5,
+        fill: state.visuals.finish[node] !== undefined ? '#66d9c7' : '#ff9f43'
+      });
+
+      dom.intervalSvg.appendChild(name);
+      dom.intervalSvg.appendChild(line);
+      dom.intervalSvg.appendChild(leftCap);
+      dom.intervalSvg.appendChild(rightCap);
+    });
+  }
+
+  function renderDagPanel() {
+    const show = state.mode === 'topo';
+    dom.dagPanel.classList.toggle('hidden', !show);
+
+    if (!show) {
+      return;
+    }
+
+    if (state.visuals.cycleFound) {
+      dom.dagSummary.innerHTML = '<strong>Longest path disabled:</strong> dynamic programming on a topological order only works for DAGs.';
+      return;
+    }
+
+    if (!state.visuals.dagDp) {
+      dom.dagSummary.textContent = 'Run the traversal to completion on a DAG to populate this panel.';
+      return;
+    }
+
+    const dp = state.visuals.dagDp;
+    const distanceLines = Object.entries(dp.distances)
+      .map(([node, distance]) => `${node}: ${distance === Number.NEGATIVE_INFINITY ? '-inf' : distance}`)
+      .join(' | ');
+
+    dom.dagSummary.innerHTML =
+      `<strong>Source:</strong> ${dp.source}. ` +
+      `<strong>Best path:</strong> ${dp.bestPath.join(' -> ')} ` +
+      `(length ${dp.bestDistance}).<br>` +
+      `<strong>DP over topological order:</strong> ${dp.topoOrder.join(' -> ')}.<br>` +
+      `<strong>Longest-path table:</strong> ${distanceLines}`;
+  }
+
+  function renderPseudocode() {
+    const config = APP_CONTENT.modes[state.mode];
+    dom.pseudocode.innerHTML = '';
+    config.pseudocode.forEach((line, index) => {
+      const div = document.createElement('div');
+      div.className = 'code-line';
+      div.textContent = line || ' ';
+      const tip = config.tips[index];
+      if (tip) {
+        div.title = tip;
+        div.addEventListener('mouseenter', () => {
+          dom.codeHoverTip.textContent = tip;
+        });
+        div.addEventListener('mouseleave', () => {
+          dom.codeHoverTip.textContent = state.codeHoverTip;
+        });
+      }
+      dom.pseudocode.appendChild(div);
+    });
+    highlightCode(0);
+  }
+
+  function highlightCode(lineIndex) {
+    const lines = dom.pseudocode.querySelectorAll('.code-line');
+    lines.forEach((line, index) => {
+      line.classList.toggle('active', index === lineIndex);
+    });
+  }
+
+  function renderOverview() {
+    dom.overview.innerHTML = APP_CONTENT.overview(state.mode);
+    updateModePanels();
+  }
+
+  function updateModePanels() {
+    dom.topoPanel.classList.toggle('hidden', state.mode !== 'topo');
+    dom.dagPanel.classList.toggle('hidden', state.mode !== 'topo');
+  }
+
+  function updateStats() {
+    const visuals = state.visuals;
+    const totalSteps = state.steps.length;
+    const currentStep = totalSteps ? state.stepIndex + 1 : 0;
+    dom.stepCounter.textContent = `${currentStep} / ${totalSteps}`;
+    dom.statusText.textContent = state.status;
+    dom.nodesVisited.textContent = String(visuals.nodesVisited);
+    dom.edgesExplored.textContent = String(visuals.edgesExplored);
+    dom.treeEdges.textContent = String(visuals.treeEdges);
+    dom.backEdges.textContent = String(visuals.backEdges);
+    dom.componentCount.textContent = String(visuals.components);
+    dom.timerValue.textContent = String(visuals.timer);
+  }
+
+  function renderHistory() {
+    dom.historyBody.innerHTML = '';
+    state.history
+      .slice()
+      .reverse()
+      .forEach((entry) => {
+        const row = document.createElement('tr');
+        if (entry.index === state.stepIndex) {
+          row.classList.add('active-row');
+        }
+        row.innerHTML =
+          `<td>${entry.index + 1}</td>` +
+          `<td><span class="history-type">${entry.type}</span></td>` +
+          `<td>${entry.focus || '-'}</td>` +
+          `<td>${entry.explanation}</td>`;
+        row.addEventListener('click', () => {
+          pause();
+          applyStep(entry.index);
+        });
+        dom.historyBody.appendChild(row);
+      });
+  }
+
+  function stepForward() {
+    pause();
+    if (!state.steps.length) {
+      buildSteps();
+      return;
+    }
+
+    if (state.stepIndex >= state.steps.length - 1) {
+      applyStep(state.steps.length - 1);
+      return;
+    }
+
+    applyStep(state.stepIndex + 1);
+  }
+
+  function stepBack() {
+    pause();
+    if (!state.steps.length) {
+      return;
+    }
+    applyStep(state.stepIndex - 1);
+  }
+
+  function skipToEnd() {
+    pause();
+    if (!state.steps.length) {
+      return;
+    }
+    applyStep(state.steps.length - 1);
+  }
+
+  async function play() {
+    if (!state.steps.length) {
+      buildSteps();
+    }
+    if (!state.steps.length) {
+      return;
+    }
+    if (state.playing) {
+      return;
+    }
+
+    state.playing = true;
+    state.playToken += 1;
+    const token = state.playToken;
+
+    while (state.playing && token === state.playToken && state.stepIndex < state.steps.length - 1) {
+      applyStep(state.stepIndex + 1);
+      const speed = Number(dom.speed.value) || 1;
+      await wait(Math.max(120, PLAY_BASE_MS / speed));
+    }
+
+    state.playing = false;
+  }
+
+  function pause() {
+    state.playing = false;
+    state.playToken += 1;
+  }
+
+  function resetPlayback() {
+    pause();
+    if (!state.steps.length) {
+      state.visuals = createEmptyVisuals();
+      state.history = [];
+      state.status = 'Idle';
+      updateGraphVisuals();
+      renderAuxiliaryPanels();
+      renderHistory();
+      updateStats();
+      dom.explanationBox.textContent = 'Build steps to begin.';
+      return;
+    }
+
+    state.history = [];
+    applyStep(0);
+    state.status = 'Reset to first step';
+    updateStats();
+  }
+
+  function wait(ms) {
+    return new Promise((resolve) => {
+      window.setTimeout(resolve, ms);
+    });
+  }
+
+  function drawComplexityChart() {
+    const V = Number(dom.vertexSlider.value);
+    const E = Number(dom.edgeSlider.value);
+    dom.vertexLabel.textContent = String(V);
+    dom.edgeLabel.textContent = String(E);
+
+    while (dom.complexitySvg.firstChild) {
+      dom.complexitySvg.removeChild(dom.complexitySvg.firstChild);
+    }
+
+    const width = 960;
+    const height = 280;
+    const left = 58;
+    const right = 28;
+    const top = 24;
+    const bottom = 42;
+    const usableWidth = width - left - right;
+    const usableHeight = height - top - bottom;
+    const maxX = Math.max(6, V + E);
+    const dfsValue = V + E;
+    const bfsValue = V + E;
+    const denseContrast = V * Math.max(1, E);
+    const maxY = Math.max(denseContrast, dfsValue + 2, 12);
+
+    const axisX = svgEl('line', {
+      x1: left,
+      y1: height - bottom,
+      x2: width - right,
+      y2: height - bottom,
+      stroke: 'rgba(255,255,255,0.22)',
+      'stroke-width': 1.5
+    });
+    const axisY = svgEl('line', {
+      x1: left,
+      y1: top,
+      x2: left,
+      y2: height - bottom,
+      stroke: 'rgba(255,255,255,0.22)',
+      'stroke-width': 1.5
+    });
+    dom.complexitySvg.appendChild(axisX);
+    dom.complexitySvg.appendChild(axisY);
+
+    for (let i = 0; i <= 5; i += 1) {
+      const ratio = i / 5;
+      const x = left + ratio * usableWidth;
+      const y = height - bottom - ratio * usableHeight;
+      const vx = Math.round(ratio * maxX);
+      const vy = Math.round(ratio * maxY);
+
+      const vertical = svgEl('line', {
+        x1: x,
+        y1: top,
+        x2: x,
+        y2: height - bottom,
+        stroke: 'rgba(255,255,255,0.06)',
+        'stroke-width': 1
+      });
+      const horizontal = svgEl('line', {
+        x1: left,
+        y1: y,
+        x2: width - right,
+        y2: y,
+        stroke: 'rgba(255,255,255,0.06)',
+        'stroke-width': 1
+      });
+      const xLabel = svgEl('text', {
+        x,
+        y: height - 14,
+        'text-anchor': 'middle',
+        class: 'axis-label'
+      });
+      xLabel.textContent = String(vx);
+      const yLabel = svgEl('text', {
+        x: left - 10,
+        y: y + 4,
+        'text-anchor': 'end',
+        class: 'axis-label'
+      });
+      yLabel.textContent = String(vy);
+      dom.complexitySvg.appendChild(vertical);
+      dom.complexitySvg.appendChild(horizontal);
+      dom.complexitySvg.appendChild(xLabel);
+      dom.complexitySvg.appendChild(yLabel);
+    }
+
+    const dfsPath = plotLine(maxX, maxY, usableWidth, usableHeight, left, height - bottom, (x) => x);
+    const bfsPath = plotLine(maxX, maxY, usableWidth, usableHeight, left, height - bottom, (x) => x * 0.98 + 0.4);
+    const densePath = plotLine(maxX, maxY, usableWidth, usableHeight, left, height - bottom, (x) => (V / maxX) * x * (E / maxX) * x);
+
+    dom.complexitySvg.appendChild(makePath(dfsPath, '#66d9c7', 4));
+    dom.complexitySvg.appendChild(makePath(bfsPath, '#5ea5ff', 3));
+    dom.complexitySvg.appendChild(makePath(densePath, '#ff6b6b', 2, '8 7'));
+
+    addChartLabel('DFS O(V + E)', '#66d9c7', usableWidth * 0.66 + left, mapY(maxY, usableHeight, height - bottom, dfsValue * 0.66));
+    addChartLabel('BFS O(V + E)', '#5ea5ff', usableWidth * 0.48 + left, mapY(maxY, usableHeight, height - bottom, bfsValue * 0.48 + 1));
+    addChartLabel('Contrast: O(VE)', '#ff6b6b', usableWidth * 0.7 + left, mapY(maxY, usableHeight, height - bottom, denseContrast * 0.48));
+
+    const xAxisLabel = svgEl('text', {
+      x: left + usableWidth / 2,
+      y: height - 6,
+      'text-anchor': 'middle',
+      class: 'axis-label'
+    });
+    xAxisLabel.textContent = 'Graph size scale';
+
+    const yAxisLabel = svgEl('text', {
+      x: 16,
+      y: top + usableHeight / 2,
+      transform: `rotate(-90 16 ${top + usableHeight / 2})`,
+      'text-anchor': 'middle',
+      class: 'axis-label'
+    });
+    yAxisLabel.textContent = 'Estimated operations';
+
+    dom.complexitySvg.appendChild(xAxisLabel);
+    dom.complexitySvg.appendChild(yAxisLabel);
+
+    const actualGraph = state.graph;
+    const actualNote = actualGraph
+      ? `Current graph: V = ${actualGraph.nodes.length}, E = ${actualGraph.edges.length}`
+      : 'Build a graph to compare the actual V and E values.';
+
+    dom.complexityMetrics.innerHTML =
+      metricRow('DFS estimate', `${dfsValue} scans`) +
+      metricRow('BFS estimate', `${bfsValue} scans`) +
+      metricRow('Contrast O(VE)', `${denseContrast} operations`) +
+      metricRow('Actual graph', actualNote);
+  }
+
+  function syncComplexitySlidersToGraph(graph) {
+    if (!graph || !graph.nodes.length) {
+      return;
+    }
+
+    const vMin = Number(dom.vertexSlider.min);
+    const vMax = Number(dom.vertexSlider.max);
+    const eMin = Number(dom.edgeSlider.min);
+    const eMax = Number(dom.edgeSlider.max);
+
+    dom.vertexSlider.value = String(Math.min(vMax, Math.max(vMin, graph.nodes.length)));
+    dom.edgeSlider.value = String(Math.min(eMax, Math.max(eMin, graph.edges.length || 1)));
+  }
+
+  function plotLine(maxX, maxY, usableWidth, usableHeight, left, bottomY, fn) {
+    const points = [];
+    for (let x = 0; x <= maxX; x += 1) {
+      const px = left + (x / maxX) * usableWidth;
+      const py = mapY(maxY, usableHeight, bottomY, fn(x));
+      points.push(`${x === 0 ? 'M' : 'L'} ${px} ${py}`);
+    }
+    return points.join(' ');
+  }
+
+  function mapY(maxY, usableHeight, bottomY, value) {
+    return bottomY - (value / maxY) * usableHeight;
+  }
+
+  function makePath(d, stroke, width, dashArray = '') {
+    const path = svgEl('path', {
+      d,
+      fill: 'none',
+      stroke,
+      'stroke-width': width,
+      'stroke-linejoin': 'round',
+      'stroke-linecap': 'round'
+    });
+    if (dashArray) {
+      path.setAttribute('stroke-dasharray', dashArray);
+    }
+    return path;
+  }
+
+  function addChartLabel(text, color, x, y) {
+    const label = svgEl('text', {
+      x,
+      y,
+      class: 'chart-label',
+      fill: color
+    });
+    label.textContent = text;
+    dom.complexitySvg.appendChild(label);
+  }
+
+  function metricRow(label, value) {
+    return `<div class="metric-row"><span>${label}</span><strong>${value}</strong></div>`;
+  }
+
+  init();
+})();
+
+  </script>
+</body>
+</html>

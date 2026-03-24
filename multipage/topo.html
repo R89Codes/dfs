@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Topological Sort Guide</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="guide-page" data-mode="topo">
+  <div class="guide-shell">
+    <header class="page-hero">
+      <div>
+        <p class="guide-kicker">Graph Algorithms Studio</p>
+        <h1>Topological Sort</h1>
+        <p class="guide-copy">This page focuses on finish times, reverse-order output, and why topological order unlocks dynamic programming on DAGs.</p>
+      </div>
+      <nav class="guide-nav">
+        <a href="index.html">Home</a>
+        <a href="dfs.html">DFS</a>
+        <a href="topo.html" class="active">Topo</a>
+        <a href="cycle.html">Cycle</a>
+      </nav>
+    </header>
+
+    <main class="page-layout">
+      <section class="guide-panel controls-col">
+        <div class="panel-title">
+          <h2>Controls</h2>
+          <p>Choose a DAG and build the finish-order walkthrough.</p>
+        </div>
+        <div class="control-block">
+          <label for="presetSelect">Preset graph</label>
+          <select id="presetSelect"></select>
+        </div>
+        <div class="control-block">
+          <label for="graphInput">Adjacency list</label>
+          <textarea id="graphInput" spellcheck="false"></textarea>
+        </div>
+        <div class="two-up">
+          <div class="control-block">
+            <label for="startNode">Start node</label>
+            <select id="startNode"></select>
+          </div>
+          <div class="control-block">
+            <label for="speed">Playback speed <span id="speedLabel">1.00x</span></label>
+            <input id="speed" type="range" min="0.25" max="4" step="0.05" value="1">
+          </div>
+        </div>
+        <div class="button-row">
+          <button id="buildBtn">Build</button>
+          <button id="stepBtn">Step</button>
+          <button id="playBtn">Play</button>
+          <button id="pauseBtn" class="secondary">Pause</button>
+          <button id="resetBtn" class="secondary">Reset</button>
+        </div>
+        <div class="status-grid">
+          <div class="status-pill"><span>Status</span><strong id="statusText">Idle</strong></div>
+          <div class="status-pill"><span>Step</span><strong id="stepCounter">0 / 0</strong></div>
+          <div class="status-pill"><span>Visited</span><strong id="visitedText">0</strong></div>
+          <div class="status-pill"><span>Edges</span><strong id="edgesText">0</strong></div>
+        </div>
+        <div class="guide-note" id="modeNote"></div>
+      </section>
+
+      <section class="guide-panel main-col">
+        <div class="panel-title">
+          <h2>Graph View</h2>
+          <p>Follow the DFS that produces the reverse finish-time ordering.</p>
+        </div>
+        <svg id="graphSvg" viewBox="0 0 920 460" preserveAspectRatio="xMidYMid meet">
+          <defs>
+            <marker id="arrow-default" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><polygon points="0 0,10 4,0 8"></polygon></marker>
+            <marker id="arrow-tree" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><polygon points="0 0,10 4,0 8"></polygon></marker>
+            <marker id="arrow-back" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><polygon points="0 0,10 4,0 8"></polygon></marker>
+            <marker id="arrow-forward" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><polygon points="0 0,10 4,0 8"></polygon></marker>
+            <marker id="arrow-cross" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><polygon points="0 0,10 4,0 8"></polygon></marker>
+            <marker id="arrow-active" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><polygon points="0 0,10 4,0 8"></polygon></marker>
+          </defs>
+        </svg>
+        <div class="two-up panel-gap">
+          <section class="mini-panel">
+            <h3>Topological Order</h3>
+            <div id="topoStrip" class="topo-strip"></div>
+          </section>
+          <section class="mini-panel">
+            <h3>Step Explanation</h3>
+            <div id="stepExplain" class="step-explain">Build the page to begin.</div>
+          </section>
+        </div>
+      </section>
+
+      <section class="guide-panel full-span">
+        <div class="panel-title">
+          <h2 id="diagramTitle">Finish-Time Conveyor</h2>
+          <p id="diagramText">Each completed vertex moves to the front of the final ordering.</p>
+        </div>
+        <div class="diagram-layout">
+          <svg id="diagramSvg" viewBox="0 0 960 260" preserveAspectRatio="xMidYMid meet"></svg>
+          <div class="diagram-side">
+            <div class="mini-panel">
+              <h3>DAG DP Summary</h3>
+              <div id="scanSummary" class="guide-note">Complete the traversal on a DAG to compute the longest path.</div>
+              <div id="scanRow" class="scan-row"></div>
+            </div>
+            <div class="mini-panel">
+              <h3>Timestamps</h3>
+              <table class="stamp-table">
+                <thead>
+                  <tr><th>Node</th><th>d</th><th>f</th><th>Depth</th></tr>
+                </thead>
+                <tbody id="stampBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
