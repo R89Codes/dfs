@@ -392,6 +392,50 @@ function testMultipageFiles() {
   });
 }
 
+function testRootGuideFiles() {
+  const rootDir = path.join(__dirname, '..');
+  const files = [
+    path.join(rootDir, 'guide.html'),
+    path.join(rootDir, 'dfs.html'),
+    path.join(rootDir, 'topo.html'),
+    path.join(rootDir, 'cycle.html'),
+    path.join(rootDir, 'guide-styles.css'),
+    path.join(rootDir, 'guide-data.js'),
+    path.join(rootDir, 'guide-app.js')
+  ];
+
+  files.forEach((file) => {
+    assert(fs.existsSync(file), `Missing root guide asset: ${path.basename(file)}`);
+  });
+
+  const guideHome = fs.readFileSync(path.join(rootDir, 'guide.html'), 'utf8');
+  const dfsPage = fs.readFileSync(path.join(rootDir, 'dfs.html'), 'utf8');
+
+  assert(guideHome.includes('href="brand.css"'), 'Root guide home is not using the shared brand stylesheet');
+  assert(guideHome.includes('href="guide-styles.css"'), 'Root guide home is not using root guide styles');
+  assert(dfsPage.includes('href="index.html"'), 'Root DFS page should include the shared app home link');
+  assert(dfsPage.includes('href="guide.html"'), 'Root DFS page should still link to the multi-page overview');
+  assert(dfsPage.includes('src="guide-data.js"'), 'Root DFS page is not using root guide data');
+  assert(dfsPage.includes('src="guide-app.js"'), 'Root DFS page is not using root guide app');
+}
+
+function testHomeAndSingleFiles() {
+  const rootDir = path.join(__dirname, '..');
+  const homePath = path.join(rootDir, 'index.html');
+  const singlePath = path.join(rootDir, 'single.html');
+
+  assert(fs.existsSync(homePath), 'Missing root home entry point');
+  assert(fs.existsSync(singlePath), 'Missing generated single-page entry point');
+
+  const home = fs.readFileSync(homePath, 'utf8');
+  const single = fs.readFileSync(singlePath, 'utf8');
+
+  assert(home.includes('Visualization Workspace'), 'Root index should be the standalone teaching tool');
+  assert(single.includes('Visualization Workspace'), 'Single-page output should still exist as the teaching tool');
+  assert(!home.includes('href="brand.css"'), 'Root index should be self-contained with no external brand stylesheet');
+  assert(!single.includes('href="brand.css"'), 'Single-page output should be self-contained with no external brand stylesheet');
+}
+
 function main() {
   const harness = loadRuntime();
   testInitialBuild(harness);
@@ -400,6 +444,8 @@ function main() {
   testDisconnectedGraph(harness);
   testReset(harness);
   testMultipageFiles();
+  testRootGuideFiles();
+  testHomeAndSingleFiles();
   console.log('smoke-test:ok');
 }
 

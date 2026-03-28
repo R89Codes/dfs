@@ -1,0 +1,159 @@
+:root {
+  --app-bg: #1b130f;
+  --app-bg-deep: #130d0a;
+  --app-panel: rgba(42, 28, 23, 0.92);
+  --app-panel-soft: rgba(58, 38, 30, 0.86);
+  --app-panel-strong: rgba(68, 44, 35, 0.96);
+  --app-line: rgba(255, 213, 173, 0.14);
+  --app-line-strong: rgba(255, 213, 173, 0.24);
+  --app-line-soft: rgba(255, 213, 173, 0.08);
+  --app-text: #fff2e7;
+  --app-text-strong: #fff8f1;
+  --app-muted: #d9bfa9;
+  --app-muted-strong: #edd5c1;
+  --app-brand: #ff8c42;
+  --app-brand-soft: #ffb16c;
+  --app-accent: #ffd166;
+  --app-danger: #ff6b6b;
+  --app-tree: #8ecae6;
+  --app-back-edge: #ff6b6b;
+  --app-forward: #80ed99;
+  --app-cross: #ffd166;
+  --app-active: #ff8c42;
+  --app-shadow-lg: 0 24px 44px rgba(0, 0, 0, 0.42);
+  --app-shadow-md: 0 18px 42px rgba(0, 0, 0, 0.28);
+  --app-shadow-sm: 0 16px 28px rgba(0, 0, 0, 0.34);
+  --app-radius-panel: 24px;
+  --app-radius-card: 20px;
+  --app-radius-pill: 999px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  color-scheme: dark;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  color: var(--app-text);
+  font-family: "Trebuchet MS", "Gill Sans", "Segoe UI", sans-serif;
+  background:
+    radial-gradient(circle at top right, rgba(255, 140, 66, 0.18), transparent 26%),
+    radial-gradient(circle at top left, rgba(255, 209, 102, 0.14), transparent 24%),
+    linear-gradient(180deg, #1a120f 0%, #130d0a 100%);
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+code {
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+}
+
+::selection {
+  background: rgba(255, 140, 66, 0.3);
+  color: var(--app-text-strong);
+}
+
+.mode-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 12px;
+  padding: 8px 14px;
+  border-radius: var(--app-radius-pill);
+  border: 1px solid rgba(255, 177, 108, 0.22);
+  background: rgba(255, 140, 66, 0.1);
+  color: var(--app-brand-soft);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.mode-pill::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--app-accent);
+  box-shadow: 0 0 0 4px rgba(255, 209, 102, 0.12);
+}
+
+.app-back-link {
+  position: fixed;
+  top: 14px;
+  left: 14px;
+  z-index: 1300;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: var(--app-radius-pill);
+  border: 1px solid rgba(255, 177, 108, 0.24);
+  background: rgba(27, 19, 15, 0.92);
+  box-shadow: var(--app-shadow-sm);
+  color: var(--app-text);
+  transition: transform 0.16s ease, border-color 0.2s ease, background 0.2s ease;
+}
+
+.app-back-link:hover {
+  transform: translateY(-1px);
+  border-color: rgba(255, 177, 108, 0.34);
+  background: rgba(42, 28, 23, 0.96);
+}
+
+.app-back-link:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 3px rgba(255, 140, 66, 0.18),
+    var(--app-shadow-sm);
+}
+
+.app-back-link svg {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 auto;
+  fill: none;
+  stroke: var(--app-accent);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.8;
+}
+
+.app-back-link span {
+  font-size: 0.84rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.with-app-back .guide-shell,
+.with-app-back .shell {
+  padding-top: 48px;
+}
+
+@media (max-width: 760px) {
+  .app-back-link {
+    top: 10px;
+    left: 10px;
+    padding: 9px 12px;
+  }
+
+  .with-app-back .guide-shell,
+  .with-app-back .shell {
+    padding-top: 42px;
+  }
+}
