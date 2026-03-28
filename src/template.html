@@ -9,6 +9,44 @@ __INLINE_STYLE__
   </style>
 </head>
 <body>
+  <div class="floating-tools">
+    <button id="topTutorialBtn" class="tutorial-launcher" type="button" aria-label="Open tutorial">
+      <span class="tutorial-launcher-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" role="img" focusable="false">
+          <path d="M5 4.5C5 3.67 5.67 3 6.5 3H19v16H8a3 3 0 0 0-3 3V4.5Zm2.5.5A1.5 1.5 0 0 0 6 6.5V18.3A4.45 4.45 0 0 1 8 18h9V5H7.5ZM4 20a2 2 0 0 1 2-2h11v2H6a1 1 0 1 0 0 2h11v2H6a3 3 0 0 1-2-3Z"></path>
+        </svg>
+      </span>
+      <span>Tutorial</span>
+    </button>
+    <button id="topFilterBtn" class="tutorial-launcher filter-launcher" type="button" aria-expanded="false" aria-controls="topFilterMenu">
+      <span class="tutorial-launcher-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" role="img" focusable="false">
+          <path d="M4 6.5A1.5 1.5 0 0 1 5.5 5h13A1.5 1.5 0 0 1 20 6.5v1A1.5 1.5 0 0 1 18.5 9H13v10.5a.5.5 0 0 1-.8.4l-2-1.5a.5.5 0 0 1-.2-.4V9H5.5A1.5 1.5 0 0 1 4 7.5v-1Z"></path>
+        </svg>
+      </span>
+      <span>Filters</span>
+    </button>
+    <div id="topFilterMenu" class="filter-menu" aria-label="Layout filters">
+      <div class="filter-menu-head">
+        <strong>Readable Layout</strong>
+        <p>Hide panels you do not need during presenting or studying.</p>
+      </div>
+      <div class="filter-actions">
+        <button id="showEssentialsBtn" class="secondary filter-action" type="button">Show Essentials</button>
+        <button id="showAllBtn" class="secondary filter-action" type="button">Show All</button>
+      </div>
+      <div class="filter-grid" id="filterGrid">
+        <label class="filter-chip"><input type="checkbox" data-filter-key="overview" checked>Overview</label>
+        <label class="filter-chip"><input type="checkbox" data-filter-key="topology" checked>Topo + Cycle</label>
+        <label class="filter-chip"><input type="checkbox" data-filter-key="stackDepth" checked>Stack + Depth</label>
+        <label class="filter-chip"><input type="checkbox" data-filter-key="scanInterval" checked>Scan + Interval</label>
+        <label class="filter-chip"><input type="checkbox" data-filter-key="dag" checked>DAG Panel</label>
+        <label class="filter-chip"><input type="checkbox" data-filter-key="codeExplain" checked>Code + Explain</label>
+        <label class="filter-chip"><input type="checkbox" data-filter-key="history" checked>History</label>
+        <label class="filter-chip"><input type="checkbox" data-filter-key="complexity" checked>Complexity</label>
+      </div>
+    </div>
+  </div>
   <div class="shell">
     <header class="hero">
       <div>
@@ -66,6 +104,10 @@ __INLINE_STYLE__
           <button id="pauseBtn" class="secondary">Pause</button>
           <button id="skipBtn" class="secondary">Skip End</button>
           <button id="resetBtn" class="danger">Reset</button>
+        </div>
+
+        <div class="assist-row">
+          <button id="startPracticeBtn" class="secondary" type="button">Guided Practice</button>
         </div>
 
         <div class="stats-grid">
@@ -128,7 +170,7 @@ __INLINE_STYLE__
           </defs>
         </svg>
 
-        <div class="info-grid">
+        <div class="info-grid" id="topologyCluster">
           <div class="subpanel" id="topoPanel">
             <div class="subpanel-head">
               <h3>Topological Order</h3>
@@ -146,8 +188,8 @@ __INLINE_STYLE__
           </div>
         </div>
 
-        <div class="info-grid">
-          <div class="subpanel">
+        <div class="info-grid" id="stackDepthCluster">
+          <div class="subpanel" id="stackPanel">
             <div class="subpanel-head">
               <h3>DFS Recursion Stack</h3>
               <p id="stackDepthLabel">Depth 0</p>
@@ -155,7 +197,7 @@ __INLINE_STYLE__
             <div class="stack-list" id="stackList"></div>
           </div>
 
-          <div class="subpanel">
+          <div class="subpanel" id="depthPanel">
             <div class="subpanel-head">
               <h3>Depth Map</h3>
               <p id="depthSummary">The x-axis shows recursion depth. The y-axis shows discovery order.</p>
@@ -164,8 +206,8 @@ __INLINE_STYLE__
           </div>
         </div>
 
-        <div class="info-grid">
-          <div class="subpanel">
+        <div class="info-grid" id="scanIntervalCluster">
+          <div class="subpanel" id="scanPanel">
             <div class="subpanel-head">
               <h3>Adjacency Scan</h3>
               <p>DFS picks the first WHITE neighbor in adjacency-list order, then recurses immediately.</p>
@@ -174,7 +216,7 @@ __INLINE_STYLE__
             <div class="scan-row" id="scanRow"></div>
           </div>
 
-          <div class="subpanel">
+          <div class="subpanel" id="intervalPanel">
             <div class="subpanel-head">
               <h3>Parenthesis Theorem</h3>
               <p>Intervals are either nested or disjoint. They never partially overlap.</p>
@@ -191,15 +233,15 @@ __INLINE_STYLE__
           <div class="dag-summary" id="dagSummary">Run topological sort on a DAG to populate this panel.</div>
         </div>
 
-        <div class="code-layout">
-          <div class="subpanel code-panel">
+        <div class="code-layout" id="codeExplainCluster">
+          <div class="subpanel code-panel" id="codePanel">
             <div class="subpanel-head">
               <h3>Pseudocode</h3>
               <p id="codeHoverTip">Hover a line for the teaching note. The active line is highlighted during playback.</p>
             </div>
             <div class="pseudocode" id="pseudocode"></div>
           </div>
-          <div class="subpanel explanation-panel">
+          <div class="subpanel explanation-panel" id="explainPanel">
             <div class="subpanel-head">
               <h3>Step Explanation</h3>
               <p>Plain-English explanation with the actual values from the current step.</p>
@@ -209,7 +251,7 @@ __INLINE_STYLE__
         </div>
       </section>
 
-      <section class="panel full-span">
+      <section class="panel full-span" id="historySection">
         <div class="panel-head">
           <h2>Step History</h2>
           <p>Last 25 steps. Click any row to jump directly to that saved state.</p>
@@ -229,7 +271,7 @@ __INLINE_STYLE__
         </div>
       </section>
 
-      <section class="panel full-span">
+      <section class="panel full-span" id="complexitySection">
         <div class="panel-head">
           <h2>Complexity Analysis</h2>
           <p>CLO-1: show why DFS stays linear in the size of the graph, and compare its growth with BFS.</p>

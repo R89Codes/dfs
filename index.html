@@ -32,10 +32,6 @@
   box-sizing: border-box;
 }
 
-html {
-  scroll-behavior: smooth;
-}
-
 body {
   margin: 0;
   min-height: 100vh;
@@ -61,6 +57,75 @@ code {
 .shell {
   width: min(1440px, calc(100vw - 24px));
   margin: 16px auto 28px;
+}
+
+.floating-tools {
+  position: fixed;
+  top: 14px;
+  right: 14px;
+  z-index: 1200;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 10px;
+}
+
+.tutorial-launcher {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  width: auto;
+  padding: 10px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 200, 87, 0.28);
+  background: rgba(8, 17, 29, 0.9);
+  box-shadow: 0 16px 28px rgba(0, 0, 0, 0.34);
+}
+
+.tutorial-launcher-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(255, 200, 87, 0.18);
+}
+
+.tutorial-launcher svg {
+  width: 16px;
+  height: 16px;
+  fill: #ffcf7a;
+}
+
+.filter-launcher svg {
+  fill: var(--accent-strong);
+}
+
+.filter-menu {
+  display: none;
+  width: min(360px, calc(100vw - 24px));
+  padding: 16px;
+  border-radius: 20px;
+  border: 1px solid rgba(164, 197, 255, 0.18);
+  background: linear-gradient(180deg, rgba(12, 24, 40, 0.98), rgba(7, 15, 25, 0.98));
+  box-shadow: 0 24px 44px rgba(0, 0, 0, 0.44);
+}
+
+.filter-menu.open {
+  display: block;
+}
+
+.filter-menu-head strong {
+  display: block;
+  margin-bottom: 6px;
+}
+
+.filter-menu-head p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.55;
+  font-size: 0.84rem;
 }
 
 .hero {
@@ -180,7 +245,7 @@ code {
 }
 
 .button-grid {
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
 }
 
 .stats-grid {
@@ -218,6 +283,47 @@ code {
   color: var(--muted);
   font-size: 0.83rem;
   line-height: 1.5;
+}
+
+.filter-actions,
+.filter-grid {
+  display: grid;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.filter-actions {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.filter-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.filter-chip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--muted);
+  font-size: 0.84rem;
+}
+
+.filter-chip input {
+  width: auto;
+  accent-color: var(--accent);
+}
+
+.filter-action {
+  width: auto;
+  white-space: nowrap;
+}
+
+.assist-row {
+  margin: 16px 20px 0;
 }
 
 textarea,
@@ -718,6 +824,107 @@ button.preset-btn.active {
   display: none;
 }
 
+.is-hidden-filter {
+  display: none !important;
+}
+
+.tour-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1050;
+  display: none;
+  pointer-events: none;
+}
+
+.tour-overlay.open {
+  display: block;
+}
+
+.tour-mask {
+  position: fixed;
+  background: rgba(2, 8, 16, 0.72);
+  z-index: 1050;
+  pointer-events: none;
+}
+
+.tour-spotlight {
+  position: fixed;
+  border-radius: 20px;
+  border: 2px solid rgba(255, 200, 87, 0.48);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.08), 0 20px 34px rgba(0, 0, 0, 0.38);
+  z-index: 1055;
+  pointer-events: none;
+  display: none;
+}
+
+.tour-spotlight.open {
+  display: block;
+}
+
+.tour-card {
+  position: fixed;
+  right: 18px;
+  top: 72px;
+  width: min(360px, calc(100vw - 24px));
+  padding: 18px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 200, 87, 0.24);
+  background: linear-gradient(180deg, rgba(15, 25, 40, 0.98), rgba(7, 15, 25, 0.98));
+  box-shadow: 0 24px 44px rgba(0, 0, 0, 0.44);
+  color: var(--text);
+  z-index: 1060;
+  pointer-events: auto;
+}
+
+.tour-target-active {
+  position: relative;
+  z-index: 1062;
+  box-shadow: 0 0 0 2px rgba(255, 200, 87, 0.42), 0 0 0 10px rgba(255, 200, 87, 0.08), 0 18px 34px rgba(0, 0, 0, 0.34);
+  border-radius: 18px;
+}
+
+.tour-step {
+  margin: 0 0 8px;
+  color: var(--warm);
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+}
+
+.tour-card h3 {
+  margin: 0 0 8px;
+  font-size: 1.05rem;
+}
+
+.tour-card p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.62;
+}
+
+.tour-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.tour-actions button {
+  width: auto;
+  min-width: 92px;
+}
+
+.tour-choice-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.tour-choice-row button {
+  width: auto;
+}
+
 .controls-panel .split,
 .controls-panel .button-grid,
 .controls-panel .stats-grid {
@@ -783,6 +990,21 @@ svg text {
     border-radius: 18px;
   }
 
+  .tutorial-launcher {
+    padding: 9px 12px;
+  }
+
+  .floating-tools {
+    top: 10px;
+    right: 10px;
+  }
+
+  .tour-card {
+    top: 64px;
+    right: 10px;
+    width: min(340px, calc(100vw - 20px));
+  }
+
   .mode-row,
   .preset-grid,
   .button-grid,
@@ -790,7 +1012,9 @@ svg text {
   .info-grid,
   .code-layout,
   .complexity-grid,
-  .split {
+  .split,
+  .filter-actions,
+  .filter-grid {
     grid-template-columns: 1fr;
   }
 
@@ -822,6 +1046,44 @@ svg text {
   </style>
 </head>
 <body>
+  <div class="floating-tools">
+    <button id="topTutorialBtn" class="tutorial-launcher" type="button" aria-label="Open tutorial">
+      <span class="tutorial-launcher-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" role="img" focusable="false">
+          <path d="M5 4.5C5 3.67 5.67 3 6.5 3H19v16H8a3 3 0 0 0-3 3V4.5Zm2.5.5A1.5 1.5 0 0 0 6 6.5V18.3A4.45 4.45 0 0 1 8 18h9V5H7.5ZM4 20a2 2 0 0 1 2-2h11v2H6a1 1 0 1 0 0 2h11v2H6a3 3 0 0 1-2-3Z"></path>
+        </svg>
+      </span>
+      <span>Tutorial</span>
+    </button>
+    <button id="topFilterBtn" class="tutorial-launcher filter-launcher" type="button" aria-expanded="false" aria-controls="topFilterMenu">
+      <span class="tutorial-launcher-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" role="img" focusable="false">
+          <path d="M4 6.5A1.5 1.5 0 0 1 5.5 5h13A1.5 1.5 0 0 1 20 6.5v1A1.5 1.5 0 0 1 18.5 9H13v10.5a.5.5 0 0 1-.8.4l-2-1.5a.5.5 0 0 1-.2-.4V9H5.5A1.5 1.5 0 0 1 4 7.5v-1Z"></path>
+        </svg>
+      </span>
+      <span>Filters</span>
+    </button>
+    <div id="topFilterMenu" class="filter-menu" aria-label="Layout filters">
+      <div class="filter-menu-head">
+        <strong>Readable Layout</strong>
+        <p>Hide panels you do not need during presenting or studying.</p>
+      </div>
+      <div class="filter-actions">
+        <button id="showEssentialsBtn" class="secondary filter-action" type="button">Show Essentials</button>
+        <button id="showAllBtn" class="secondary filter-action" type="button">Show All</button>
+      </div>
+      <div class="filter-grid" id="filterGrid">
+        <label class="filter-chip"><input type="checkbox" data-filter-key="overview" checked>Overview</label>
+        <label class="filter-chip"><input type="checkbox" data-filter-key="topology" checked>Topo + Cycle</label>
+        <label class="filter-chip"><input type="checkbox" data-filter-key="stackDepth" checked>Stack + Depth</label>
+        <label class="filter-chip"><input type="checkbox" data-filter-key="scanInterval" checked>Scan + Interval</label>
+        <label class="filter-chip"><input type="checkbox" data-filter-key="dag" checked>DAG Panel</label>
+        <label class="filter-chip"><input type="checkbox" data-filter-key="codeExplain" checked>Code + Explain</label>
+        <label class="filter-chip"><input type="checkbox" data-filter-key="history" checked>History</label>
+        <label class="filter-chip"><input type="checkbox" data-filter-key="complexity" checked>Complexity</label>
+      </div>
+    </div>
+  </div>
   <div class="shell">
     <header class="hero">
       <div>
@@ -879,6 +1141,10 @@ svg text {
           <button id="pauseBtn" class="secondary">Pause</button>
           <button id="skipBtn" class="secondary">Skip End</button>
           <button id="resetBtn" class="danger">Reset</button>
+        </div>
+
+        <div class="assist-row">
+          <button id="startPracticeBtn" class="secondary" type="button">Guided Practice</button>
         </div>
 
         <div class="stats-grid">
@@ -941,7 +1207,7 @@ svg text {
           </defs>
         </svg>
 
-        <div class="info-grid">
+        <div class="info-grid" id="topologyCluster">
           <div class="subpanel" id="topoPanel">
             <div class="subpanel-head">
               <h3>Topological Order</h3>
@@ -959,8 +1225,8 @@ svg text {
           </div>
         </div>
 
-        <div class="info-grid">
-          <div class="subpanel">
+        <div class="info-grid" id="stackDepthCluster">
+          <div class="subpanel" id="stackPanel">
             <div class="subpanel-head">
               <h3>DFS Recursion Stack</h3>
               <p id="stackDepthLabel">Depth 0</p>
@@ -968,7 +1234,7 @@ svg text {
             <div class="stack-list" id="stackList"></div>
           </div>
 
-          <div class="subpanel">
+          <div class="subpanel" id="depthPanel">
             <div class="subpanel-head">
               <h3>Depth Map</h3>
               <p id="depthSummary">The x-axis shows recursion depth. The y-axis shows discovery order.</p>
@@ -977,8 +1243,8 @@ svg text {
           </div>
         </div>
 
-        <div class="info-grid">
-          <div class="subpanel">
+        <div class="info-grid" id="scanIntervalCluster">
+          <div class="subpanel" id="scanPanel">
             <div class="subpanel-head">
               <h3>Adjacency Scan</h3>
               <p>DFS picks the first WHITE neighbor in adjacency-list order, then recurses immediately.</p>
@@ -987,7 +1253,7 @@ svg text {
             <div class="scan-row" id="scanRow"></div>
           </div>
 
-          <div class="subpanel">
+          <div class="subpanel" id="intervalPanel">
             <div class="subpanel-head">
               <h3>Parenthesis Theorem</h3>
               <p>Intervals are either nested or disjoint. They never partially overlap.</p>
@@ -1004,15 +1270,15 @@ svg text {
           <div class="dag-summary" id="dagSummary">Run topological sort on a DAG to populate this panel.</div>
         </div>
 
-        <div class="code-layout">
-          <div class="subpanel code-panel">
+        <div class="code-layout" id="codeExplainCluster">
+          <div class="subpanel code-panel" id="codePanel">
             <div class="subpanel-head">
               <h3>Pseudocode</h3>
               <p id="codeHoverTip">Hover a line for the teaching note. The active line is highlighted during playback.</p>
             </div>
             <div class="pseudocode" id="pseudocode"></div>
           </div>
-          <div class="subpanel explanation-panel">
+          <div class="subpanel explanation-panel" id="explainPanel">
             <div class="subpanel-head">
               <h3>Step Explanation</h3>
               <p>Plain-English explanation with the actual values from the current step.</p>
@@ -1022,7 +1288,7 @@ svg text {
         </div>
       </section>
 
-      <section class="panel full-span">
+      <section class="panel full-span" id="historySection">
         <div class="panel-head">
           <h2>Step History</h2>
           <p>Last 25 steps. Click any row to jump directly to that saved state.</p>
@@ -1042,7 +1308,7 @@ svg text {
         </div>
       </section>
 
-      <section class="panel full-span">
+      <section class="panel full-span" id="complexitySection">
         <div class="panel-head">
           <h2>Complexity Analysis</h2>
           <p>CLO-1: show why DFS stays linear in the size of the graph, and compare its growth with BFS.</p>
@@ -1272,6 +1538,166 @@ const APP_CONTENT = {
     }
   },
 
+  tours: {
+    common: [
+      {
+        id: 'controls',
+        target: '#graphInput',
+        title: 'Start With the Graph',
+        body: 'Paste a directed adjacency list here or load a preset. Every build starts from this graph text, so this is the first place to change the lesson.'
+      },
+      {
+        id: 'mode',
+        target: '#modeRow',
+        title: 'Choose the Goal',
+        body: 'The same DFS engine powers all three modes. Switch here when you want to emphasize search, topological order, or cycle proof.'
+      },
+      {
+        id: 'build',
+        target: '#buildBtn',
+        title: 'Build the Walkthrough',
+        body: 'Build creates the full sequence of DFS states. Then Step, Step Back, Play, Pause, and Skip End let you control how fast you teach it.'
+      },
+      {
+        id: 'filters',
+        target: '#topFilterBtn',
+        title: 'Make the Page Readable',
+        body: 'Open the Filters menu here when you want a cleaner teaching view. The Essentials preset hides the supporting panels that are not needed for a focused walkthrough.'
+      },
+      {
+        id: 'graph',
+        target: '#graphSvg',
+        title: 'Read the Main Graph',
+        body: 'Nodes change WHITE, GRAY, and BLACK. The top tag shows depth level Lk. The lower labels show discovery and finish time as d/f.'
+      },
+      {
+        id: 'scan',
+        target: '#scanPanel',
+        title: 'Why This Branch?',
+        body: 'This panel explains the branch choice. Each build assigns randomized priorities 1 to 5, orders Adj[u] by that priority, and DFS chooses the first WHITE neighbor in that ordered list.'
+      },
+      {
+        id: 'stack',
+        target: '#stackPanel',
+        title: 'Track Recursion',
+        body: 'The recursion stack shows the active branch from root to current node. If a back edge points to a GRAY node in this stack, you have found a cycle.'
+      },
+      {
+        id: 'depth',
+        target: '#depthPanel',
+        title: 'See Depth as a Diagram',
+        body: 'This chart turns the recursive search tree into coordinates. X is depth level and Y is discovery order, so moving right means going deeper.'
+      },
+      {
+        id: 'code',
+        target: '#codeExplainCluster',
+        title: 'Connect State to Pseudocode',
+        body: 'The pseudocode highlight and the explanation box are synced to the current DFS step. Use them when students ask what the algorithm is doing right now.'
+      }
+    ],
+    dfs: [
+      {
+        id: 'history',
+        target: '#historySection',
+        title: 'Revisit Important Moments',
+        body: 'The history table keeps recent states clickable. This is useful when you want to go back to the first tree edge or the exact moment a branch was chosen.'
+      },
+      {
+        id: 'complexity',
+        target: '#complexitySection',
+        title: 'Close With Complexity',
+        body: 'Finish the story by showing why DFS is O(V + E): vertices are discovered once, and adjacency scans examine each edge once.'
+      }
+    ],
+    topo: [
+      {
+        id: 'topo',
+        target: '#topoPanel',
+        title: 'Watch the Topological Order Grow',
+        body: 'Vertices are added to the front when they finish. That is why reverse finish time becomes a valid topological order on a DAG.'
+      },
+      {
+        id: 'dag',
+        target: '#dagPanel',
+        title: 'Connect It to Dynamic Programming',
+        body: 'This panel shows how topological order supports longest path on a DAG. Dependencies come first, so later states can reuse earlier results.'
+      }
+    ],
+    cycle: [
+      {
+        id: 'cycle',
+        target: '#cyclePanel',
+        title: 'Use the Proof Panel',
+        body: 'When DFS sees an edge to a GRAY ancestor, this panel explains the exact cycle path using the current recursion stack.'
+      }
+    ]
+  },
+
+  practice: {
+    common: [
+      {
+        id: 'practice-build',
+        target: '#buildBtn',
+        title: 'Build the Walkthrough',
+        body: 'Click Build Steps now. Guided Practice waits for the real action before continuing.',
+        action: 'build',
+        waitingText: 'Waiting for you to click Build Steps.',
+        doneText: 'Build detected. The DFS timeline is ready.'
+      },
+      {
+        id: 'practice-step',
+        target: '#stepBtn',
+        title: 'Advance One DFS State',
+        body: 'Click Step once so the tool advances to the next DFS state.',
+        action: 'step',
+        waitingText: 'Waiting for you to click Step.',
+        doneText: 'Step detected. You can now see how one DFS action updates the graph.'
+      }
+    ],
+    dfs: [
+      {
+        id: 'practice-filter',
+        target: '#showEssentialsBtn',
+        title: 'Reduce Visual Noise',
+        body: 'Click Show Essentials so the page switches into a cleaner presenter view.',
+        action: 'filter:essentials',
+        waitingText: 'Waiting for you to click Show Essentials.',
+        doneText: 'Essentials view applied.'
+      }
+    ],
+    topo: [
+      {
+        id: 'practice-mode-topo',
+        target: '#modeRow',
+        title: 'Switch to Topological Sort',
+        body: 'Click the Topo Sort mode button.',
+        action: 'mode:topo',
+        waitingText: 'Waiting for you to switch to Topo Sort mode.',
+        doneText: 'Topo Sort mode detected.'
+      },
+      {
+        id: 'practice-build-topo',
+        target: '#topoPanel',
+        title: 'Rebuild for the New Mode',
+        body: 'Click Build Steps again so the topological-order walkthrough is generated.',
+        action: 'build',
+        waitingText: 'Waiting for you to click Build Steps in Topo mode.',
+        doneText: 'Topo build detected.'
+      }
+    ],
+    cycle: [
+      {
+        id: 'practice-mode-cycle',
+        target: '#modeRow',
+        title: 'Switch to Cycle Detect',
+        body: 'Click the Cycle Detect mode button.',
+        action: 'mode:cycle',
+        waitingText: 'Waiting for you to switch to Cycle Detect mode.',
+        doneText: 'Cycle Detect mode detected.'
+      }
+    ]
+  },
+
   overview(mode) {
     const blocks = {
       dfs: [
@@ -1352,6 +1778,27 @@ const APP_CONTENT = {
   const MAX_HISTORY = 25;
   const NODE_RADIUS = 24;
   const PLAY_BASE_MS = 900;
+  const FILTER_STORAGE_KEY = 'dfs-single-filters-v1';
+  const FILTER_TARGETS = {
+    overview: ['#overview'],
+    topology: ['#topologyCluster'],
+    stackDepth: ['#stackDepthCluster'],
+    scanInterval: ['#scanIntervalCluster'],
+    dag: ['#dagPanel'],
+    codeExplain: ['#codeExplainCluster'],
+    history: ['#historySection'],
+    complexity: ['#complexitySection']
+  };
+  const ESSENTIAL_FILTERS = {
+    overview: false,
+    topology: true,
+    stackDepth: true,
+    scanInterval: true,
+    dag: false,
+    codeExplain: true,
+    history: false,
+    complexity: false
+  };
 
   const state = {
     mode: 'dfs',
@@ -1365,7 +1812,35 @@ const APP_CONTENT = {
     history: [],
     status: 'Idle',
     codeHoverTip: 'Hover a line for the teaching note. The active line is highlighted during playback.',
-    visuals: createEmptyVisuals()
+    visuals: createEmptyVisuals(),
+    panelFilters: {
+      overview: true,
+      topology: true,
+      stackDepth: true,
+      scanInterval: true,
+      dag: true,
+      codeExplain: true,
+      history: true,
+      complexity: true
+    },
+    tour: {
+      steps: [],
+      index: 0,
+      active: false,
+      mode: 'idle',
+      actionSatisfied: false,
+      overlay: null,
+      spotlight: null,
+      card: null,
+      title: null,
+      body: null,
+      counter: null,
+      nextBtn: null,
+      backBtn: null,
+      skipBtn: null,
+      highlighted: null,
+      masks: {}
+    }
   };
 
   const dom = {
@@ -1383,6 +1858,14 @@ const APP_CONTENT = {
     pauseBtn: document.getElementById('pauseBtn'),
     skipBtn: document.getElementById('skipBtn'),
     resetBtn: document.getElementById('resetBtn'),
+    topTutorialBtn: document.getElementById('topTutorialBtn'),
+    topFilterBtn: document.getElementById('topFilterBtn'),
+    topFilterMenu: document.getElementById('topFilterMenu'),
+    startTourBtn: document.getElementById('startTourBtn'),
+    startPracticeBtn: document.getElementById('startPracticeBtn'),
+    showEssentialsBtn: document.getElementById('showEssentialsBtn'),
+    showAllBtn: document.getElementById('showAllBtn'),
+    filterGrid: document.getElementById('filterGrid'),
     overview: document.getElementById('overview'),
     graphSvg: document.getElementById('graphSvg'),
     topoPanel: document.getElementById('topoPanel'),
@@ -1494,12 +1977,15 @@ const APP_CONTENT = {
     buildModeButtons();
     buildPresetButtons();
     bindEvents();
+    initializeFilters();
+    initializeTour();
     loadPreset(APP_CONTENT.presets[0].id, true);
     renderOverview();
     renderPseudocode();
     updateSpeedLabel();
     drawComplexityChart();
     buildSteps();
+    showTourWelcome();
   }
 
   function buildModeButtons() {
@@ -1534,6 +2020,33 @@ const APP_CONTENT = {
     dom.pauseBtn.addEventListener('click', pause);
     dom.skipBtn.addEventListener('click', skipToEnd);
     dom.resetBtn.addEventListener('click', resetPlayback);
+    if (dom.topTutorialBtn) {
+      dom.topTutorialBtn.addEventListener('click', showTourWelcome);
+    }
+    if (dom.topFilterBtn) {
+      dom.topFilterBtn.addEventListener('click', (event) => {
+        event.stopPropagation();
+        setFilterMenuOpen(!isFilterMenuOpen());
+      });
+    }
+    if (dom.topFilterMenu) {
+      dom.topFilterMenu.addEventListener('click', (event) => event.stopPropagation());
+    }
+    if (dom.startTourBtn) {
+      dom.startTourBtn.addEventListener('click', showTourWelcome);
+    }
+    if (dom.startPracticeBtn) {
+      dom.startPracticeBtn.addEventListener('click', () => startPractice(true));
+    }
+    if (dom.showEssentialsBtn) {
+      dom.showEssentialsBtn.addEventListener('click', () => {
+        applyFilterPreset(ESSENTIAL_FILTERS);
+        notifyTourAction('filter:essentials');
+      });
+    }
+    if (dom.showAllBtn) {
+      dom.showAllBtn.addEventListener('click', () => applyFilterPreset(allFilters(true)));
+    }
     dom.speed.addEventListener('input', updateSpeedLabel);
     dom.vertexSlider.addEventListener('input', drawComplexityChart);
     dom.edgeSlider.addEventListener('input', drawComplexityChart);
@@ -1543,10 +2056,455 @@ const APP_CONTENT = {
       dom.presetNote.textContent = 'Custom graph detected. Build steps when you are ready.';
       syncStartNodesFromText();
     });
+    if (typeof document.addEventListener === 'function') {
+      document.addEventListener('click', handleDocumentClick);
+      document.addEventListener('keydown', handleDocumentKeydown);
+    }
+  }
+
+  function initializeFilters() {
+    const stored = safeReadJSON(FILTER_STORAGE_KEY);
+    if (stored) {
+      state.panelFilters = { ...state.panelFilters, ...stored };
+    }
+
+    const labels = dom.filterGrid ? Array.from(dom.filterGrid.children) : [];
+    labels.forEach((label) => {
+      const input = label.children && label.children[0];
+      if (!input || !input.dataset || !input.dataset.filterKey) {
+        return;
+      }
+      const key = input.dataset.filterKey;
+      input.checked = state.panelFilters[key] !== false;
+      input.addEventListener('change', () => {
+        state.panelFilters[key] = input.checked;
+        applyFilters();
+      });
+    });
+
+    applyFilters();
+  }
+
+  function applyFilterPreset(preset) {
+    state.panelFilters = { ...state.panelFilters, ...preset };
+    const labels = dom.filterGrid ? Array.from(dom.filterGrid.children) : [];
+    labels.forEach((label) => {
+      const input = label.children && label.children[0];
+      if (!input || !input.dataset || !input.dataset.filterKey) {
+        return;
+      }
+      input.checked = state.panelFilters[input.dataset.filterKey] !== false;
+    });
+    applyFilters();
+  }
+
+  function applyFilters() {
+    Object.entries(FILTER_TARGETS).forEach(([key, selectors]) => {
+      const shouldShow = state.panelFilters[key] !== false;
+      selectors.forEach((selector) => {
+        const target = document.querySelector ? document.querySelector(selector) : null;
+        if (target) {
+          target.classList.toggle('is-hidden-filter', !shouldShow);
+        }
+      });
+    });
+
+    safeWriteJSON(FILTER_STORAGE_KEY, state.panelFilters);
+  }
+
+  function initializeTour() {
+    if (!document.body) {
+      return;
+    }
+
+    const overlay = document.createElement('div');
+    overlay.className = 'tour-overlay';
+    overlay.innerHTML = `
+      <div class="tour-mask" id="tourMaskTop"></div>
+      <div class="tour-mask" id="tourMaskRight"></div>
+      <div class="tour-mask" id="tourMaskBottom"></div>
+      <div class="tour-mask" id="tourMaskLeft"></div>
+      <div class="tour-spotlight" id="tourSpotlight"></div>
+      <div class="tour-card" role="dialog" aria-modal="true" aria-live="polite">
+        <p class="tour-step" id="tourStepCount">Guided Tour</p>
+        <h3 id="tourTitle">Tour</h3>
+        <p id="tourBody">Walk through the interface step by step.</p>
+        <div class="tour-actions">
+          <button type="button" id="tourBackBtn" class="secondary">Back</button>
+          <button type="button" id="tourNextBtn">Next</button>
+          <button type="button" id="tourSkipBtn" class="secondary">Skip</button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(overlay);
+
+    state.tour.overlay = overlay;
+    state.tour.card = overlay.querySelector('.tour-card');
+    state.tour.spotlight = overlay.querySelector('#tourSpotlight');
+    state.tour.counter = overlay.querySelector('#tourStepCount');
+    state.tour.title = overlay.querySelector('#tourTitle');
+    state.tour.body = overlay.querySelector('#tourBody');
+    state.tour.backBtn = overlay.querySelector('#tourBackBtn');
+    state.tour.nextBtn = overlay.querySelector('#tourNextBtn');
+    state.tour.skipBtn = overlay.querySelector('#tourSkipBtn');
+    state.tour.masks = {
+      top: overlay.querySelector('#tourMaskTop'),
+      right: overlay.querySelector('#tourMaskRight'),
+      bottom: overlay.querySelector('#tourMaskBottom'),
+      left: overlay.querySelector('#tourMaskLeft')
+    };
+
+    state.tour.backBtn.addEventListener('click', previousTourStep);
+    state.tour.nextBtn.addEventListener('click', nextTourStep);
+    state.tour.skipBtn.addEventListener('click', stopTour);
+    window.addEventListener('scroll', handleTourViewportChange, { passive: true });
+    window.addEventListener('resize', handleTourViewportChange);
+  }
+
+  function getTourSteps() {
+    return [
+      ...APP_CONTENT.tours.common,
+      ...(APP_CONTENT.tours[state.mode] || [])
+    ];
+  }
+
+  function getPracticeSteps() {
+    return [
+      ...APP_CONTENT.practice.common,
+      ...(APP_CONTENT.practice[state.mode] || [])
+    ];
+  }
+
+  function startTour(forceRestart) {
+    if (!state.tour.overlay) {
+      return;
+    }
+    setFilterMenuOpen(false);
+    applyFilterPreset(allFilters(true));
+    state.tour.steps = getTourSteps();
+    state.tour.index = 0;
+    state.tour.active = true;
+    state.tour.mode = 'tour';
+    state.tour.actionSatisfied = false;
+    state.tour.overlay.classList.add('open');
+    renderTourStep();
+  }
+
+  function startPractice(forceRestart) {
+    if (!state.tour.overlay) {
+      return;
+    }
+    setFilterMenuOpen(false);
+    applyFilterPreset(ESSENTIAL_FILTERS);
+    state.tour.steps = getPracticeSteps();
+    state.tour.index = 0;
+    state.tour.active = true;
+    state.tour.mode = 'practice';
+    state.tour.actionSatisfied = false;
+    state.tour.overlay.classList.add('open');
+    renderTourStep();
+  }
+
+  function showTourWelcome() {
+    if (!state.tour.overlay) {
+      return;
+    }
+    setFilterMenuOpen(false);
+    state.tour.active = true;
+    state.tour.mode = 'welcome';
+    state.tour.overlay.classList.add('open');
+    clearSpotlight();
+    state.tour.counter.textContent = 'Welcome';
+    state.tour.title.textContent = 'Quick Tour or Explore?';
+    state.tour.body.textContent = 'Choose Quick Tour if you want the interface explained step by step. Choose Explore if you want to use the page freely and start the tour later from the Tutorial button in the top-right corner.';
+    state.tour.backBtn.style.display = 'none';
+    state.tour.nextBtn.textContent = 'Quick Tour';
+    state.tour.skipBtn.textContent = 'I Want to Explore';
+  }
+
+  function stopTour() {
+    if (!state.tour.overlay) {
+      return;
+    }
+    if (state.tour.highlighted) {
+      state.tour.highlighted.classList.remove('tour-target-active');
+    }
+    state.tour.active = false;
+    state.tour.mode = 'idle';
+    state.tour.actionSatisfied = false;
+    state.tour.highlighted = null;
+    state.tour.overlay.classList.remove('open');
+    clearSpotlight();
+    if (dom.topTutorialBtn) {
+      dom.topTutorialBtn.focus();
+    } else if (dom.startTourBtn) {
+      dom.startTourBtn.focus();
+    }
+  }
+
+  function nextTourStep() {
+    if (!state.tour.active) {
+      return;
+    }
+    if (state.tour.mode === 'welcome') {
+      state.tour.backBtn.style.display = '';
+      state.tour.skipBtn.textContent = 'Skip';
+      startTour(false);
+      return;
+    }
+    if (state.tour.mode === 'practice') {
+      const step = state.tour.steps[state.tour.index];
+      if (step && step.action && !state.tour.actionSatisfied) {
+        return;
+      }
+    }
+    if (state.tour.index >= state.tour.steps.length - 1) {
+      stopTour();
+      return;
+    }
+    state.tour.index += 1;
+    state.tour.actionSatisfied = false;
+    renderTourStep();
+  }
+
+  function previousTourStep() {
+    if (!state.tour.active || state.tour.mode !== 'tour') {
+      return;
+    }
+    state.tour.index = Math.max(0, state.tour.index - 1);
+    renderTourStep();
+  }
+
+  function renderTourStep() {
+    const step = state.tour.steps[state.tour.index];
+    if (!step) {
+      stopTour();
+      return;
+    }
+
+    if (state.tour.highlighted) {
+      state.tour.highlighted.classList.remove('tour-target-active');
+      state.tour.highlighted = null;
+    }
+
+    const target = resolveTourTarget(step.target);
+    if (target) {
+      prepareTourTarget(target);
+      state.tour.highlighted = target;
+      target.classList.add('tour-target-active');
+      ensureTargetVisible(target);
+      window.setTimeout(handleTourViewportChange, 0);
+      window.setTimeout(handleTourViewportChange, 120);
+    } else {
+      state.tour.highlighted = null;
+      clearSpotlight();
+    }
+
+    state.tour.counter.textContent = `Step ${state.tour.index + 1} of ${state.tour.steps.length}`;
+    state.tour.title.textContent = step.title;
+    if (state.tour.mode === 'practice' && step.action) {
+      state.tour.body.textContent = state.tour.actionSatisfied
+        ? (step.doneText || step.body)
+        : `${step.body} ${step.waitingText || ''}`.trim();
+    } else {
+      state.tour.body.textContent = step.body;
+    }
+    state.tour.backBtn.disabled = state.tour.index === 0;
+    state.tour.backBtn.style.display = '';
+    state.tour.skipBtn.textContent = 'Skip';
+    state.tour.nextBtn.textContent = state.tour.index === state.tour.steps.length - 1 ? 'Done' : 'Next';
+    state.tour.nextBtn.disabled = state.tour.mode === 'practice' && step.action && !state.tour.actionSatisfied;
+  }
+
+  function ensureTargetVisible(target) {
+    if (typeof target.getBoundingClientRect !== 'function' || typeof target.scrollIntoView !== 'function') {
+      return;
+    }
+    const rect = target.getBoundingClientRect();
+    const marginTop = 90;
+    const marginBottom = 140;
+    const viewportHeight = window.innerHeight || 900;
+    if (rect.top < marginTop || rect.bottom > viewportHeight - marginBottom) {
+      target.scrollIntoView({ block: 'center', behavior: 'auto' });
+    }
+  }
+
+  function prepareTourTarget(target) {
+    if (!target || typeof target.closest !== 'function') {
+      return;
+    }
+    const filterMenu = target.closest('#topFilterMenu');
+    if (filterMenu) {
+      setFilterMenuOpen(true);
+    }
+  }
+
+  function updateSpotlight(target) {
+    if (!state.tour.spotlight || typeof target.getBoundingClientRect !== 'function') {
+      return;
+    }
+    const rect = target.getBoundingClientRect();
+    const padding = 12;
+    const viewportWidth = window.innerWidth || document.documentElement.clientWidth || 1280;
+    const viewportHeight = window.innerHeight || document.documentElement.clientHeight || 720;
+    const left = Math.max(8, Math.round(rect.left - padding));
+    const top = Math.max(8, Math.round(rect.top - padding));
+    const right = Math.min(viewportWidth - 8, Math.round(rect.right + padding));
+    const bottom = Math.min(viewportHeight - 8, Math.round(rect.bottom + padding));
+
+    state.tour.spotlight.style.left = `${left}px`;
+    state.tour.spotlight.style.top = `${top}px`;
+    state.tour.spotlight.style.width = `${Math.max(24, right - left)}px`;
+    state.tour.spotlight.style.height = `${Math.max(24, bottom - top)}px`;
+    state.tour.spotlight.classList.add('open');
+
+    if (!state.tour.masks) {
+      return;
+    }
+
+    const topMask = state.tour.masks.top;
+    const rightMask = state.tour.masks.right;
+    const bottomMask = state.tour.masks.bottom;
+    const leftMask = state.tour.masks.left;
+
+    if (topMask) {
+      topMask.style.left = '0px';
+      topMask.style.top = '0px';
+      topMask.style.width = `${viewportWidth}px`;
+      topMask.style.height = `${Math.max(0, top)}px`;
+    }
+    if (bottomMask) {
+      bottomMask.style.left = '0px';
+      bottomMask.style.top = `${bottom}px`;
+      bottomMask.style.width = `${viewportWidth}px`;
+      bottomMask.style.height = `${Math.max(0, viewportHeight - bottom)}px`;
+    }
+    if (leftMask) {
+      leftMask.style.left = '0px';
+      leftMask.style.top = `${top}px`;
+      leftMask.style.width = `${Math.max(0, left)}px`;
+      leftMask.style.height = `${Math.max(0, bottom - top)}px`;
+    }
+    if (rightMask) {
+      rightMask.style.left = `${right}px`;
+      rightMask.style.top = `${top}px`;
+      rightMask.style.width = `${Math.max(0, viewportWidth - right)}px`;
+      rightMask.style.height = `${Math.max(0, bottom - top)}px`;
+    }
+  }
+
+  function clearSpotlight() {
+    if (state.tour.spotlight) {
+      state.tour.spotlight.classList.remove('open');
+    }
+    if (!state.tour.masks) {
+      return;
+    }
+    Object.values(state.tour.masks).forEach((mask) => {
+      if (!mask) {
+        return;
+      }
+      mask.style.width = '0px';
+      mask.style.height = '0px';
+    });
+  }
+
+  function handleTourViewportChange() {
+    if (!state.tour.active || !state.tour.highlighted || !state.tour.spotlight) {
+      return;
+    }
+    updateSpotlight(state.tour.highlighted);
+  }
+
+  function resolveTourTarget(selector) {
+    if (!selector) {
+      return null;
+    }
+    if (selector.startsWith('#')) {
+      return document.getElementById(selector.slice(1));
+    }
+    return document.querySelector ? document.querySelector(selector) : null;
+  }
+
+  function safeWriteJSON(key, value) {
+    try {
+      if (window.localStorage) {
+        window.localStorage.setItem(key, JSON.stringify(value));
+      }
+    } catch (_error) {
+      // Ignore storage failures.
+    }
+  }
+
+  function safeReadJSON(key) {
+    try {
+      if (!window.localStorage) {
+        return null;
+      }
+      const raw = window.localStorage.getItem(key);
+      return raw ? JSON.parse(raw) : null;
+    } catch (_error) {
+      return null;
+    }
+  }
+
+  function isFilterMenuOpen() {
+    return !!(dom.topFilterMenu && dom.topFilterMenu.classList.contains('open'));
+  }
+
+  function setFilterMenuOpen(open) {
+    if (!dom.topFilterMenu) {
+      return;
+    }
+    dom.topFilterMenu.classList.toggle('open', open);
+    if (dom.topFilterBtn) {
+      dom.topFilterBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    }
+  }
+
+  function handleDocumentClick(event) {
+    if (!isFilterMenuOpen()) {
+      return;
+    }
+    const target = event.target;
+    if (dom.topFilterMenu && dom.topFilterMenu.contains(target)) {
+      return;
+    }
+    if (dom.topFilterBtn && dom.topFilterBtn.contains(target)) {
+      return;
+    }
+    setFilterMenuOpen(false);
+  }
+
+  function handleDocumentKeydown(event) {
+    if (event.key === 'Escape') {
+      setFilterMenuOpen(false);
+    }
+  }
+
+  function allFilters(value) {
+    return Object.keys(FILTER_TARGETS).reduce((acc, key) => {
+      acc[key] = value;
+      return acc;
+    }, {});
   }
 
   function updateSpeedLabel() {
     dom.speedLabel.textContent = `${Number(dom.speed.value).toFixed(2)}x`;
+  }
+
+  function notifyTourAction(actionName) {
+    if (!state.tour.active || state.tour.mode !== 'practice') {
+      return;
+    }
+    const step = state.tour.steps[state.tour.index];
+    if (!step || !step.action) {
+      return;
+    }
+    if (step.action === actionName) {
+      state.tour.actionSatisfied = true;
+      renderTourStep();
+    }
   }
 
   function setMode(modeId) {
@@ -1554,6 +2512,7 @@ const APP_CONTENT = {
       return;
     }
     state.mode = modeId;
+    notifyTourAction(`mode:${modeId}`);
     buildModeButtons();
     renderOverview();
     renderPseudocode();
@@ -1837,6 +2796,7 @@ const APP_CONTENT = {
     state.status = `Built ${state.steps.length} steps for ${APP_CONTENT.modes[state.mode].label}`;
     updateStats();
     drawComplexityChart();
+    notifyTourAction('build');
   }
 
   function generateSteps(graph, mode, requestedStartNode) {
@@ -2980,6 +3940,7 @@ const APP_CONTENT = {
     }
 
     applyStep(state.stepIndex + 1);
+    notifyTourAction('step');
   }
 
   function stepBack() {

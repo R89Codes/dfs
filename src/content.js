@@ -184,6 +184,166 @@ const APP_CONTENT = {
     }
   },
 
+  tours: {
+    common: [
+      {
+        id: 'controls',
+        target: '#graphInput',
+        title: 'Start With the Graph',
+        body: 'Paste a directed adjacency list here or load a preset. Every build starts from this graph text, so this is the first place to change the lesson.'
+      },
+      {
+        id: 'mode',
+        target: '#modeRow',
+        title: 'Choose the Goal',
+        body: 'The same DFS engine powers all three modes. Switch here when you want to emphasize search, topological order, or cycle proof.'
+      },
+      {
+        id: 'build',
+        target: '#buildBtn',
+        title: 'Build the Walkthrough',
+        body: 'Build creates the full sequence of DFS states. Then Step, Step Back, Play, Pause, and Skip End let you control how fast you teach it.'
+      },
+      {
+        id: 'filters',
+        target: '#topFilterBtn',
+        title: 'Make the Page Readable',
+        body: 'Open the Filters menu here when you want a cleaner teaching view. The Essentials preset hides the supporting panels that are not needed for a focused walkthrough.'
+      },
+      {
+        id: 'graph',
+        target: '#graphSvg',
+        title: 'Read the Main Graph',
+        body: 'Nodes change WHITE, GRAY, and BLACK. The top tag shows depth level Lk. The lower labels show discovery and finish time as d/f.'
+      },
+      {
+        id: 'scan',
+        target: '#scanPanel',
+        title: 'Why This Branch?',
+        body: 'This panel explains the branch choice. Each build assigns randomized priorities 1 to 5, orders Adj[u] by that priority, and DFS chooses the first WHITE neighbor in that ordered list.'
+      },
+      {
+        id: 'stack',
+        target: '#stackPanel',
+        title: 'Track Recursion',
+        body: 'The recursion stack shows the active branch from root to current node. If a back edge points to a GRAY node in this stack, you have found a cycle.'
+      },
+      {
+        id: 'depth',
+        target: '#depthPanel',
+        title: 'See Depth as a Diagram',
+        body: 'This chart turns the recursive search tree into coordinates. X is depth level and Y is discovery order, so moving right means going deeper.'
+      },
+      {
+        id: 'code',
+        target: '#codeExplainCluster',
+        title: 'Connect State to Pseudocode',
+        body: 'The pseudocode highlight and the explanation box are synced to the current DFS step. Use them when students ask what the algorithm is doing right now.'
+      }
+    ],
+    dfs: [
+      {
+        id: 'history',
+        target: '#historySection',
+        title: 'Revisit Important Moments',
+        body: 'The history table keeps recent states clickable. This is useful when you want to go back to the first tree edge or the exact moment a branch was chosen.'
+      },
+      {
+        id: 'complexity',
+        target: '#complexitySection',
+        title: 'Close With Complexity',
+        body: 'Finish the story by showing why DFS is O(V + E): vertices are discovered once, and adjacency scans examine each edge once.'
+      }
+    ],
+    topo: [
+      {
+        id: 'topo',
+        target: '#topoPanel',
+        title: 'Watch the Topological Order Grow',
+        body: 'Vertices are added to the front when they finish. That is why reverse finish time becomes a valid topological order on a DAG.'
+      },
+      {
+        id: 'dag',
+        target: '#dagPanel',
+        title: 'Connect It to Dynamic Programming',
+        body: 'This panel shows how topological order supports longest path on a DAG. Dependencies come first, so later states can reuse earlier results.'
+      }
+    ],
+    cycle: [
+      {
+        id: 'cycle',
+        target: '#cyclePanel',
+        title: 'Use the Proof Panel',
+        body: 'When DFS sees an edge to a GRAY ancestor, this panel explains the exact cycle path using the current recursion stack.'
+      }
+    ]
+  },
+
+  practice: {
+    common: [
+      {
+        id: 'practice-build',
+        target: '#buildBtn',
+        title: 'Build the Walkthrough',
+        body: 'Click Build Steps now. Guided Practice waits for the real action before continuing.',
+        action: 'build',
+        waitingText: 'Waiting for you to click Build Steps.',
+        doneText: 'Build detected. The DFS timeline is ready.'
+      },
+      {
+        id: 'practice-step',
+        target: '#stepBtn',
+        title: 'Advance One DFS State',
+        body: 'Click Step once so the tool advances to the next DFS state.',
+        action: 'step',
+        waitingText: 'Waiting for you to click Step.',
+        doneText: 'Step detected. You can now see how one DFS action updates the graph.'
+      }
+    ],
+    dfs: [
+      {
+        id: 'practice-filter',
+        target: '#showEssentialsBtn',
+        title: 'Reduce Visual Noise',
+        body: 'Click Show Essentials so the page switches into a cleaner presenter view.',
+        action: 'filter:essentials',
+        waitingText: 'Waiting for you to click Show Essentials.',
+        doneText: 'Essentials view applied.'
+      }
+    ],
+    topo: [
+      {
+        id: 'practice-mode-topo',
+        target: '#modeRow',
+        title: 'Switch to Topological Sort',
+        body: 'Click the Topo Sort mode button.',
+        action: 'mode:topo',
+        waitingText: 'Waiting for you to switch to Topo Sort mode.',
+        doneText: 'Topo Sort mode detected.'
+      },
+      {
+        id: 'practice-build-topo',
+        target: '#topoPanel',
+        title: 'Rebuild for the New Mode',
+        body: 'Click Build Steps again so the topological-order walkthrough is generated.',
+        action: 'build',
+        waitingText: 'Waiting for you to click Build Steps in Topo mode.',
+        doneText: 'Topo build detected.'
+      }
+    ],
+    cycle: [
+      {
+        id: 'practice-mode-cycle',
+        target: '#modeRow',
+        title: 'Switch to Cycle Detect',
+        body: 'Click the Cycle Detect mode button.',
+        action: 'mode:cycle',
+        waitingText: 'Waiting for you to switch to Cycle Detect mode.',
+        doneText: 'Cycle Detect mode detected.'
+      }
+    ]
+  },
+
   overview(mode) {
     const blocks = {
       dfs: [
