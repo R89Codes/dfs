@@ -392,6 +392,31 @@ function testMultipageFiles() {
   });
 }
 
+function testRootGuideFiles() {
+  const rootDir = path.join(__dirname, '..');
+  const files = [
+    path.join(rootDir, 'guide.html'),
+    path.join(rootDir, 'dfs.html'),
+    path.join(rootDir, 'topo.html'),
+    path.join(rootDir, 'cycle.html'),
+    path.join(rootDir, 'guide-styles.css'),
+    path.join(rootDir, 'guide-data.js'),
+    path.join(rootDir, 'guide-app.js')
+  ];
+
+  files.forEach((file) => {
+    assert(fs.existsSync(file), `Missing root guide asset: ${path.basename(file)}`);
+  });
+
+  const guideHome = fs.readFileSync(path.join(rootDir, 'guide.html'), 'utf8');
+  const dfsPage = fs.readFileSync(path.join(rootDir, 'dfs.html'), 'utf8');
+
+  assert(guideHome.includes('href="guide-styles.css"'), 'Root guide home is not using root guide styles');
+  assert(dfsPage.includes('href="guide.html"'), 'Root DFS page should link back to guide.html');
+  assert(dfsPage.includes('src="guide-data.js"'), 'Root DFS page is not using root guide data');
+  assert(dfsPage.includes('src="guide-app.js"'), 'Root DFS page is not using root guide app');
+}
+
 function main() {
   const harness = loadRuntime();
   testInitialBuild(harness);
@@ -400,6 +425,7 @@ function main() {
   testDisconnectedGraph(harness);
   testReset(harness);
   testMultipageFiles();
+  testRootGuideFiles();
   console.log('smoke-test:ok');
 }
 

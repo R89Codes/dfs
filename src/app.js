@@ -26,6 +26,38 @@
     history: false,
     complexity: false
   };
+  const VISUAL_THEME = {
+    label: '#f3f6fb',
+    meta: '#98a4bb',
+    badge: '#ffbf72',
+    panelFill: 'rgba(8, 11, 17, 0.92)',
+    panelFillActive: 'rgba(53, 210, 195, 0.18)',
+    panelStroke: 'rgba(196, 208, 226, 0.14)',
+    orderLabel: '#ffbf72',
+    orderLabelActive: '#d9fff9',
+    nodeStrokeDefault: 'rgba(198, 208, 226, 0.22)',
+    nodeStrokeGray: '#ffc379',
+    nodeStrokeBlack: '#63e3ca',
+    nodeHaloActive: 'rgba(53, 210, 195, 0.54)',
+    nodeHaloCycle: 'rgba(212, 106, 120, 0.48)',
+    gridSoft: 'rgba(188, 198, 220, 0.08)',
+    axis: 'rgba(188, 198, 220, 0.24)',
+    depthLink: '#48c7ff',
+    intervalOpen: '#ffbf72',
+    intervalClosed: '#63e3ca',
+    intervalCurrent: '#35d2c3',
+    chartDfs: '#35d2c3',
+    chartBfs: '#7f83ff',
+    chartContrast: '#d46a78',
+    edge: {
+      default: 'rgba(230, 238, 251, 0.24)',
+      tree: '#48c7ff',
+      back: '#ffb761',
+      forward: '#8b8cff',
+      cross: '#34c88a',
+      active: '#35d2c3'
+    }
+  };
 
   const state = {
     mode: 'dfs',
@@ -1370,7 +1402,7 @@
         cx: pos.x,
         cy: pos.y,
         r: NODE_RADIUS,
-        stroke: 'rgba(255,255,255,0.15)',
+        stroke: VISUAL_THEME.nodeStrokeDefault,
         'stroke-width': 1.5
       });
       const label = svgEl('text', {
@@ -1379,7 +1411,7 @@
         'text-anchor': 'middle',
         'font-size': node.length > 5 ? 10 : node.length > 3 ? 11 : 13,
         'font-weight': 700,
-        fill: '#eef4ff'
+        fill: VISUAL_THEME.label
       });
       label.textContent = node;
       const depthBadge = svgEl('text', {
@@ -1388,21 +1420,21 @@
         'text-anchor': 'middle',
         'font-size': 11,
         'font-weight': 700,
-        fill: '#ffcf7a'
+        fill: VISUAL_THEME.badge
       });
       const stamp = svgEl('text', {
         x: pos.x,
         y: pos.y + NODE_RADIUS + 18,
         'text-anchor': 'middle',
         'font-size': 11,
-        fill: '#9bb0ce'
+        fill: VISUAL_THEME.meta
       });
       const stampSub = svgEl('text', {
         x: pos.x,
         y: pos.y + NODE_RADIUS + 33,
         'text-anchor': 'middle',
         'font-size': 10,
-        fill: '#ffcf7a'
+        fill: VISUAL_THEME.badge
       });
       group.appendChild(halo);
       group.appendChild(circle);
@@ -1509,11 +1541,11 @@
         els.orderBg.setAttribute('y', orderY - 8);
         els.orderBg.setAttribute('width', 16);
         els.orderBg.setAttribute('height', 16);
-        els.orderBg.setAttribute('fill', isActive ? 'rgba(255,159,67,0.86)' : 'rgba(4,11,18,0.86)');
-        els.orderBg.setAttribute('stroke', 'rgba(255,255,255,0.12)');
+        els.orderBg.setAttribute('fill', isActive ? VISUAL_THEME.panelFillActive : VISUAL_THEME.panelFill);
+        els.orderBg.setAttribute('stroke', VISUAL_THEME.panelStroke);
         els.orderLabel.setAttribute('x', orderX);
         els.orderLabel.setAttribute('y', orderY + 4);
-        els.orderLabel.setAttribute('fill', isActive ? '#1d1200' : '#ffcf7a');
+        els.orderLabel.setAttribute('fill', isActive ? VISUAL_THEME.orderLabelActive : VISUAL_THEME.orderLabel);
         els.orderLabel.textContent = String(order);
       }
 
@@ -1527,7 +1559,7 @@
         els.labelBg.setAttribute('y', geometry.labelY - 8);
         els.labelBg.setAttribute('width', 20);
         els.labelBg.setAttribute('height', 16);
-        els.labelBg.setAttribute('fill', 'rgba(4, 11, 18, 0.86)');
+        els.labelBg.setAttribute('fill', VISUAL_THEME.panelFill);
         els.labelBg.setAttribute('opacity', 1);
       } else {
         els.label.setAttribute('opacity', 0);
@@ -1544,12 +1576,16 @@
       const color = visuals.nodeColors[node] || 'WHITE';
       const isActive = visuals.activeNode === node;
       const fill = colorForNode(color, isActive);
-      const stroke = color === 'GRAY' ? '#ffcf66' : color === 'BLACK' ? '#66d9c7' : 'rgba(255,255,255,0.15)';
+      const stroke = color === 'GRAY'
+        ? VISUAL_THEME.nodeStrokeGray
+        : color === 'BLACK'
+          ? VISUAL_THEME.nodeStrokeBlack
+          : VISUAL_THEME.nodeStrokeDefault;
       const cycleHighlight = visuals.cycleEdge && (visuals.cycleEdge.from === node || visuals.cycleEdge.to === node);
 
       els.circle.setAttribute('fill', fill);
       els.circle.setAttribute('stroke', stroke);
-      els.halo.setAttribute('stroke', isActive ? 'rgba(255, 159, 67, 0.5)' : cycleHighlight ? 'rgba(255, 107, 107, 0.46)' : 'none');
+      els.halo.setAttribute('stroke', isActive ? VISUAL_THEME.nodeHaloActive : cycleHighlight ? VISUAL_THEME.nodeHaloCycle : 'none');
       els.halo.setAttribute('stroke-width', isActive || cycleHighlight ? 4 : 0);
       els.halo.setAttribute('stroke-dasharray', cycleHighlight && !isActive ? '6 5' : '');
 
@@ -1571,27 +1607,17 @@
   }
 
   function colorForNode(color, isActive) {
-    if (isActive) {
-      return 'rgba(255, 159, 67, 0.92)';
-    }
     if (color === 'GRAY') {
-      return 'rgba(255, 200, 87, 0.88)';
+      return isActive ? 'rgba(255, 194, 121, 0.96)' : 'rgba(255, 183, 97, 0.88)';
     }
     if (color === 'BLACK') {
-      return 'rgba(102, 217, 199, 0.76)';
+      return isActive ? 'rgba(98, 233, 207, 0.94)' : 'rgba(53, 210, 195, 0.82)';
     }
-    return 'rgba(255, 255, 255, 0.08)';
+    return isActive ? 'rgba(243, 246, 251, 0.18)' : 'rgba(243, 246, 251, 0.08)';
   }
 
   function colorForEdge(type) {
-    return {
-      default: 'rgba(255,255,255,0.24)',
-      tree: '#5ea5ff',
-      back: '#ff6b6b',
-      forward: '#66d9c7',
-      cross: '#ffc857',
-      active: '#ff9f43'
-    }[type];
+    return VISUAL_THEME.edge[type];
   }
 
   function markerForEdge(type) {
@@ -1769,7 +1795,7 @@
         y1: top,
         x2: x,
         y2: height - bottom,
-        stroke: 'rgba(255,255,255,0.08)',
+        stroke: VISUAL_THEME.gridSoft,
         'stroke-width': 1
       });
       const label = svgEl('text', {
@@ -1790,7 +1816,7 @@
         y1: y,
         x2: width - right,
         y2: y,
-        stroke: 'rgba(255,255,255,0.08)',
+        stroke: VISUAL_THEME.gridSoft,
         'stroke-width': 1
       });
       const label = svgEl('text', {
@@ -1809,7 +1835,7 @@
       y1: height - bottom,
       x2: width - right,
       y2: height - bottom,
-      stroke: 'rgba(255,255,255,0.22)',
+      stroke: VISUAL_THEME.axis,
       'stroke-width': 1.5
     });
     const yAxis = svgEl('line', {
@@ -1817,7 +1843,7 @@
       y1: top,
       x2: left,
       y2: height - bottom,
-      stroke: 'rgba(255,255,255,0.22)',
+      stroke: VISUAL_THEME.axis,
       'stroke-width': 1.5
     });
     dom.depthSvg.appendChild(xAxis);
@@ -1844,7 +1870,7 @@
         y1: from.y,
         x2: to.x,
         y2: to.y,
-        stroke: '#5ea5ff',
+        stroke: VISUAL_THEME.depthLink,
         'stroke-width': 2.5,
         opacity: 0.9
       });
@@ -1859,7 +1885,7 @@
         cy: point.y,
         r: state.visuals.activeNode === node ? 9 : 7,
         fill,
-        stroke: 'rgba(255,255,255,0.28)',
+        stroke: VISUAL_THEME.axis,
         'stroke-width': 1.5
       });
       const label = svgEl('text', {
@@ -1976,7 +2002,7 @@
       y1: 18,
       x2: width - 20,
       y2: 18,
-      stroke: 'rgba(255,255,255,0.2)',
+      stroke: VISUAL_THEME.axis,
       'stroke-width': 1.5
     });
     dom.intervalSvg.appendChild(axis);
@@ -1988,7 +2014,7 @@
         y1: 14,
         x2: x,
         y2: 22,
-        stroke: 'rgba(255,255,255,0.2)',
+        stroke: VISUAL_THEME.axis,
         'stroke-width': 1
       });
       const label = svgEl('text', {
@@ -2021,7 +2047,7 @@
         y1: y,
         x2,
         y2: y,
-        stroke: state.visuals.finish[node] !== undefined ? '#66d9c7' : '#ffc857',
+        stroke: state.visuals.finish[node] !== undefined ? VISUAL_THEME.intervalClosed : VISUAL_THEME.intervalOpen,
         'stroke-width': 5,
         'stroke-linecap': 'round'
       });
@@ -2030,14 +2056,14 @@
         cx: x1,
         cy: y,
         r: 5,
-        fill: '#ffc857'
+        fill: VISUAL_THEME.intervalOpen
       });
 
       const rightCap = svgEl('circle', {
         cx: x2,
         cy: y,
         r: 5,
-        fill: state.visuals.finish[node] !== undefined ? '#66d9c7' : '#ff9f43'
+        fill: state.visuals.finish[node] !== undefined ? VISUAL_THEME.intervalClosed : VISUAL_THEME.intervalCurrent
       });
 
       dom.intervalSvg.appendChild(name);
@@ -2270,7 +2296,7 @@
       y1: height - bottom,
       x2: width - right,
       y2: height - bottom,
-      stroke: 'rgba(255,255,255,0.22)',
+      stroke: VISUAL_THEME.axis,
       'stroke-width': 1.5
     });
     const axisY = svgEl('line', {
@@ -2278,7 +2304,7 @@
       y1: top,
       x2: left,
       y2: height - bottom,
-      stroke: 'rgba(255,255,255,0.22)',
+      stroke: VISUAL_THEME.axis,
       'stroke-width': 1.5
     });
     dom.complexitySvg.appendChild(axisX);
@@ -2296,7 +2322,7 @@
         y1: top,
         x2: x,
         y2: height - bottom,
-        stroke: 'rgba(255,255,255,0.06)',
+        stroke: VISUAL_THEME.gridSoft,
         'stroke-width': 1
       });
       const horizontal = svgEl('line', {
@@ -2304,7 +2330,7 @@
         y1: y,
         x2: width - right,
         y2: y,
-        stroke: 'rgba(255,255,255,0.06)',
+        stroke: VISUAL_THEME.gridSoft,
         'stroke-width': 1
       });
       const xLabel = svgEl('text', {
@@ -2331,13 +2357,13 @@
     const bfsPath = plotLine(maxX, maxY, usableWidth, usableHeight, left, height - bottom, (x) => x * 0.98 + 0.4);
     const densePath = plotLine(maxX, maxY, usableWidth, usableHeight, left, height - bottom, (x) => (V / maxX) * x * (E / maxX) * x);
 
-    dom.complexitySvg.appendChild(makePath(dfsPath, '#66d9c7', 4));
-    dom.complexitySvg.appendChild(makePath(bfsPath, '#5ea5ff', 3));
-    dom.complexitySvg.appendChild(makePath(densePath, '#ff6b6b', 2, '8 7'));
+    dom.complexitySvg.appendChild(makePath(dfsPath, VISUAL_THEME.chartDfs, 4));
+    dom.complexitySvg.appendChild(makePath(bfsPath, VISUAL_THEME.chartBfs, 3));
+    dom.complexitySvg.appendChild(makePath(densePath, VISUAL_THEME.chartContrast, 2, '8 7'));
 
-    addChartLabel('DFS O(V + E)', '#66d9c7', usableWidth * 0.66 + left, mapY(maxY, usableHeight, height - bottom, dfsValue * 0.66));
-    addChartLabel('BFS O(V + E)', '#5ea5ff', usableWidth * 0.48 + left, mapY(maxY, usableHeight, height - bottom, bfsValue * 0.48 + 1));
-    addChartLabel('Contrast: O(VE)', '#ff6b6b', usableWidth * 0.7 + left, mapY(maxY, usableHeight, height - bottom, denseContrast * 0.48));
+    addChartLabel('DFS O(V + E)', VISUAL_THEME.chartDfs, usableWidth * 0.66 + left, mapY(maxY, usableHeight, height - bottom, dfsValue * 0.66));
+    addChartLabel('BFS O(V + E)', VISUAL_THEME.chartBfs, usableWidth * 0.48 + left, mapY(maxY, usableHeight, height - bottom, bfsValue * 0.48 + 1));
+    addChartLabel('Contrast: O(VE)', VISUAL_THEME.chartContrast, usableWidth * 0.7 + left, mapY(maxY, usableHeight, height - bottom, denseContrast * 0.48));
 
     const xAxisLabel = svgEl('text', {
       x: left + usableWidth / 2,

@@ -6,41 +6,93 @@
   <title>DFS, Topological Sort, and Cycle Detection Visualizer</title>
   <style>
 :root {
-  --bg: #08111d;
-  --bg-soft: #12243a;
-  --panel: rgba(11, 20, 34, 0.92);
-  --panel-alt: rgba(16, 30, 48, 0.9);
-  --line: rgba(164, 197, 255, 0.16);
-  --text: #eef4ff;
-  --muted: #9bb0ce;
-  --accent: #66d9c7;
-  --accent-strong: #9af0e3;
-  --warm: #ffc857;
-  --danger: #ff6b6b;
-  --tree: #5ea5ff;
-  --back: #ff6b6b;
-  --forward: #66d9c7;
-  --cross: #ffc857;
-  --active: #ff9f43;
-  --white-node: rgba(255, 255, 255, 0.08);
-  --gray-node: rgba(255, 200, 87, 0.88);
-  --black-node: rgba(102, 217, 199, 0.76);
-  --shadow: 0 18px 40px rgba(0, 0, 0, 0.32);
+  --bg: #06080d;
+  --bg-soft: #0b1018;
+  --bg-elevated: #111722;
+  --surface: rgba(14, 19, 29, 0.9);
+  --surface-strong: rgba(18, 25, 38, 0.96);
+  --surface-soft: rgba(15, 21, 31, 0.84);
+  --surface-alt: rgba(19, 28, 42, 0.88);
+  --surface-graph: rgba(9, 13, 20, 0.96);
+  --line: rgba(142, 156, 185, 0.18);
+  --line-strong: rgba(164, 180, 210, 0.28);
+  --line-soft: rgba(164, 180, 210, 0.1);
+  --text: #f3f6fb;
+  --text-strong: #ffffff;
+  --muted: #98a4bb;
+  --muted-strong: #c5cedd;
+  --accent: #35d2c3;
+  --accent-strong: #adfff7;
+  --accent-soft: rgba(53, 210, 195, 0.18);
+  --violet: #7f83ff;
+  --violet-soft: rgba(127, 131, 255, 0.16);
+  --success: #34c88a;
+  --success-soft: rgba(52, 200, 138, 0.16);
+  --warm: #ffb761;
+  --warm-soft: rgba(255, 183, 97, 0.16);
+  --danger: #d46a78;
+  --danger-soft: rgba(212, 106, 120, 0.16);
+  --tree: #48c7ff;
+  --back: #ffb761;
+  --forward: #8b8cff;
+  --cross: #34c88a;
+  --active: #35d2c3;
+  --white-node: rgba(243, 246, 251, 0.08);
+  --gray-node: rgba(255, 183, 97, 0.88);
+  --black-node: rgba(53, 210, 195, 0.82);
+  --shadow-lg: 0 30px 70px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 18px 42px rgba(0, 0, 0, 0.34);
+  --shadow-sm: 0 10px 24px rgba(0, 0, 0, 0.24);
+  --radius-panel: 28px;
+  --radius-card: 22px;
+  --radius-pill: 999px;
 }
 
 * {
   box-sizing: border-box;
 }
 
+html {
+  color-scheme: dark;
+}
+
 body {
   margin: 0;
   min-height: 100vh;
   color: var(--text);
-  font-family: "Avenir Next", "Trebuchet MS", "Segoe UI", sans-serif;
+  font-family: "Avenir Next", "Segoe UI", "Trebuchet MS", sans-serif;
   background:
-    radial-gradient(circle at top left, rgba(102, 217, 199, 0.16), transparent 32%),
-    radial-gradient(circle at top right, rgba(94, 165, 255, 0.18), transparent 28%),
-    linear-gradient(180deg, #07111d 0%, #09131f 32%, #050a11 100%);
+    radial-gradient(circle at top left, rgba(53, 210, 195, 0.11), transparent 28%),
+    radial-gradient(circle at 86% 8%, rgba(127, 131, 255, 0.11), transparent 24%),
+    linear-gradient(180deg, #05070b 0%, #080b11 24%, #0a0f17 55%, #05080d 100%);
+}
+
+body::before,
+body::after {
+  content: "";
+  position: fixed;
+  inset: auto;
+  z-index: -1;
+  border-radius: 50%;
+  filter: blur(18px);
+  opacity: 0.55;
+  pointer-events: none;
+}
+
+body::before {
+  top: 9%;
+  left: -6%;
+  width: 380px;
+  height: 380px;
+  background: radial-gradient(circle, rgba(53, 210, 195, 0.18), transparent 70%);
+}
+
+body::after {
+  right: -8%;
+  bottom: 14%;
+  width: 420px;
+  height: 420px;
+  background: radial-gradient(circle, rgba(127, 131, 255, 0.15), transparent 72%);
 }
 
 button,
@@ -54,15 +106,31 @@ code {
   font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
 }
 
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  border: 2px solid rgba(6, 8, 13, 0);
+  background: rgba(148, 163, 184, 0.26);
+  background-clip: padding-box;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
 .shell {
-  width: min(1440px, calc(100vw - 24px));
-  margin: 16px auto 28px;
+  width: min(1600px, calc(100vw - 32px));
+  margin: 20px auto 28px;
 }
 
 .floating-tools {
   position: fixed;
-  top: 14px;
-  right: 14px;
+  top: 16px;
+  right: 16px;
   z-index: 1200;
   display: flex;
   flex-direction: column;
@@ -75,27 +143,36 @@ code {
   align-items: center;
   gap: 10px;
   width: auto;
-  padding: 10px 14px;
-  border-radius: 999px;
-  border: 1px solid rgba(255, 200, 87, 0.28);
-  background: rgba(8, 17, 29, 0.9);
-  box-shadow: 0 16px 28px rgba(0, 0, 0, 0.34);
+  padding: 11px 15px;
+  border-radius: var(--radius-pill);
+  border: 1px solid rgba(255, 183, 97, 0.22);
+  background: rgba(10, 13, 20, 0.82);
+  backdrop-filter: blur(16px);
+  box-shadow: var(--shadow-sm);
 }
 
 .tutorial-launcher-icon {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 28px;
-  height: 28px;
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
-  background: rgba(255, 200, 87, 0.18);
+  background: rgba(255, 183, 97, 0.14);
 }
 
 .tutorial-launcher svg {
   width: 16px;
   height: 16px;
-  fill: #ffcf7a;
+  fill: var(--warm);
+}
+
+.filter-launcher {
+  border-color: rgba(53, 210, 195, 0.22);
+}
+
+.filter-launcher .tutorial-launcher-icon {
+  background: rgba(53, 210, 195, 0.14);
 }
 
 .filter-launcher svg {
@@ -104,12 +181,14 @@ code {
 
 .filter-menu {
   display: none;
-  width: min(360px, calc(100vw - 24px));
-  padding: 16px;
-  border-radius: 20px;
-  border: 1px solid rgba(164, 197, 255, 0.18);
-  background: linear-gradient(180deg, rgba(12, 24, 40, 0.98), rgba(7, 15, 25, 0.98));
-  box-shadow: 0 24px 44px rgba(0, 0, 0, 0.44);
+  width: min(368px, calc(100vw - 24px));
+  padding: 18px;
+  border-radius: 22px;
+  border: 1px solid var(--line);
+  background:
+    linear-gradient(180deg, rgba(20, 28, 42, 0.98), rgba(10, 14, 22, 0.98));
+  backdrop-filter: blur(18px);
+  box-shadow: var(--shadow-lg);
 }
 
 .filter-menu.open {
@@ -119,108 +198,257 @@ code {
 .filter-menu-head strong {
   display: block;
   margin-bottom: 6px;
+  font-size: 1rem;
+  letter-spacing: 0.01em;
 }
 
 .filter-menu-head p {
   margin: 0;
   color: var(--muted);
-  line-height: 1.55;
-  font-size: 0.84rem;
+  line-height: 1.6;
+  font-size: 0.85rem;
 }
 
 .hero {
-  display: flex;
-  justify-content: space-between;
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(280px, 0.9fr);
   gap: 24px;
-  padding: 22px 24px;
+  padding: 30px;
   border: 1px solid var(--line);
-  border-radius: 24px;
+  border-radius: 32px;
   background:
-    linear-gradient(135deg, rgba(12, 27, 45, 0.95), rgba(7, 17, 29, 0.9)),
-    radial-gradient(circle at 20% 20%, rgba(255, 200, 87, 0.08), transparent 30%);
-  box-shadow: var(--shadow);
+    linear-gradient(145deg, rgba(18, 25, 38, 0.98), rgba(9, 12, 18, 0.96)),
+    radial-gradient(circle at 14% 18%, rgba(53, 210, 195, 0.12), transparent 28%),
+    radial-gradient(circle at 88% 16%, rgba(127, 131, 255, 0.12), transparent 28%);
+  overflow: hidden;
+  box-shadow: var(--shadow-lg);
+}
+
+.hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.04), transparent 16% 84%, rgba(255, 255, 255, 0.02)),
+    linear-gradient(180deg, transparent, rgba(255, 255, 255, 0.02));
+  pointer-events: none;
+}
+
+.hero-copy-block,
+.hero-meta {
+  position: relative;
+  z-index: 1;
 }
 
 .eyebrow {
-  margin: 0 0 8px;
+  margin: 0 0 10px;
   color: var(--accent-strong);
-  font-size: 0.78rem;
+  font-size: 0.76rem;
+  font-weight: 700;
   letter-spacing: 0.18em;
   text-transform: uppercase;
 }
 
 .hero h1 {
-  margin: 0 0 10px;
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: clamp(2rem, 3.8vw, 3.2rem);
-  line-height: 1.02;
+  margin: 0 0 12px;
+  font-family: "Avenir Next", "Segoe UI", sans-serif;
+  font-size: clamp(2.2rem, 3.7vw, 3.6rem);
+  font-weight: 750;
+  letter-spacing: -0.03em;
+  line-height: 0.98;
 }
 
 .hero-copy {
-  max-width: 780px;
+  max-width: 760px;
   margin: 0;
-  color: var(--muted);
-  line-height: 1.65;
+  color: var(--muted-strong);
+  font-size: 1rem;
+  line-height: 1.72;
 }
 
-.hero-badges {
+.hero-meta {
+  display: grid;
+  gap: 16px;
+  align-content: start;
+}
+
+.hero-badges,
+.panel-chip-row {
   display: flex;
   flex-wrap: wrap;
-  align-content: flex-start;
   gap: 10px;
-  max-width: 300px;
 }
 
-.hero-badges span {
-  padding: 10px 14px;
-  border-radius: 999px;
-  border: 1px solid rgba(154, 240, 227, 0.2);
-  background: rgba(102, 217, 199, 0.08);
+.panel-chip-row {
+  justify-content: flex-end;
+}
+
+.hero-badges span,
+.panel-chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 34px;
+  padding: 8px 14px;
+  border-radius: var(--radius-pill);
+  border: 1px solid rgba(164, 180, 210, 0.16);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--muted-strong);
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.hero-badges span:nth-child(1) {
+  border-color: rgba(53, 210, 195, 0.24);
+  background: rgba(53, 210, 195, 0.08);
   color: var(--accent-strong);
-  font-size: 0.83rem;
 }
 
-.layout {
+.hero-badges span:nth-child(2) {
+  border-color: rgba(127, 131, 255, 0.2);
+  background: rgba(127, 131, 255, 0.08);
+}
+
+.hero-badges span:nth-child(3) {
+  border-color: rgba(255, 183, 97, 0.22);
+  background: rgba(255, 183, 97, 0.08);
+}
+
+.hero-stats {
   display: grid;
-  grid-template-columns: minmax(320px, 420px) minmax(0, 1fr);
-  gap: 16px;
-  margin-top: 16px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.hero-stat {
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  background: linear-gradient(180deg, rgba(19, 28, 42, 0.78), rgba(12, 17, 26, 0.76));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+.hero-stat span {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--muted);
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.hero-stat strong {
+  display: block;
+  color: var(--text-strong);
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.dashboard {
+  display: grid;
+  grid-template-columns: minmax(340px, 380px) minmax(0, 1fr);
+  gap: 22px;
+  margin-top: 22px;
+  align-items: start;
+}
+
+.workspace {
+  display: grid;
+  gap: 22px;
+}
+
+.workspace-footer {
+  display: grid;
+  grid-template-columns: minmax(340px, 0.84fr) minmax(0, 1.16fr);
+  gap: 22px;
+  align-items: start;
 }
 
 .panel {
   border: 1px solid var(--line);
-  border-radius: 24px;
+  border-radius: var(--radius-panel);
   background:
-    linear-gradient(180deg, rgba(16, 30, 48, 0.94), rgba(7, 15, 25, 0.94));
-  box-shadow: var(--shadow);
+    linear-gradient(180deg, rgba(16, 22, 32, 0.96), rgba(10, 14, 21, 0.96));
+  box-shadow: var(--shadow-md);
   overflow: hidden;
 }
 
 .controls-panel,
 .viz-panel,
-.full-span {
+.history-panel,
+.complexity-panel {
   animation: slide-up 0.55s ease both;
 }
 
+.controls-panel {
+  position: sticky;
+  top: 16px;
+  align-self: start;
+}
+
 .panel-head {
-  padding: 18px 20px 14px;
-  border-bottom: 1px solid var(--line);
-  background: rgba(255, 255, 255, 0.02);
+  display: grid;
+  gap: 6px;
+  padding: 22px 24px 18px;
+  border-bottom: 1px solid var(--line-soft);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0));
+}
+
+.panel-head-split {
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 18px;
 }
 
 .panel-head h2 {
-  margin: 0 0 6px;
-  font-size: 1.08rem;
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
 }
 
 .panel-head p {
   margin: 0;
   color: var(--muted);
-  line-height: 1.55;
+  line-height: 1.65;
 }
 
-.controls-panel {
-  padding-bottom: 16px;
+.panel-chip {
+  padding-inline: 12px;
+  font-size: 0.76rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--muted-strong);
+}
+
+.controls-body,
+.viz-dashboard,
+.complexity-body {
+  display: grid;
+  gap: 18px;
+  padding: 20px 22px 24px;
+}
+
+.control-section {
+  display: grid;
+  gap: 14px;
+  padding: 18px;
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius-card);
+  background:
+    linear-gradient(180deg, rgba(17, 23, 34, 0.9), rgba(12, 17, 26, 0.82));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
+}
+
+.section-label {
+  color: var(--accent-strong);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
 }
 
 .mode-row,
@@ -230,85 +458,82 @@ code {
 .info-grid,
 .code-layout,
 .complexity-grid,
-.split {
+.split,
+.filter-actions,
+.filter-grid {
   display: grid;
   gap: 12px;
 }
 
-.mode-row,
-.split {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+.mode-row {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
-.preset-grid {
+.preset-grid,
+.split,
+.filter-actions,
+.filter-grid {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .button-grid {
-  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
 .stats-grid {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
-.info-grid,
-.code-layout,
-.complexity-grid {
+.info-grid {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
-.field,
-.overview,
-.legend,
-.subpanel,
-.history-wrap {
-  margin: 0 20px;
+.code-layout {
+  grid-template-columns: minmax(300px, 0.92fr) minmax(320px, 1.08fr);
+}
+
+.complexity-grid {
+  grid-template-columns: minmax(280px, 0.78fr) minmax(0, 1.22fr);
+}
+
+.side-stack {
+  grid-template-columns: 1fr;
 }
 
 .field {
-  margin-top: 16px;
+  display: grid;
+  gap: 8px;
 }
 
 .field label {
-  display: block;
-  margin-bottom: 8px;
-  color: var(--muted);
+  color: var(--muted-strong);
   font-size: 0.87rem;
+  font-weight: 600;
 }
 
 .field-note,
 .preset-note {
-  margin: 8px 0 0;
+  margin: 0;
   color: var(--muted);
   font-size: 0.83rem;
-  line-height: 1.5;
+  line-height: 1.6;
 }
 
-.filter-actions,
-.filter-grid {
-  display: grid;
-  gap: 10px;
-  margin-top: 12px;
-}
-
-.filter-actions {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-}
-
-.filter-grid {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+.field-note code,
+.complexity-note code,
+.overview code {
+  color: var(--accent-strong);
 }
 
 .filter-chip {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 10px 12px;
-  border-radius: 14px;
+  padding: 11px 12px;
+  border-radius: 16px;
   border: 1px solid var(--line);
   background: rgba(255, 255, 255, 0.03);
-  color: var(--muted);
+  color: var(--muted-strong);
   font-size: 0.84rem;
 }
 
@@ -322,10 +547,6 @@ code {
   white-space: nowrap;
 }
 
-.assist-row {
-  margin: 16px 20px 0;
-}
-
 textarea,
 select,
 input[type="range"],
@@ -336,21 +557,47 @@ button {
 textarea,
 select,
 input[type="range"] {
-  border-radius: 16px;
-  border: 1px solid rgba(164, 197, 255, 0.18);
-  background: rgba(5, 10, 18, 0.58);
+  border-radius: 18px;
+  border: 1px solid rgba(164, 180, 210, 0.18);
+  background: rgba(7, 10, 16, 0.8);
   color: var(--text);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
 }
 
 textarea,
 select {
-  padding: 12px 14px;
+  padding: 13px 15px;
 }
 
 textarea {
-  min-height: 132px;
+  min-height: 144px;
   resize: vertical;
-  line-height: 1.55;
+  line-height: 1.6;
+}
+
+select {
+  appearance: none;
+  background-image:
+    linear-gradient(45deg, transparent 50%, var(--muted) 50%),
+    linear-gradient(135deg, var(--muted) 50%, transparent 50%);
+  background-position:
+    calc(100% - 20px) calc(50% - 3px),
+    calc(100% - 14px) calc(50% - 3px);
+  background-size: 6px 6px, 6px 6px;
+  background-repeat: no-repeat;
+  padding-right: 38px;
+}
+
+textarea:focus,
+select:focus,
+input[type="range"]:focus,
+button:focus-visible,
+summary:focus-visible {
+  outline: none;
+  border-color: rgba(53, 210, 195, 0.42);
+  box-shadow:
+    0 0 0 3px rgba(53, 210, 195, 0.14),
+    inset 0 1px 0 rgba(255, 255, 255, 0.03);
 }
 
 input[type="range"] {
@@ -358,95 +605,140 @@ input[type="range"] {
 }
 
 button {
-  padding: 11px 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 46px;
+  padding: 11px 14px;
   border-radius: 16px;
-  border: 1px solid rgba(94, 165, 255, 0.25);
+  border: 1px solid rgba(53, 210, 195, 0.2);
   background:
-    linear-gradient(180deg, rgba(94, 165, 255, 0.2), rgba(94, 165, 255, 0.08));
+    linear-gradient(180deg, rgba(53, 210, 195, 0.2), rgba(53, 210, 195, 0.08));
   color: var(--text);
   font-weight: 700;
+  letter-spacing: 0.01em;
   cursor: pointer;
-  transition: transform 0.16s ease, background 0.2s ease, border-color 0.2s ease;
+  transition: transform 0.16s ease, background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
 }
 
 button:hover {
   transform: translateY(-1px);
-  border-color: rgba(94, 165, 255, 0.42);
+  border-color: rgba(53, 210, 195, 0.38);
   background:
-    linear-gradient(180deg, rgba(94, 165, 255, 0.28), rgba(94, 165, 255, 0.1));
+    linear-gradient(180deg, rgba(53, 210, 195, 0.28), rgba(53, 210, 195, 0.12));
+  box-shadow: 0 14px 24px rgba(0, 0, 0, 0.22);
 }
 
 button.secondary {
-  border-color: rgba(255, 255, 255, 0.16);
-  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(164, 180, 210, 0.16);
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--muted-strong);
 }
 
 button.secondary:hover {
-  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(164, 180, 210, 0.28);
+  background: rgba(255, 255, 255, 0.09);
 }
 
 button.danger {
-  border-color: rgba(255, 107, 107, 0.2);
-  background: rgba(255, 107, 107, 0.12);
+  border-color: rgba(212, 106, 120, 0.22);
+  background: rgba(212, 106, 120, 0.12);
+  color: #ffe6ea;
 }
 
 button.danger:hover {
-  background: rgba(255, 107, 107, 0.22);
+  border-color: rgba(212, 106, 120, 0.34);
+  background: rgba(212, 106, 120, 0.2);
 }
 
 button.mode-btn,
 button.preset-btn {
   padding: 10px 12px;
+  font-size: 0.88rem;
 }
 
 button.mode-btn.active,
 button.preset-btn.active {
-  border-color: rgba(154, 240, 227, 0.35);
-  background: rgba(102, 217, 199, 0.16);
+  border-color: rgba(53, 210, 195, 0.4);
+  background: linear-gradient(180deg, rgba(53, 210, 195, 0.28), rgba(53, 210, 195, 0.12));
   color: var(--accent-strong);
 }
 
-.stat-pill {
+#buildBtn {
+  grid-column: 1 / -1;
+  min-height: 50px;
+}
+
+#startPracticeBtn {
+  border-color: rgba(127, 131, 255, 0.24);
+  background: rgba(127, 131, 255, 0.12);
+  color: #eff0ff;
+}
+
+#startPracticeBtn:hover {
+  border-color: rgba(127, 131, 255, 0.36);
+  background: rgba(127, 131, 255, 0.18);
+}
+
+.assist-row {
   display: flex;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 12px 14px;
+}
+
+.assist-row button {
+  min-height: 48px;
+}
+
+.stat-pill {
+  display: grid;
+  gap: 6px;
+  padding: 14px 15px;
   border: 1px solid var(--line);
-  border-radius: 16px;
-  background: rgba(3, 9, 16, 0.4);
+  border-radius: 18px;
+  background: linear-gradient(180deg, rgba(19, 28, 42, 0.72), rgba(11, 16, 24, 0.72));
 }
 
 .stat-pill span {
   color: var(--muted);
-  font-size: 0.82rem;
+  font-size: 0.76rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 .stat-pill strong {
-  font-size: 0.95rem;
+  color: var(--text-strong);
+  font-size: 1.05rem;
+  line-height: 1.2;
 }
 
 .overview {
-  margin-top: 18px;
+  display: grid;
+  gap: 10px;
 }
 
 .overview details {
-  margin-bottom: 10px;
   border: 1px solid var(--line);
-  border-radius: 16px;
-  background: rgba(4, 11, 18, 0.42);
+  border-radius: 18px;
+  background: rgba(8, 11, 17, 0.5);
   overflow: hidden;
 }
 
 .overview summary {
-  padding: 12px 14px;
+  padding: 14px 16px;
   cursor: pointer;
   font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+.overview summary::-webkit-details-marker {
+  display: none;
 }
 
 .overview .detail-body {
-  padding: 0 14px 14px;
+  padding: 0 16px 16px;
   color: var(--muted);
-  line-height: 1.62;
+  line-height: 1.7;
 }
 
 .overview .detail-body p,
@@ -458,17 +750,39 @@ button.preset-btn.active {
   color: var(--text);
 }
 
-.viz-panel {
-  padding-bottom: 20px;
+.viz-top-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.65fr) minmax(320px, 0.95fr);
+  gap: 18px;
+  align-items: start;
+}
+
+.viz-hero-card,
+.chart-frame {
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  background:
+    linear-gradient(180deg, rgba(17, 24, 35, 0.92), rgba(11, 15, 22, 0.94));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
+}
+
+.viz-hero-card {
+  display: grid;
+  gap: 16px;
+  padding: 18px;
+}
+
+.legend-strip {
+  display: grid;
+  gap: 14px;
 }
 
 .legend {
   display: flex;
   flex-wrap: wrap;
   gap: 10px 16px;
-  padding-top: 16px;
   color: var(--muted);
-  font-size: 0.83rem;
+  font-size: 0.82rem;
 }
 
 .legend span {
@@ -477,93 +791,63 @@ button.preset-btn.active {
   gap: 8px;
 }
 
+.legend strong {
+  color: var(--text);
+}
+
 .viz-note {
-  margin: 12px 20px 0;
+  padding: 12px 14px;
+  border: 1px solid rgba(127, 131, 255, 0.18);
+  border-radius: 18px;
+  background: rgba(127, 131, 255, 0.06);
 }
 
-.swatch,
-.line {
-  display: inline-block;
-}
-
-.swatch {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  border: 1px solid rgba(255, 255, 255, 0.18);
-}
-
-.line {
-  width: 22px;
-  height: 4px;
-  border-radius: 999px;
-}
-
-.node-white { background: var(--white-node); }
-.node-gray { background: var(--gray-node); }
-.node-black { background: var(--black-node); }
-.tree-line { background: var(--tree); }
-.back-line { background: var(--back); }
-.forward-line { background: var(--forward); }
-.cross-line { background: var(--cross); }
-.active-line { background: var(--active); }
-
-#graphSvg,
-#complexitySvg,
-#intervalSvg {
-  display: block;
-  width: calc(100% - 40px);
-  margin: 14px 20px 0;
-  border-radius: 20px;
+.graph-stage {
+  padding: 8px;
   border: 1px solid var(--line);
+  border-radius: 22px;
   background:
-    linear-gradient(180deg, rgba(4, 11, 18, 0.85), rgba(6, 13, 22, 0.96));
+    radial-gradient(circle at 18% 18%, rgba(53, 210, 195, 0.06), transparent 22%),
+    linear-gradient(180deg, rgba(7, 10, 16, 0.98), rgba(9, 13, 20, 0.98));
 }
 
-#graphSvg {
-  height: 470px;
-}
-
-#complexitySvg {
-  height: 280px;
-}
-
-#intervalSvg {
-  height: 220px;
-  margin: 0;
-  width: 100%;
-}
-
-#depthSvg {
-  display: block;
-  width: 100%;
-  height: 240px;
-  margin: 0;
+.viz-side-rail,
+.analysis-grid {
+  display: grid;
+  gap: 18px;
 }
 
 .subpanel {
-  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
   border: 1px solid var(--line);
-  border-radius: 20px;
-  background: rgba(4, 11, 18, 0.46);
+  border-radius: var(--radius-card);
+  background:
+    linear-gradient(180deg, rgba(18, 25, 37, 0.88), rgba(11, 16, 24, 0.86));
   overflow: hidden;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
 }
 
 .subpanel-head {
-  padding: 14px 16px 10px;
-  border-bottom: 1px solid rgba(164, 197, 255, 0.1);
+  display: grid;
+  gap: 5px;
+  padding: 18px 18px 14px;
+  border-bottom: 1px solid var(--line-soft);
 }
 
 .subpanel-head h3 {
-  margin: 0 0 4px;
-  font-size: 0.98rem;
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
 }
 
 .subpanel-head p {
   margin: 0;
   color: var(--muted);
-  line-height: 1.5;
-  font-size: 0.83rem;
+  line-height: 1.58;
+  font-size: 0.84rem;
 }
 
 .topo-row,
@@ -574,20 +858,21 @@ button.preset-btn.active {
 .metric-list,
 .complexity-note,
 .callout {
-  padding: 14px 16px 16px;
+  padding: 16px 18px 18px;
 }
 
 .topo-row {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
-  min-height: 70px;
+  align-content: flex-start;
+  gap: 10px;
+  min-height: 96px;
 }
 
 .topo-chip {
-  min-width: 42px;
+  min-width: 48px;
   padding: 10px 12px;
-  border-radius: 12px;
+  border-radius: 14px;
   text-align: center;
   border: 1px solid var(--line);
   background: rgba(255, 255, 255, 0.04);
@@ -596,39 +881,39 @@ button.preset-btn.active {
 }
 
 .topo-chip.filled {
-  background: rgba(102, 217, 199, 0.18);
-  border-color: rgba(102, 217, 199, 0.28);
+  background: rgba(53, 210, 195, 0.16);
+  border-color: rgba(53, 210, 195, 0.3);
 }
 
 .topo-chip.latest {
-  background: rgba(255, 200, 87, 0.2);
-  border-color: rgba(255, 200, 87, 0.28);
+  background: rgba(255, 183, 97, 0.18);
+  border-color: rgba(255, 183, 97, 0.28);
 }
 
 .callout {
-  color: var(--muted);
-  line-height: 1.62;
+  color: var(--muted-strong);
+  line-height: 1.7;
 }
 
 .callout.alert {
-  color: #ffe0e0;
-  background: rgba(255, 107, 107, 0.08);
+  color: #ffe8eb;
+  background: rgba(212, 106, 120, 0.1);
 }
 
 .stack-list {
   display: grid;
-  gap: 8px;
-  min-height: 90px;
+  gap: 10px;
+  min-height: 110px;
 }
 
 .stack-frame {
   display: flex;
   justify-content: space-between;
   gap: 12px;
-  padding: 10px 12px;
-  border-radius: 14px;
-  border: 1px solid rgba(164, 197, 255, 0.12);
-  background: rgba(255, 255, 255, 0.03);
+  padding: 12px 14px;
+  border-radius: 16px;
+  border: 1px solid rgba(164, 180, 210, 0.12);
+  background: rgba(255, 255, 255, 0.04);
   font-family: "SFMono-Regular", Consolas, monospace;
 }
 
@@ -639,71 +924,8 @@ button.preset-btn.active {
 .dag-summary,
 .explanation,
 .complexity-note {
-  color: var(--muted);
-  line-height: 1.65;
-}
-
-.scan-summary {
-  padding: 14px 16px 0;
-  color: var(--muted);
-  line-height: 1.6;
-}
-
-.scan-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  padding: 12px 16px 16px;
-  min-height: 70px;
-}
-
-.scan-chip {
-  min-width: 52px;
-  padding: 9px 10px;
-  border-radius: 12px;
-  border: 1px solid var(--line);
-  background: rgba(255, 255, 255, 0.04);
-  font-family: "SFMono-Regular", Consolas, monospace;
-  font-size: 0.82rem;
-  text-align: center;
-}
-
-.scan-chip.current {
-  border-color: rgba(255, 159, 67, 0.4);
-  background: rgba(255, 159, 67, 0.12);
-  color: #ffe0ba;
-}
-
-.scan-chip.white {
-  color: #eef4ff;
-}
-
-.scan-chip.gray {
-  color: #1d1400;
-  background: rgba(255, 200, 87, 0.86);
-  border-color: rgba(255, 200, 87, 0.42);
-}
-
-.scan-chip.black {
-  color: #08211b;
-  background: rgba(102, 217, 199, 0.76);
-  border-color: rgba(102, 217, 199, 0.32);
-}
-
-.scan-chip.edge-tree {
-  box-shadow: inset 0 0 0 1px rgba(94, 165, 255, 0.42);
-}
-
-.scan-chip.edge-back {
-  box-shadow: inset 0 0 0 1px rgba(255, 107, 107, 0.48);
-}
-
-.scan-chip.edge-forward {
-  box-shadow: inset 0 0 0 1px rgba(102, 217, 199, 0.48);
-}
-
-.scan-chip.edge-cross {
-  box-shadow: inset 0 0 0 1px rgba(255, 200, 87, 0.48);
+  color: var(--muted-strong);
+  line-height: 1.72;
 }
 
 .dag-summary strong,
@@ -712,20 +934,83 @@ button.preset-btn.active {
   color: var(--text);
 }
 
+.scan-summary {
+  padding: 16px 18px 0;
+  color: var(--muted-strong);
+  line-height: 1.68;
+}
+
+.scan-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 12px 18px 18px;
+  min-height: 90px;
+}
+
+.scan-chip {
+  min-width: 56px;
+  padding: 10px 12px;
+  border-radius: 13px;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.04);
+  font-family: "SFMono-Regular", Consolas, monospace;
+  font-size: 0.81rem;
+  text-align: center;
+}
+
+.scan-chip.current {
+  border-color: rgba(53, 210, 195, 0.44);
+  background: rgba(53, 210, 195, 0.14);
+  color: #d7fff9;
+}
+
+.scan-chip.white {
+  color: var(--text);
+}
+
+.scan-chip.gray {
+  color: #241507;
+  background: rgba(255, 183, 97, 0.9);
+  border-color: rgba(255, 183, 97, 0.4);
+}
+
+.scan-chip.black {
+  color: #04120f;
+  background: rgba(53, 210, 195, 0.82);
+  border-color: rgba(53, 210, 195, 0.34);
+}
+
+.scan-chip.edge-tree {
+  box-shadow: inset 0 0 0 1px rgba(72, 199, 255, 0.5);
+}
+
+.scan-chip.edge-back {
+  box-shadow: inset 0 0 0 1px rgba(255, 183, 97, 0.5);
+}
+
+.scan-chip.edge-forward {
+  box-shadow: inset 0 0 0 1px rgba(139, 140, 255, 0.5);
+}
+
+.scan-chip.edge-cross {
+  box-shadow: inset 0 0 0 1px rgba(52, 200, 138, 0.5);
+}
+
 .pseudocode {
   display: grid;
-  gap: 4px;
-  max-height: 420px;
+  gap: 5px;
+  max-height: 450px;
   overflow: auto;
   font-family: "SFMono-Regular", Consolas, monospace;
   font-size: 0.88rem;
 }
 
 .code-line {
-  padding: 7px 10px;
-  border-radius: 10px;
+  padding: 9px 11px;
+  border-radius: 12px;
   white-space: pre;
-  color: #dae6ff;
+  color: #e0e8f8;
   cursor: default;
   transition: background 0.16s ease, transform 0.16s ease, border-color 0.16s ease;
   border-left: 3px solid transparent;
@@ -736,34 +1021,47 @@ button.preset-btn.active {
 }
 
 .code-line.active {
-  background: rgba(255, 200, 87, 0.12);
-  border-left-color: var(--warm);
-  color: #fff4d7;
+  background: rgba(127, 131, 255, 0.14);
+  border-left-color: var(--violet);
+  color: #f0f1ff;
 }
 
 .history-wrap {
-  margin-top: 0;
-  padding-bottom: 18px;
   overflow: auto;
 }
 
 .history-table {
   width: 100%;
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.history-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: rgba(15, 21, 31, 0.98);
 }
 
 .history-table th,
 .history-table td {
-  padding: 12px 14px;
+  padding: 14px 16px;
   text-align: left;
-  border-bottom: 1px solid rgba(164, 197, 255, 0.08);
+  border-bottom: 1px solid rgba(164, 180, 210, 0.08);
   vertical-align: top;
 }
 
 .history-table th {
   color: var(--muted);
-  font-size: 0.82rem;
+  font-size: 0.78rem;
   font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.history-table td {
+  font-size: 0.9rem;
+  line-height: 1.6;
 }
 
 .history-table tbody tr {
@@ -776,20 +1074,27 @@ button.preset-btn.active {
 }
 
 .history-table tbody tr.active-row {
-  background: rgba(94, 165, 255, 0.12);
+  background: rgba(53, 210, 195, 0.1);
 }
 
 .history-type {
   display: inline-block;
-  padding: 4px 8px;
-  border-radius: 999px;
-  font-size: 0.75rem;
+  padding: 5px 9px;
+  border-radius: var(--radius-pill);
+  font-size: 0.73rem;
   border: 1px solid var(--line);
   background: rgba(255, 255, 255, 0.04);
 }
 
 .chart-controls {
-  margin: 16px 20px 0;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  background: linear-gradient(180deg, rgba(19, 28, 42, 0.7), rgba(12, 17, 26, 0.72));
+}
+
+.chart-frame {
+  padding: 16px;
 }
 
 .metric-list {
@@ -801,10 +1106,10 @@ button.preset-btn.active {
   display: flex;
   justify-content: space-between;
   gap: 12px;
-  padding: 10px 12px;
-  border-radius: 14px;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(164, 197, 255, 0.08);
+  padding: 12px 13px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(164, 180, 210, 0.08);
 }
 
 .metric-row span {
@@ -813,10 +1118,6 @@ button.preset-btn.active {
 
 .metric-row strong {
   color: var(--text);
-}
-
-.full-span {
-  grid-column: 1 / -1;
 }
 
 .dag-panel.hidden,
@@ -842,16 +1143,19 @@ button.preset-btn.active {
 
 .tour-mask {
   position: fixed;
-  background: rgba(2, 8, 16, 0.72);
+  background: rgba(3, 5, 9, 0.74);
   z-index: 1050;
   pointer-events: none;
 }
 
 .tour-spotlight {
   position: fixed;
-  border-radius: 20px;
-  border: 2px solid rgba(255, 200, 87, 0.48);
-  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.08), 0 20px 34px rgba(0, 0, 0, 0.38);
+  border-radius: 22px;
+  border: 2px solid rgba(255, 183, 97, 0.5);
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.08),
+    0 0 0 12px rgba(255, 183, 97, 0.08),
+    0 20px 34px rgba(0, 0, 0, 0.38);
   z-index: 1055;
   pointer-events: none;
   display: none;
@@ -864,13 +1168,13 @@ button.preset-btn.active {
 .tour-card {
   position: fixed;
   right: 18px;
-  top: 72px;
-  width: min(360px, calc(100vw - 24px));
-  padding: 18px;
-  border-radius: 20px;
-  border: 1px solid rgba(255, 200, 87, 0.24);
-  background: linear-gradient(180deg, rgba(15, 25, 40, 0.98), rgba(7, 15, 25, 0.98));
-  box-shadow: 0 24px 44px rgba(0, 0, 0, 0.44);
+  top: 74px;
+  width: min(372px, calc(100vw - 24px));
+  padding: 20px;
+  border-radius: 22px;
+  border: 1px solid rgba(255, 183, 97, 0.26);
+  background: linear-gradient(180deg, rgba(18, 25, 38, 0.98), rgba(9, 14, 21, 0.98));
+  box-shadow: var(--shadow-lg);
   color: var(--text);
   z-index: 1060;
   pointer-events: auto;
@@ -879,41 +1183,34 @@ button.preset-btn.active {
 .tour-target-active {
   position: relative;
   z-index: 1062;
-  box-shadow: 0 0 0 2px rgba(255, 200, 87, 0.42), 0 0 0 10px rgba(255, 200, 87, 0.08), 0 18px 34px rgba(0, 0, 0, 0.34);
-  border-radius: 18px;
+  box-shadow:
+    0 0 0 2px rgba(255, 183, 97, 0.4),
+    0 0 0 10px rgba(255, 183, 97, 0.08),
+    0 18px 34px rgba(0, 0, 0, 0.34);
+  border-radius: 20px;
 }
 
 .tour-step {
   margin: 0 0 8px;
   color: var(--warm);
   font-size: 0.78rem;
+  font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.14em;
 }
 
 .tour-card h3 {
   margin: 0 0 8px;
-  font-size: 1.05rem;
+  font-size: 1.06rem;
 }
 
 .tour-card p {
   margin: 0;
-  color: var(--muted);
-  line-height: 1.62;
+  color: var(--muted-strong);
+  line-height: 1.65;
 }
 
-.tour-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-top: 16px;
-}
-
-.tour-actions button {
-  width: auto;
-  min-width: 92px;
-}
-
+.tour-actions,
 .tour-choice-row {
   display: flex;
   flex-wrap: wrap;
@@ -921,26 +1218,74 @@ button.preset-btn.active {
   margin-top: 16px;
 }
 
+.tour-actions button,
 .tour-choice-row button {
   width: auto;
+  min-width: 92px;
 }
 
-.controls-panel .split,
-.controls-panel .button-grid,
-.controls-panel .stats-grid {
-  margin: 16px 20px 0;
+.swatch,
+.line {
+  display: inline-block;
+}
+
+.swatch {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.line {
+  width: 22px;
+  height: 4px;
+  border-radius: var(--radius-pill);
+}
+
+.node-white { background: var(--white-node); }
+.node-gray { background: var(--gray-node); }
+.node-black { background: var(--black-node); }
+.tree-line { background: var(--tree); }
+.back-line { background: var(--back); }
+.forward-line { background: var(--forward); }
+.cross-line { background: var(--cross); }
+.active-line { background: var(--active); }
+
+#graphSvg,
+#complexitySvg,
+#intervalSvg,
+#depthSvg {
+  display: block;
+  width: 100%;
+}
+
+#graphSvg {
+  height: clamp(470px, 50vw, 620px);
+  border-radius: 18px;
+}
+
+#complexitySvg {
+  height: 320px;
+}
+
+#intervalSvg,
+#depthSvg {
+  flex: 1;
+  min-height: 230px;
+  border-top: 1px solid var(--line-soft);
+  background: linear-gradient(180deg, rgba(9, 12, 18, 0.9), rgba(8, 11, 17, 0.98));
 }
 
 svg text {
-  font-family: "Avenir Next", "Trebuchet MS", "Segoe UI", sans-serif;
+  font-family: "Avenir Next", "Segoe UI", sans-serif;
 }
 
-#arrow-default polygon { fill: rgba(255, 255, 255, 0.3); }
-#arrow-tree polygon { fill: #5ea5ff; }
-#arrow-back polygon { fill: #ff6b6b; }
-#arrow-forward polygon { fill: #66d9c7; }
-#arrow-cross polygon { fill: #ffc857; }
-#arrow-active polygon { fill: #ff9f43; }
+#arrow-default polygon { fill: rgba(230, 238, 251, 0.28); }
+#arrow-tree polygon { fill: var(--tree); }
+#arrow-back polygon { fill: var(--back); }
+#arrow-forward polygon { fill: var(--forward); }
+#arrow-cross polygon { fill: var(--cross); }
+#arrow-active polygon { fill: var(--active); }
 
 .axis-label {
   fill: var(--muted);
@@ -965,38 +1310,94 @@ svg text {
   }
 }
 
-@media (max-width: 1080px) {
-  .layout {
+@media (max-width: 1450px) {
+  .dashboard {
+    grid-template-columns: minmax(320px, 360px) minmax(0, 1fr);
+  }
+
+  .workspace-footer {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 1220px) {
+  .dashboard,
+  .viz-top-grid {
     grid-template-columns: 1fr;
   }
 
-  .hero {
-    flex-direction: column;
+  .controls-panel {
+    position: static;
   }
 
-  .hero-badges {
-    max-width: none;
+  .hero {
+    grid-template-columns: 1fr;
+  }
+
+  .hero-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 980px) {
+  .mode-row,
+  .button-grid,
+  .complexity-grid,
+  .code-layout,
+  .info-grid,
+  .split,
+  .filter-actions,
+  .filter-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .panel-head-split {
+    grid-template-columns: 1fr;
   }
 }
 
 @media (max-width: 760px) {
   .shell {
-    width: min(100vw - 16px, 1440px);
+    width: min(100vw - 16px, 1600px);
     margin: 8px auto 20px;
   }
 
   .hero,
   .panel {
-    border-radius: 18px;
+    border-radius: 22px;
   }
 
-  .tutorial-launcher {
-    padding: 9px 12px;
+  .hero {
+    padding: 22px 20px;
+  }
+
+  .hero-stats,
+  .preset-grid,
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .controls-body,
+  .viz-dashboard,
+  .complexity-body {
+    padding: 16px;
+  }
+
+  .panel-head {
+    padding: 18px 16px 16px;
+  }
+
+  .control-section {
+    padding: 16px;
   }
 
   .floating-tools {
     top: 10px;
     right: 10px;
+  }
+
+  .tutorial-launcher {
+    padding: 9px 12px;
   }
 
   .tour-card {
@@ -1005,41 +1406,12 @@ svg text {
     width: min(340px, calc(100vw - 20px));
   }
 
-  .mode-row,
-  .preset-grid,
-  .button-grid,
-  .stats-grid,
-  .info-grid,
-  .code-layout,
-  .complexity-grid,
-  .split,
-  .filter-actions,
-  .filter-grid {
-    grid-template-columns: 1fr;
+  #graphSvg {
+    height: 430px;
   }
 
-  .hero {
-    padding: 18px;
-  }
-
-  .panel-head,
-  .field,
-  .legend,
-  .subpanel,
-  .history-wrap,
-  .controls-panel .split,
-  .controls-panel .button-grid,
-  .controls-panel .stats-grid,
-  .chart-controls,
-  #graphSvg,
   #complexitySvg {
-    margin-left: 14px;
-    margin-right: 14px;
-  }
-
-  #graphSvg,
-  #complexitySvg {
-    width: calc(100% - 28px);
+    height: 280px;
   }
 }
 
@@ -1084,268 +1456,330 @@ svg text {
       </div>
     </div>
   </div>
+
   <div class="shell">
     <header class="hero">
-      <div>
+      <div class="hero-copy-block">
         <p class="eyebrow">BCS 309 Interactive Teaching Tool</p>
         <h1>DFS, Topological Sort, and Cycle Detection</h1>
         <p class="hero-copy">
-          One DFS engine, three ideas: search deeply, classify edges, detect cycles,
+          One DFS engine, three connected ideas: search deeply, classify edges, detect cycles,
           and produce a topological order when the graph is a DAG.
         </p>
       </div>
-      <div class="hero-badges">
-        <span>Pure HTML/CSS/JS</span>
-        <span>Single-file deploy target</span>
-        <span>GitHub Pages ready</span>
+      <div class="hero-meta">
+        <div class="hero-badges">
+          <span>Pure HTML/CSS/JS</span>
+          <span>Single-file deploy target</span>
+          <span>GitHub Pages ready</span>
+        </div>
+        <div class="hero-stats">
+          <div class="hero-stat">
+            <span>Teaching modes</span>
+            <strong>3 linked views</strong>
+          </div>
+          <div class="hero-stat">
+            <span>Live focus</span>
+            <strong>search, ordering, proof</strong>
+          </div>
+        </div>
       </div>
     </header>
 
-    <main class="layout">
-      <section class="panel controls-panel">
+    <main class="dashboard">
+      <aside class="panel controls-panel">
         <div class="panel-head">
           <h2>Controls</h2>
-          <p>Build a graph, choose the learning mode, and walk through DFS one state at a time.</p>
+          <p>Build a graph, choose the lesson mode, and drive DFS step by step without losing the teaching context.</p>
         </div>
 
-        <div class="mode-row" id="modeRow"></div>
+        <div class="controls-body">
+          <section class="control-section">
+            <div class="section-label">Mode Selection</div>
+            <div class="mode-row" id="modeRow"></div>
+          </section>
 
-        <div class="field">
-          <label for="graphInput">Directed graph adjacency list</label>
-          <textarea id="graphInput" spellcheck="false"></textarea>
-          <p class="field-note">Format: <code>Node: Neighbor1 Neighbor2</code>. One node per line.</p>
-        </div>
-
-        <div class="field">
-          <label>Preset graphs</label>
-          <div class="preset-grid" id="presetGrid"></div>
-          <div class="preset-note" id="presetNote"></div>
-        </div>
-
-        <div class="split">
-          <div class="field">
-            <label for="speed">Playback speed <span id="speedLabel">1.00x</span></label>
-            <input id="speed" type="range" min="0.25" max="4" step="0.05" value="1">
-          </div>
-          <div class="field">
-            <label for="startNode">Preferred start node</label>
-            <select id="startNode"></select>
-          </div>
-        </div>
-
-        <div class="button-grid">
-          <button id="buildBtn">Build Steps</button>
-          <button id="stepBackBtn" class="secondary">Step Back</button>
-          <button id="stepBtn">Step</button>
-          <button id="playBtn">Play</button>
-          <button id="pauseBtn" class="secondary">Pause</button>
-          <button id="skipBtn" class="secondary">Skip End</button>
-          <button id="resetBtn" class="danger">Reset</button>
-        </div>
-
-        <div class="assist-row">
-          <button id="startPracticeBtn" class="secondary" type="button">Guided Practice</button>
-        </div>
-
-        <div class="stats-grid">
-          <div class="stat-pill"><span>Step</span><strong id="stepCounter">0 / 0</strong></div>
-          <div class="stat-pill"><span>Status</span><strong id="statusText">Idle</strong></div>
-          <div class="stat-pill"><span>Nodes Visited</span><strong id="nodesVisited">0</strong></div>
-          <div class="stat-pill"><span>Edges Explored</span><strong id="edgesExplored">0</strong></div>
-          <div class="stat-pill"><span>Tree Edges</span><strong id="treeEdges">0</strong></div>
-          <div class="stat-pill"><span>Back Edges</span><strong id="backEdges">0</strong></div>
-          <div class="stat-pill"><span>Components</span><strong id="componentCount">0</strong></div>
-          <div class="stat-pill"><span>Timer</span><strong id="timerValue">0</strong></div>
-        </div>
-
-        <div class="overview" id="overview"></div>
-      </section>
-
-      <section class="panel viz-panel">
-        <div class="panel-head">
-          <h2>Visualization</h2>
-          <p>Follow node colors, recursion frames, timestamps, and edge classifications live.</p>
-        </div>
-
-        <div class="legend">
-          <span><i class="swatch node-white"></i>WHITE</span>
-          <span><i class="swatch node-gray"></i>GRAY</span>
-          <span><i class="swatch node-black"></i>BLACK</span>
-          <span><i class="line tree-line"></i>Tree</span>
-          <span><i class="line back-line"></i>Back</span>
-          <span><i class="line forward-line"></i>Forward</span>
-          <span><i class="line cross-line"></i>Cross</span>
-          <span><i class="line active-line"></i>Active</span>
-          <span><strong>Lk</strong> = DFS depth level</span>
-          <span><strong>1-5</strong> = branch priority</span>
-        </div>
-
-        <div class="field-note viz-note">
-          DFS selection rule for this teaching view: each build assigns randomized branch priorities <code>1-5</code>, orders <code>Adj[u]</code> by that priority, then DFS recurses into the first neighbor that is still WHITE.
-        </div>
-
-        <svg id="graphSvg" viewBox="0 0 900 470" preserveAspectRatio="xMidYMid meet" aria-label="Directed graph visualization">
-          <defs>
-            <marker id="arrow-default" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
-              <polygon points="0 0, 10 4, 0 8"></polygon>
-            </marker>
-            <marker id="arrow-tree" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
-              <polygon points="0 0, 10 4, 0 8"></polygon>
-            </marker>
-            <marker id="arrow-back" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
-              <polygon points="0 0, 10 4, 0 8"></polygon>
-            </marker>
-            <marker id="arrow-forward" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
-              <polygon points="0 0, 10 4, 0 8"></polygon>
-            </marker>
-            <marker id="arrow-cross" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
-              <polygon points="0 0, 10 4, 0 8"></polygon>
-            </marker>
-            <marker id="arrow-active" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
-              <polygon points="0 0, 10 4, 0 8"></polygon>
-            </marker>
-          </defs>
-        </svg>
-
-        <div class="info-grid" id="topologyCluster">
-          <div class="subpanel" id="topoPanel">
-            <div class="subpanel-head">
-              <h3>Topological Order</h3>
-              <p>Vertices are added to the front as they finish.</p>
+          <section class="control-section">
+            <div class="section-label">Graph Setup</div>
+            <div class="field">
+              <label for="graphInput">Directed graph adjacency list</label>
+              <textarea id="graphInput" spellcheck="false"></textarea>
+              <p class="field-note">Format: <code>Node: Neighbor1 Neighbor2</code>. One node per line.</p>
             </div>
-            <div class="topo-row" id="topoRow"></div>
-          </div>
 
-          <div class="subpanel" id="cyclePanel">
-            <div class="subpanel-head">
-              <h3>Cycle Detection Proof</h3>
-              <p>A directed cycle exists exactly when DFS finds a back edge to a GRAY ancestor.</p>
+            <div class="field">
+              <label>Preset graphs</label>
+              <div class="preset-grid" id="presetGrid"></div>
+              <div class="preset-note" id="presetNote"></div>
             </div>
-            <div class="callout" id="cycleCallout">No back edge has been found yet.</div>
-          </div>
-        </div>
 
-        <div class="info-grid" id="stackDepthCluster">
-          <div class="subpanel" id="stackPanel">
-            <div class="subpanel-head">
-              <h3>DFS Recursion Stack</h3>
-              <p id="stackDepthLabel">Depth 0</p>
+            <div class="split control-split">
+              <div class="field">
+                <label for="speed">Playback speed <span id="speedLabel">1.00x</span></label>
+                <input id="speed" type="range" min="0.25" max="4" step="0.05" value="1">
+              </div>
+              <div class="field">
+                <label for="startNode">Preferred start node</label>
+                <select id="startNode"></select>
+              </div>
             </div>
-            <div class="stack-list" id="stackList"></div>
-          </div>
+          </section>
 
-          <div class="subpanel" id="depthPanel">
-            <div class="subpanel-head">
-              <h3>Depth Map</h3>
-              <p id="depthSummary">The x-axis shows recursion depth. The y-axis shows discovery order.</p>
+          <section class="control-section">
+            <div class="section-label">Playback Actions</div>
+            <div class="button-grid">
+              <button id="buildBtn">Build Steps</button>
+              <button id="stepBackBtn" class="secondary">Step Back</button>
+              <button id="stepBtn">Step</button>
+              <button id="playBtn">Play</button>
+              <button id="pauseBtn" class="secondary">Pause</button>
+              <button id="skipBtn" class="secondary">Skip End</button>
+              <button id="resetBtn" class="danger">Reset</button>
             </div>
-            <svg id="depthSvg" viewBox="0 0 420 240" preserveAspectRatio="xMidYMid meet"></svg>
-          </div>
-        </div>
+          </section>
 
-        <div class="info-grid" id="scanIntervalCluster">
-          <div class="subpanel" id="scanPanel">
-            <div class="subpanel-head">
-              <h3>Adjacency Scan</h3>
-              <p>DFS picks the first WHITE neighbor in adjacency-list order, then recurses immediately.</p>
+          <section class="control-section">
+            <div class="section-label">Guided Support</div>
+            <div class="assist-row">
+              <button id="startPracticeBtn" class="secondary" type="button">Guided Practice</button>
             </div>
-            <div class="scan-summary" id="scanSummary">Build steps to inspect the active adjacency list.</div>
-            <div class="scan-row" id="scanRow"></div>
-          </div>
+          </section>
 
-          <div class="subpanel" id="intervalPanel">
-            <div class="subpanel-head">
-              <h3>Parenthesis Theorem</h3>
-              <p>Intervals are either nested or disjoint. They never partially overlap.</p>
+          <section class="control-section">
+            <div class="section-label">Live Metrics</div>
+            <div class="stats-grid">
+              <div class="stat-pill"><span>Step</span><strong id="stepCounter">0 / 0</strong></div>
+              <div class="stat-pill"><span>Status</span><strong id="statusText">Idle</strong></div>
+              <div class="stat-pill"><span>Nodes Visited</span><strong id="nodesVisited">0</strong></div>
+              <div class="stat-pill"><span>Edges Explored</span><strong id="edgesExplored">0</strong></div>
+              <div class="stat-pill"><span>Tree Edges</span><strong id="treeEdges">0</strong></div>
+              <div class="stat-pill"><span>Back Edges</span><strong id="backEdges">0</strong></div>
+              <div class="stat-pill"><span>Components</span><strong id="componentCount">0</strong></div>
+              <div class="stat-pill"><span>Timer</span><strong id="timerValue">0</strong></div>
             </div>
-            <svg id="intervalSvg" viewBox="0 0 420 220" preserveAspectRatio="xMidYMid meet"></svg>
-          </div>
-        </div>
+          </section>
 
-        <div class="subpanel dag-panel" id="dagPanel">
-          <div class="subpanel-head">
-            <h3>DAG Dynamic Programming</h3>
-            <p>Topological order lets us solve longest path on a DAG by processing prerequisites first.</p>
-          </div>
-          <div class="dag-summary" id="dagSummary">Run topological sort on a DAG to populate this panel.</div>
+          <section class="control-section overview-section">
+            <div class="section-label">Concept Guide</div>
+            <div class="overview" id="overview"></div>
+          </section>
         </div>
+      </aside>
 
-        <div class="code-layout" id="codeExplainCluster">
-          <div class="subpanel code-panel" id="codePanel">
-            <div class="subpanel-head">
-              <h3>Pseudocode</h3>
-              <p id="codeHoverTip">Hover a line for the teaching note. The active line is highlighted during playback.</p>
+      <section class="workspace">
+        <section class="panel viz-panel">
+          <div class="panel-head panel-head-split">
+            <div>
+              <h2>Visualization Workspace</h2>
+              <p>Keep the graph central while the proof, ordering, recursion, and code panels stay aligned around it.</p>
             </div>
-            <div class="pseudocode" id="pseudocode"></div>
-          </div>
-          <div class="subpanel explanation-panel" id="explainPanel">
-            <div class="subpanel-head">
-              <h3>Step Explanation</h3>
-              <p>Plain-English explanation with the actual values from the current step.</p>
-            </div>
-            <div class="explanation" id="explanationBox">Build steps to begin.</div>
-          </div>
-        </div>
-      </section>
-
-      <section class="panel full-span" id="historySection">
-        <div class="panel-head">
-          <h2>Step History</h2>
-          <p>Last 25 steps. Click any row to jump directly to that saved state.</p>
-        </div>
-        <div class="history-wrap">
-          <table class="history-table">
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>Type</th>
-                <th>Focus</th>
-                <th>Explanation</th>
-              </tr>
-            </thead>
-            <tbody id="historyBody"></tbody>
-          </table>
-        </div>
-      </section>
-
-      <section class="panel full-span" id="complexitySection">
-        <div class="panel-head">
-          <h2>Complexity Analysis</h2>
-          <p>CLO-1: show why DFS stays linear in the size of the graph, and compare its growth with BFS.</p>
-        </div>
-
-        <div class="split chart-controls">
-          <div class="field">
-            <label for="vertexSlider">Vertices V <span id="vertexLabel">8</span></label>
-            <input id="vertexSlider" type="range" min="2" max="32" value="8">
-          </div>
-          <div class="field">
-            <label for="edgeSlider">Edges E <span id="edgeLabel">10</span></label>
-            <input id="edgeSlider" type="range" min="1" max="120" value="10">
-          </div>
-        </div>
-
-        <svg id="complexitySvg" viewBox="0 0 960 280" preserveAspectRatio="xMidYMid meet"></svg>
-
-        <div class="complexity-grid">
-          <div class="subpanel">
-            <div class="subpanel-head">
-              <h3>Current Estimates</h3>
-              <p>Based on the sliders above.</p>
-            </div>
-            <div class="metric-list" id="complexityMetrics"></div>
-          </div>
-          <div class="subpanel">
-            <div class="subpanel-head">
-              <h3>Why DFS and BFS Match Asymptotically</h3>
-              <p>They scan the same vertices and edges, but maintain different frontier structures.</p>
-            </div>
-            <div class="complexity-note">
-              DFS marks each vertex once and scans each adjacency list once, so its work is <code>O(V + E)</code>.
-              BFS does the same counting with a queue, so it is also <code>O(V + E)</code>. The difference is not growth order;
-              it is the search pattern and the frontier data structure.
+            <div class="panel-chip-row">
+              <span class="panel-chip">graph-first</span>
+              <span class="panel-chip">mode-aware</span>
+              <span class="panel-chip">teaching-ready</span>
             </div>
           </div>
+
+          <div class="viz-dashboard">
+            <div class="viz-top-grid">
+              <section class="viz-hero-card">
+                <div class="legend-strip">
+                  <div class="legend">
+                    <span><i class="swatch node-white"></i>WHITE</span>
+                    <span><i class="swatch node-gray"></i>GRAY</span>
+                    <span><i class="swatch node-black"></i>BLACK</span>
+                    <span><i class="line tree-line"></i>Tree</span>
+                    <span><i class="line back-line"></i>Back</span>
+                    <span><i class="line forward-line"></i>Forward</span>
+                    <span><i class="line cross-line"></i>Cross</span>
+                    <span><i class="line active-line"></i>Active</span>
+                    <span><strong>Lk</strong> = DFS depth level</span>
+                    <span><strong>1-5</strong> = branch priority</span>
+                  </div>
+
+                  <div class="field-note viz-note">
+                    DFS selection rule for this teaching view: each build assigns randomized branch priorities <code>1-5</code>, orders <code>Adj[u]</code> by that priority, then DFS recurses into the first neighbor that is still WHITE.
+                  </div>
+                </div>
+
+                <div class="graph-stage">
+                  <svg id="graphSvg" viewBox="0 0 900 470" preserveAspectRatio="xMidYMid meet" aria-label="Directed graph visualization">
+                    <defs>
+                      <marker id="arrow-default" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
+                        <polygon points="0 0, 10 4, 0 8"></polygon>
+                      </marker>
+                      <marker id="arrow-tree" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
+                        <polygon points="0 0, 10 4, 0 8"></polygon>
+                      </marker>
+                      <marker id="arrow-back" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
+                        <polygon points="0 0, 10 4, 0 8"></polygon>
+                      </marker>
+                      <marker id="arrow-forward" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
+                        <polygon points="0 0, 10 4, 0 8"></polygon>
+                      </marker>
+                      <marker id="arrow-cross" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
+                        <polygon points="0 0, 10 4, 0 8"></polygon>
+                      </marker>
+                      <marker id="arrow-active" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
+                        <polygon points="0 0, 10 4, 0 8"></polygon>
+                      </marker>
+                    </defs>
+                  </svg>
+                </div>
+              </section>
+
+              <div class="viz-side-rail">
+                <div class="info-grid side-stack" id="topologyCluster">
+                  <div class="subpanel" id="topoPanel">
+                    <div class="subpanel-head">
+                      <h3>Topological Order</h3>
+                      <p>Vertices are added to the front as they finish.</p>
+                    </div>
+                    <div class="topo-row" id="topoRow"></div>
+                  </div>
+
+                  <div class="subpanel" id="cyclePanel">
+                    <div class="subpanel-head">
+                      <h3>Cycle Detection Proof</h3>
+                      <p>A directed cycle exists exactly when DFS finds a back edge to a GRAY ancestor.</p>
+                    </div>
+                    <div class="callout" id="cycleCallout">No back edge has been found yet.</div>
+                  </div>
+                </div>
+
+                <div class="subpanel dag-panel" id="dagPanel">
+                  <div class="subpanel-head">
+                    <h3>DAG Dynamic Programming</h3>
+                    <p>Topological order lets us solve longest path on a DAG by processing prerequisites first.</p>
+                  </div>
+                  <div class="dag-summary" id="dagSummary">Run topological sort on a DAG to populate this panel.</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="analysis-grid">
+              <div class="info-grid duo-grid" id="stackDepthCluster">
+                <div class="subpanel" id="stackPanel">
+                  <div class="subpanel-head">
+                    <h3>DFS Recursion Stack</h3>
+                    <p id="stackDepthLabel">Depth 0</p>
+                  </div>
+                  <div class="stack-list" id="stackList"></div>
+                </div>
+
+                <div class="subpanel" id="depthPanel">
+                  <div class="subpanel-head">
+                    <h3>Depth Map</h3>
+                    <p id="depthSummary">The x-axis shows recursion depth. The y-axis shows discovery order.</p>
+                  </div>
+                  <svg id="depthSvg" viewBox="0 0 420 240" preserveAspectRatio="xMidYMid meet"></svg>
+                </div>
+              </div>
+
+              <div class="info-grid duo-grid" id="scanIntervalCluster">
+                <div class="subpanel" id="scanPanel">
+                  <div class="subpanel-head">
+                    <h3>Adjacency Scan</h3>
+                    <p>DFS picks the first WHITE neighbor in adjacency-list order, then recurses immediately.</p>
+                  </div>
+                  <div class="scan-summary" id="scanSummary">Build steps to inspect the active adjacency list.</div>
+                  <div class="scan-row" id="scanRow"></div>
+                </div>
+
+                <div class="subpanel" id="intervalPanel">
+                  <div class="subpanel-head">
+                    <h3>Parenthesis Theorem</h3>
+                    <p>Intervals are either nested or disjoint. They never partially overlap.</p>
+                  </div>
+                  <svg id="intervalSvg" viewBox="0 0 420 220" preserveAspectRatio="xMidYMid meet"></svg>
+                </div>
+              </div>
+            </div>
+
+            <div class="code-layout" id="codeExplainCluster">
+              <div class="subpanel code-panel" id="codePanel">
+                <div class="subpanel-head">
+                  <h3>Pseudocode</h3>
+                  <p id="codeHoverTip">Hover a line for the teaching note. The active line is highlighted during playback.</p>
+                </div>
+                <div class="pseudocode" id="pseudocode"></div>
+              </div>
+              <div class="subpanel explanation-panel" id="explainPanel">
+                <div class="subpanel-head">
+                  <h3>Step Explanation</h3>
+                  <p>Plain-English explanation with the actual values from the current step.</p>
+                </div>
+                <div class="explanation" id="explanationBox">Build steps to begin.</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <div class="workspace-footer">
+          <section class="panel history-panel" id="historySection">
+            <div class="panel-head">
+              <h2>Step History</h2>
+              <p>Last 25 steps. Click any row to jump directly to that saved state.</p>
+            </div>
+            <div class="history-wrap">
+              <table class="history-table">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Type</th>
+                    <th>Focus</th>
+                    <th>Explanation</th>
+                  </tr>
+                </thead>
+                <tbody id="historyBody"></tbody>
+              </table>
+            </div>
+          </section>
+
+          <section class="panel complexity-panel" id="complexitySection">
+            <div class="panel-head">
+              <h2>Complexity Analysis</h2>
+              <p>CLO-1: show why DFS stays linear in the size of the graph, and compare its growth with BFS.</p>
+            </div>
+
+            <div class="complexity-body">
+              <div class="split chart-controls">
+                <div class="field">
+                  <label for="vertexSlider">Vertices V <span id="vertexLabel">8</span></label>
+                  <input id="vertexSlider" type="range" min="2" max="32" value="8">
+                </div>
+                <div class="field">
+                  <label for="edgeSlider">Edges E <span id="edgeLabel">10</span></label>
+                  <input id="edgeSlider" type="range" min="1" max="120" value="10">
+                </div>
+              </div>
+
+              <div class="chart-frame">
+                <svg id="complexitySvg" viewBox="0 0 960 280" preserveAspectRatio="xMidYMid meet"></svg>
+              </div>
+
+              <div class="complexity-grid">
+                <div class="subpanel">
+                  <div class="subpanel-head">
+                    <h3>Current Estimates</h3>
+                    <p>Based on the sliders above.</p>
+                  </div>
+                  <div class="metric-list" id="complexityMetrics"></div>
+                </div>
+                <div class="subpanel">
+                  <div class="subpanel-head">
+                    <h3>Why DFS and BFS Match Asymptotically</h3>
+                    <p>They scan the same vertices and edges, but maintain different frontier structures.</p>
+                  </div>
+                  <div class="complexity-note">
+                    DFS marks each vertex once and scans each adjacency list once, so its work is <code>O(V + E)</code>.
+                    BFS does the same counting with a queue, so it is also <code>O(V + E)</code>. The difference is not growth order;
+                    it is the search pattern and the frontier data structure.
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
         </div>
       </section>
     </main>
@@ -1798,6 +2232,38 @@ const APP_CONTENT = {
     codeExplain: true,
     history: false,
     complexity: false
+  };
+  const VISUAL_THEME = {
+    label: '#f3f6fb',
+    meta: '#98a4bb',
+    badge: '#ffbf72',
+    panelFill: 'rgba(8, 11, 17, 0.92)',
+    panelFillActive: 'rgba(53, 210, 195, 0.18)',
+    panelStroke: 'rgba(196, 208, 226, 0.14)',
+    orderLabel: '#ffbf72',
+    orderLabelActive: '#d9fff9',
+    nodeStrokeDefault: 'rgba(198, 208, 226, 0.22)',
+    nodeStrokeGray: '#ffc379',
+    nodeStrokeBlack: '#63e3ca',
+    nodeHaloActive: 'rgba(53, 210, 195, 0.54)',
+    nodeHaloCycle: 'rgba(212, 106, 120, 0.48)',
+    gridSoft: 'rgba(188, 198, 220, 0.08)',
+    axis: 'rgba(188, 198, 220, 0.24)',
+    depthLink: '#48c7ff',
+    intervalOpen: '#ffbf72',
+    intervalClosed: '#63e3ca',
+    intervalCurrent: '#35d2c3',
+    chartDfs: '#35d2c3',
+    chartBfs: '#7f83ff',
+    chartContrast: '#d46a78',
+    edge: {
+      default: 'rgba(230, 238, 251, 0.24)',
+      tree: '#48c7ff',
+      back: '#ffb761',
+      forward: '#8b8cff',
+      cross: '#34c88a',
+      active: '#35d2c3'
+    }
   };
 
   const state = {
@@ -3143,7 +3609,7 @@ const APP_CONTENT = {
         cx: pos.x,
         cy: pos.y,
         r: NODE_RADIUS,
-        stroke: 'rgba(255,255,255,0.15)',
+        stroke: VISUAL_THEME.nodeStrokeDefault,
         'stroke-width': 1.5
       });
       const label = svgEl('text', {
@@ -3152,7 +3618,7 @@ const APP_CONTENT = {
         'text-anchor': 'middle',
         'font-size': node.length > 5 ? 10 : node.length > 3 ? 11 : 13,
         'font-weight': 700,
-        fill: '#eef4ff'
+        fill: VISUAL_THEME.label
       });
       label.textContent = node;
       const depthBadge = svgEl('text', {
@@ -3161,21 +3627,21 @@ const APP_CONTENT = {
         'text-anchor': 'middle',
         'font-size': 11,
         'font-weight': 700,
-        fill: '#ffcf7a'
+        fill: VISUAL_THEME.badge
       });
       const stamp = svgEl('text', {
         x: pos.x,
         y: pos.y + NODE_RADIUS + 18,
         'text-anchor': 'middle',
         'font-size': 11,
-        fill: '#9bb0ce'
+        fill: VISUAL_THEME.meta
       });
       const stampSub = svgEl('text', {
         x: pos.x,
         y: pos.y + NODE_RADIUS + 33,
         'text-anchor': 'middle',
         'font-size': 10,
-        fill: '#ffcf7a'
+        fill: VISUAL_THEME.badge
       });
       group.appendChild(halo);
       group.appendChild(circle);
@@ -3282,11 +3748,11 @@ const APP_CONTENT = {
         els.orderBg.setAttribute('y', orderY - 8);
         els.orderBg.setAttribute('width', 16);
         els.orderBg.setAttribute('height', 16);
-        els.orderBg.setAttribute('fill', isActive ? 'rgba(255,159,67,0.86)' : 'rgba(4,11,18,0.86)');
-        els.orderBg.setAttribute('stroke', 'rgba(255,255,255,0.12)');
+        els.orderBg.setAttribute('fill', isActive ? VISUAL_THEME.panelFillActive : VISUAL_THEME.panelFill);
+        els.orderBg.setAttribute('stroke', VISUAL_THEME.panelStroke);
         els.orderLabel.setAttribute('x', orderX);
         els.orderLabel.setAttribute('y', orderY + 4);
-        els.orderLabel.setAttribute('fill', isActive ? '#1d1200' : '#ffcf7a');
+        els.orderLabel.setAttribute('fill', isActive ? VISUAL_THEME.orderLabelActive : VISUAL_THEME.orderLabel);
         els.orderLabel.textContent = String(order);
       }
 
@@ -3300,7 +3766,7 @@ const APP_CONTENT = {
         els.labelBg.setAttribute('y', geometry.labelY - 8);
         els.labelBg.setAttribute('width', 20);
         els.labelBg.setAttribute('height', 16);
-        els.labelBg.setAttribute('fill', 'rgba(4, 11, 18, 0.86)');
+        els.labelBg.setAttribute('fill', VISUAL_THEME.panelFill);
         els.labelBg.setAttribute('opacity', 1);
       } else {
         els.label.setAttribute('opacity', 0);
@@ -3317,12 +3783,16 @@ const APP_CONTENT = {
       const color = visuals.nodeColors[node] || 'WHITE';
       const isActive = visuals.activeNode === node;
       const fill = colorForNode(color, isActive);
-      const stroke = color === 'GRAY' ? '#ffcf66' : color === 'BLACK' ? '#66d9c7' : 'rgba(255,255,255,0.15)';
+      const stroke = color === 'GRAY'
+        ? VISUAL_THEME.nodeStrokeGray
+        : color === 'BLACK'
+          ? VISUAL_THEME.nodeStrokeBlack
+          : VISUAL_THEME.nodeStrokeDefault;
       const cycleHighlight = visuals.cycleEdge && (visuals.cycleEdge.from === node || visuals.cycleEdge.to === node);
 
       els.circle.setAttribute('fill', fill);
       els.circle.setAttribute('stroke', stroke);
-      els.halo.setAttribute('stroke', isActive ? 'rgba(255, 159, 67, 0.5)' : cycleHighlight ? 'rgba(255, 107, 107, 0.46)' : 'none');
+      els.halo.setAttribute('stroke', isActive ? VISUAL_THEME.nodeHaloActive : cycleHighlight ? VISUAL_THEME.nodeHaloCycle : 'none');
       els.halo.setAttribute('stroke-width', isActive || cycleHighlight ? 4 : 0);
       els.halo.setAttribute('stroke-dasharray', cycleHighlight && !isActive ? '6 5' : '');
 
@@ -3344,27 +3814,17 @@ const APP_CONTENT = {
   }
 
   function colorForNode(color, isActive) {
-    if (isActive) {
-      return 'rgba(255, 159, 67, 0.92)';
-    }
     if (color === 'GRAY') {
-      return 'rgba(255, 200, 87, 0.88)';
+      return isActive ? 'rgba(255, 194, 121, 0.96)' : 'rgba(255, 183, 97, 0.88)';
     }
     if (color === 'BLACK') {
-      return 'rgba(102, 217, 199, 0.76)';
+      return isActive ? 'rgba(98, 233, 207, 0.94)' : 'rgba(53, 210, 195, 0.82)';
     }
-    return 'rgba(255, 255, 255, 0.08)';
+    return isActive ? 'rgba(243, 246, 251, 0.18)' : 'rgba(243, 246, 251, 0.08)';
   }
 
   function colorForEdge(type) {
-    return {
-      default: 'rgba(255,255,255,0.24)',
-      tree: '#5ea5ff',
-      back: '#ff6b6b',
-      forward: '#66d9c7',
-      cross: '#ffc857',
-      active: '#ff9f43'
-    }[type];
+    return VISUAL_THEME.edge[type];
   }
 
   function markerForEdge(type) {
@@ -3542,7 +4002,7 @@ const APP_CONTENT = {
         y1: top,
         x2: x,
         y2: height - bottom,
-        stroke: 'rgba(255,255,255,0.08)',
+        stroke: VISUAL_THEME.gridSoft,
         'stroke-width': 1
       });
       const label = svgEl('text', {
@@ -3563,7 +4023,7 @@ const APP_CONTENT = {
         y1: y,
         x2: width - right,
         y2: y,
-        stroke: 'rgba(255,255,255,0.08)',
+        stroke: VISUAL_THEME.gridSoft,
         'stroke-width': 1
       });
       const label = svgEl('text', {
@@ -3582,7 +4042,7 @@ const APP_CONTENT = {
       y1: height - bottom,
       x2: width - right,
       y2: height - bottom,
-      stroke: 'rgba(255,255,255,0.22)',
+      stroke: VISUAL_THEME.axis,
       'stroke-width': 1.5
     });
     const yAxis = svgEl('line', {
@@ -3590,7 +4050,7 @@ const APP_CONTENT = {
       y1: top,
       x2: left,
       y2: height - bottom,
-      stroke: 'rgba(255,255,255,0.22)',
+      stroke: VISUAL_THEME.axis,
       'stroke-width': 1.5
     });
     dom.depthSvg.appendChild(xAxis);
@@ -3617,7 +4077,7 @@ const APP_CONTENT = {
         y1: from.y,
         x2: to.x,
         y2: to.y,
-        stroke: '#5ea5ff',
+        stroke: VISUAL_THEME.depthLink,
         'stroke-width': 2.5,
         opacity: 0.9
       });
@@ -3632,7 +4092,7 @@ const APP_CONTENT = {
         cy: point.y,
         r: state.visuals.activeNode === node ? 9 : 7,
         fill,
-        stroke: 'rgba(255,255,255,0.28)',
+        stroke: VISUAL_THEME.axis,
         'stroke-width': 1.5
       });
       const label = svgEl('text', {
@@ -3749,7 +4209,7 @@ const APP_CONTENT = {
       y1: 18,
       x2: width - 20,
       y2: 18,
-      stroke: 'rgba(255,255,255,0.2)',
+      stroke: VISUAL_THEME.axis,
       'stroke-width': 1.5
     });
     dom.intervalSvg.appendChild(axis);
@@ -3761,7 +4221,7 @@ const APP_CONTENT = {
         y1: 14,
         x2: x,
         y2: 22,
-        stroke: 'rgba(255,255,255,0.2)',
+        stroke: VISUAL_THEME.axis,
         'stroke-width': 1
       });
       const label = svgEl('text', {
@@ -3794,7 +4254,7 @@ const APP_CONTENT = {
         y1: y,
         x2,
         y2: y,
-        stroke: state.visuals.finish[node] !== undefined ? '#66d9c7' : '#ffc857',
+        stroke: state.visuals.finish[node] !== undefined ? VISUAL_THEME.intervalClosed : VISUAL_THEME.intervalOpen,
         'stroke-width': 5,
         'stroke-linecap': 'round'
       });
@@ -3803,14 +4263,14 @@ const APP_CONTENT = {
         cx: x1,
         cy: y,
         r: 5,
-        fill: '#ffc857'
+        fill: VISUAL_THEME.intervalOpen
       });
 
       const rightCap = svgEl('circle', {
         cx: x2,
         cy: y,
         r: 5,
-        fill: state.visuals.finish[node] !== undefined ? '#66d9c7' : '#ff9f43'
+        fill: state.visuals.finish[node] !== undefined ? VISUAL_THEME.intervalClosed : VISUAL_THEME.intervalCurrent
       });
 
       dom.intervalSvg.appendChild(name);
@@ -4043,7 +4503,7 @@ const APP_CONTENT = {
       y1: height - bottom,
       x2: width - right,
       y2: height - bottom,
-      stroke: 'rgba(255,255,255,0.22)',
+      stroke: VISUAL_THEME.axis,
       'stroke-width': 1.5
     });
     const axisY = svgEl('line', {
@@ -4051,7 +4511,7 @@ const APP_CONTENT = {
       y1: top,
       x2: left,
       y2: height - bottom,
-      stroke: 'rgba(255,255,255,0.22)',
+      stroke: VISUAL_THEME.axis,
       'stroke-width': 1.5
     });
     dom.complexitySvg.appendChild(axisX);
@@ -4069,7 +4529,7 @@ const APP_CONTENT = {
         y1: top,
         x2: x,
         y2: height - bottom,
-        stroke: 'rgba(255,255,255,0.06)',
+        stroke: VISUAL_THEME.gridSoft,
         'stroke-width': 1
       });
       const horizontal = svgEl('line', {
@@ -4077,7 +4537,7 @@ const APP_CONTENT = {
         y1: y,
         x2: width - right,
         y2: y,
-        stroke: 'rgba(255,255,255,0.06)',
+        stroke: VISUAL_THEME.gridSoft,
         'stroke-width': 1
       });
       const xLabel = svgEl('text', {
@@ -4104,13 +4564,13 @@ const APP_CONTENT = {
     const bfsPath = plotLine(maxX, maxY, usableWidth, usableHeight, left, height - bottom, (x) => x * 0.98 + 0.4);
     const densePath = plotLine(maxX, maxY, usableWidth, usableHeight, left, height - bottom, (x) => (V / maxX) * x * (E / maxX) * x);
 
-    dom.complexitySvg.appendChild(makePath(dfsPath, '#66d9c7', 4));
-    dom.complexitySvg.appendChild(makePath(bfsPath, '#5ea5ff', 3));
-    dom.complexitySvg.appendChild(makePath(densePath, '#ff6b6b', 2, '8 7'));
+    dom.complexitySvg.appendChild(makePath(dfsPath, VISUAL_THEME.chartDfs, 4));
+    dom.complexitySvg.appendChild(makePath(bfsPath, VISUAL_THEME.chartBfs, 3));
+    dom.complexitySvg.appendChild(makePath(densePath, VISUAL_THEME.chartContrast, 2, '8 7'));
 
-    addChartLabel('DFS O(V + E)', '#66d9c7', usableWidth * 0.66 + left, mapY(maxY, usableHeight, height - bottom, dfsValue * 0.66));
-    addChartLabel('BFS O(V + E)', '#5ea5ff', usableWidth * 0.48 + left, mapY(maxY, usableHeight, height - bottom, bfsValue * 0.48 + 1));
-    addChartLabel('Contrast: O(VE)', '#ff6b6b', usableWidth * 0.7 + left, mapY(maxY, usableHeight, height - bottom, denseContrast * 0.48));
+    addChartLabel('DFS O(V + E)', VISUAL_THEME.chartDfs, usableWidth * 0.66 + left, mapY(maxY, usableHeight, height - bottom, dfsValue * 0.66));
+    addChartLabel('BFS O(V + E)', VISUAL_THEME.chartBfs, usableWidth * 0.48 + left, mapY(maxY, usableHeight, height - bottom, bfsValue * 0.48 + 1));
+    addChartLabel('Contrast: O(VE)', VISUAL_THEME.chartContrast, usableWidth * 0.7 + left, mapY(maxY, usableHeight, height - bottom, denseContrast * 0.48));
 
     const xAxisLabel = svgEl('text', {
       x: left + usableWidth / 2,
