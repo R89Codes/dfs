@@ -348,92 +348,92 @@ const APP_CONTENT = {
     const blocks = {
       dfs: [
         {
-          title: "Core Idea",
+          title: "Main Concepts",
           open: true,
           body:
-            "<div class=\"detail-body\"><p><strong>Depth-first search</strong> explores as far as possible before backtracking. Every vertex moves through WHITE -> GRAY -> BLACK, and each active call stays on the recursion stack until all outgoing edges are scanned.</p></div>"
+            "<div class=\"detail-body\"><p><strong>Depth-first search</strong> explores one branch as far as possible before backtracking. Every vertex moves through <strong>WHITE -> GRAY -> BLACK</strong>, and every active GRAY vertex stays on the recursion stack until all outgoing edges have been scanned.</p><ul><li><strong>WHITE</strong> = not discovered yet</li><li><strong>GRAY</strong> = discovered and still active on the recursion stack</li><li><strong>BLACK</strong> = fully processed</li><li><strong>d[u], f[u]</strong> = discovery and finish times used for interval reasoning and edge classification</li></ul></div>"
         },
         {
-          title: "CLO-1: Complexity and Timestamps",
-          open: false,
+          title: "CLO-1 Checklist",
+          open: true,
           body:
-            "<div class=\"detail-body\"><p>DFS is <strong>O(V + E)</strong> because each vertex is discovered once and each directed edge is examined once from its adjacency list. Discovery and finish times create intervals <code>[d[u], f[u]]</code> that are either nested or disjoint. That is the parenthesis theorem.</p></div>"
+            "<div class=\"detail-body\"><p>The assignment requires you to show <strong>O(V + E)</strong>, discovery/finish intervals, and the <strong>parenthesis theorem</strong>.</p><ul><li>DFS is <strong>O(V + E)</strong> because each vertex is discovered once and each directed edge is scanned once from its adjacency list.</li><li>The interval <code>[d[u], f[u]]</code> is either nested inside an ancestor interval or disjoint from vertices in other finished branches.</li><li>Best, average, and worst visible behavior change the shape of the DFS forest, but the asymptotic bound still stays <strong>O(V + E)</strong>.</li><li>Space complexity is <strong>O(V)</strong> because DFS stores colors, parents, timestamps, and the recursion stack.</li></ul></div>"
         },
         {
-          title: "CLO-2: DFS as Searching",
-          open: false,
+          title: "CLO-2 Checklist",
+          open: true,
           body:
-            "<div class=\"detail-body\"><p>DFS is not just recursion for its own sake. It is a <strong>depth-first searching strategy</strong>: when the current node has several outgoing choices, DFS commits to one branch, keeps going deeper, and only backtracks when no WHITE neighbor remains.</p><p>Changing adjacency order can change the DFS forest, discovery/finish times, and the order in which evidence appears. What does <strong>not</strong> change is the graph itself, the reachability facts, or the proof rule that a GRAY back edge witnesses a cycle.</p></div>"
+            "<div class=\"detail-body\"><p>For this project, CLO-2 should be defended as <strong>DFS as a searching strategy</strong>.</p><ul><li>DFS commits to one outgoing choice, searches deeper, and backtracks only when no WHITE neighbor remains.</li><li>The recursion stack is the concrete record of that depth-first searching behavior.</li><li>Edge classification depends on the search state and timestamps: <strong>tree, back, forward, and cross</strong>.</li><li>Changing adjacency order can change the DFS tree, timestamps, and finish order.</li><li>What stays invariant: reachability facts, the correctness of DFS, and the rule that a GRAY back edge proves a cycle.</li></ul></div>"
         },
         {
           title: "Worked Example",
-          open: false,
+          open: true,
           body:
-            "<div class=\"detail-body\"><p>Use the <strong>CLRS 22.4</strong> preset and step through it. Watch how <code>[d[v], f[v]]</code> sits inside <code>[d[u], f[u]]</code> when <code>u</code> is an ancestor of <code>v</code>.</p></div>"
+            "<div class=\"detail-body\"><p>Use the <strong>CLRS 22.4</strong> preset and step through the run slowly.</p><ul><li>Watch the recursion stack grow and shrink.</li><li>Track <code>d[u]</code> when a vertex becomes GRAY and <code>f[u]</code> when it becomes BLACK.</li><li>Compare the interval panel with the graph panel to see why ancestor intervals contain descendant intervals.</li><li>Click old rows in Step History to revisit the exact moment a branch was chosen or an edge was classified.</li></ul></div>"
         },
         {
           title: "Common Mistakes",
-          open: false,
+          open: true,
           body:
-            "<div class=\"detail-body\"><p>Do not confuse <strong>GRAY</strong> with finished. GRAY means the node is still active on the recursion stack. Also do not assume timestamps are decoration: they are exactly what makes interval nesting and edge classification explainable.</p></div>"
+            "<div class=\"detail-body\"><ul><li>Do not confuse <strong>GRAY</strong> with finished. GRAY means the vertex is still active on the recursion stack.</li><li>Do not treat timestamps as decoration. They are what make interval nesting and edge classification explainable.</li><li>Do not assume changing adjacency order changes correctness. It changes the traversal order, not the underlying graph facts.</li></ul></div>"
         }
       ],
       topo: [
         {
-          title: "Core Idea",
+          title: "Main Concepts",
           open: true,
           body:
-            "<div class=\"detail-body\"><p><strong>Topological sort</strong> outputs vertices in reverse finish-time order. If the graph is a DAG, every edge <code>u -> v</code> goes from an earlier vertex in the ordering to a later one.</p></div>"
+            "<div class=\"detail-body\"><p><strong>Topological sort</strong> outputs vertices in reverse finish-time order. It only works on a <strong>DAG</strong>.</p><ul><li>If the graph is acyclic, every edge <code>u -> v</code> goes from an earlier vertex in the ordering to a later one.</li><li>If DFS discovers a back edge, the graph is cyclic and no valid topological order exists.</li><li>Topological order is important because it gives a dependency-safe order for later processing.</li></ul></div>"
         },
         {
-          title: "CLO-3: Dynamic Programming on DAGs",
-          open: false,
+          title: "CLO-3 Checklist",
+          open: true,
           body:
-            "<div class=\"detail-body\"><p>The explicit paradigm here is <strong>dynamic programming on a DAG</strong>. DFS gives a topological order, and that order lets the tool process each node only after every prerequisite that can improve it has already been handled. The longest-path table is not an extra factoid; it is the CLO-3 paradigm demonstration.</p></div>"
+            "<div class=\"detail-body\"><p>The assignment asks you to choose one explicit paradigm. Here the paradigm is <strong>dynamic programming on a DAG</strong>.</p><ul><li>DFS decomposes the graph and produces the topological order.</li><li>That order lets dynamic programming process each node only after every prerequisite has been handled.</li><li>The longest-path table is the paradigm demonstration: each new value is computed from already-settled earlier states.</li><li>If the graph has a cycle, the topological order disappears and this one-pass DP schedule breaks.</li></ul></div>"
         },
         {
-          title: "Important Restriction",
-          open: false,
+          title: "Why This Matters",
+          open: true,
           body:
-            "<div class=\"detail-body\"><p>Topological sort only makes sense on a DAG. If DFS discovers a back edge, the graph has a directed cycle and no valid topological order exists.</p></div>"
+            "<div class=\"detail-body\"><p>The topological order is not the final goal by itself.</p><ul><li>It is the bridge from DFS into dynamic programming.</li><li>Once prerequisites come first, later states can safely reuse earlier answers.</li><li>This is why topological sort is a design-tool, not just a list-building trick.</li></ul></div>"
         },
         {
           title: "Worked Example",
-          open: false,
+          open: true,
           body:
-            "<div class=\"detail-body\"><p>Use the <strong>DAG / Topo</strong> preset. Build the DFS order first, then read the dynamic-programming panel row by row. Notice that each best distance is computed only after the nodes that feed into it are already settled.</p></div>"
+            "<div class=\"detail-body\"><p>Use the <strong>DAG / Topo</strong> preset.</p><ul><li>Build the DFS run and let vertices finish.</li><li>Read the Topological Order strip from left to right.</li><li>Then read the DP trace table row by row to see how best distances are updated in that order.</li><li>Compare that with cycle mode to see exactly why the DP schedule fails on cyclic graphs.</li></ul></div>"
         },
         {
           title: "Common Mistakes",
-          open: false,
+          open: true,
           body:
-            "<div class=\"detail-body\"><p>A common mistake is to treat the topological order as the final goal. For CLO-3, the important point is <strong>why</strong> that order matters: it turns the DAG into a valid one-pass dynamic-programming schedule. In a cyclic graph, this schedule does not exist.</p></div>"
+            "<div class=\"detail-body\"><ul><li>Do not treat topological order as the final goal. For CLO-3, the mark is in showing how it enables dynamic programming.</li><li>Do not claim topological sort works on every directed graph. It requires a DAG.</li><li>Do not skip the counterexample: once a back edge appears, the DP-on-DAG story is no longer valid.</li></ul></div>"
         }
       ],
       cycle: [
         {
-          title: "Core Theorem",
+          title: "Main Concepts",
           open: true,
           body:
-            "<div class=\"detail-body\"><p>A directed graph contains a cycle <strong>if and only if</strong> DFS finds a back edge to a GRAY ancestor. GRAY is the key state because it means the ancestor is still on the active recursion stack.</p></div>"
+            "<div class=\"detail-body\"><p>A directed graph contains a cycle <strong>if and only if</strong> DFS finds a back edge to a GRAY ancestor.</p><ul><li><strong>GRAY</strong> is the key state because it means the ancestor is still active on the recursion stack.</li><li>The stack already contains a path from that ancestor down to the current vertex.</li><li>Adding the back edge closes the directed cycle.</li></ul></div>"
         },
         {
-          title: "Proof Sketch",
-          open: false,
+          title: "CLO-2 and CLO-3 Link",
+          open: true,
           body:
-            "<div class=\"detail-body\"><p>If DFS sees <code>u -> v</code> while <code>v</code> is GRAY, then the stack already contains a path <code>v -> ... -> u</code>. Adding <code>u -> v</code> closes a cycle. If no back edge exists, DFS never closes such a loop.</p></div>"
+            "<div class=\"detail-body\"><p>This mode ties the assignment CLOs together.</p><ul><li><strong>CLO-2:</strong> DFS is searching depth-first, so the active recursion stack tells you which ancestors are still in play.</li><li><strong>CLO-3:</strong> A back edge is the counterexample that kills the topological-order / DP-on-DAG story.</li><li>If a cycle exists, a valid DAG dynamic-programming order cannot exist.</li></ul></div>"
         },
         {
           title: "Worked Example",
-          open: false,
+          open: true,
           body:
-            "<div class=\"detail-body\"><p>Use the <strong>Has Cycle</strong> preset. When DFS reaches <code>D -> A</code>, vertex <code>A</code> is still GRAY, so the tool can show the proof path <code>A -> B -> D -> A</code>.</p></div>"
+            "<div class=\"detail-body\"><p>Use the <strong>Has Cycle</strong> preset.</p><ul><li>Step until DFS reaches <code>D -> A</code>.</li><li>Notice that <code>A</code> is still GRAY, so it is still on the active recursion stack.</li><li>The stack already contains the path <code>A -> B -> D</code>.</li><li>The edge <code>D -> A</code> closes the cycle <code>A -> B -> D -> A</code>.</li></ul></div>"
         },
         {
           title: "Common Mistakes",
-          open: false,
+          open: true,
           body:
-            "<div class=\"detail-body\"><p>Do not call every edge to an already seen vertex a cycle. A cycle proof needs a <strong>back edge to a GRAY ancestor</strong>. Forward and cross edges point to BLACK vertices and do not by themselves prove a directed cycle.</p></div>"
+            "<div class=\"detail-body\"><ul><li>Do not call every edge to an already seen vertex a cycle.</li><li>A valid cycle proof needs a <strong>back edge to a GRAY ancestor</strong>.</li><li>Forward and cross edges go to BLACK vertices and do not by themselves prove a directed cycle.</li></ul></div>"
         }
       ]
     };

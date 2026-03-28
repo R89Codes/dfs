@@ -935,11 +935,10 @@ button.preset-btn.active {
 .overview {
   display: grid;
   gap: 10px;
-  max-height: min(44vh, 420px);
+  max-height: none;
   min-width: 0;
-  padding-right: 4px;
-  overflow-y: auto;
-  overflow-x: hidden;
+  padding-right: 0;
+  overflow: visible;
 }
 
 .overview details {
@@ -958,6 +957,11 @@ button.preset-btn.active {
   overflow-wrap: anywhere;
 }
 
+.overview details[open] summary {
+  border-bottom: 1px solid var(--line-soft);
+  background: rgba(255, 255, 255, 0.03);
+}
+
 .overview summary::-webkit-details-marker {
   display: none;
 }
@@ -974,6 +978,14 @@ button.preset-btn.active {
 .overview .detail-body p,
 .overview .detail-body ul {
   margin: 10px 0 0;
+}
+
+.overview .detail-body ul {
+  padding-left: 18px;
+}
+
+.overview .detail-body li + li {
+  margin-top: 6px;
 }
 
 .overview .detail-body code,
@@ -1080,10 +1092,10 @@ button.preset-btn.active {
   grid-template-columns: repeat(12, minmax(0, 1fr));
   grid-template-areas:
     "graph graph graph graph graph graph graph graph graph graph graph graph"
+    "complexity complexity complexity complexity complexity complexity complexity complexity complexity complexity complexity complexity"
     "depth depth depth depth depth depth stack stack stack cycle cycle cycle"
     "code code code code code code code explain explain explain explain explain"
-    "history history history history history history history complexity complexity complexity complexity complexity"
-    "scan scan scan scan scan scan interval interval interval interval interval interval";
+    "history history history history history history scan scan scan interval interval interval";
   gap: 18px;
   align-items: stretch;
 }
@@ -1251,7 +1263,15 @@ button.preset-btn.active {
 #historySection,
 #complexitySection {
   min-height: 0;
+}
+
+#historySection {
   height: clamp(500px, 56vh, 640px);
+}
+
+#complexitySection {
+  height: auto;
+  min-height: clamp(560px, 64vh, 760px);
 }
 
 .panel-frame {
@@ -1726,8 +1746,7 @@ button.preset-btn.active {
   min-height: 0;
   align-content: start;
   grid-auto-rows: min-content;
-  overflow-y: auto;
-  overscroll-behavior: contain;
+  overflow: visible;
 }
 
 .metric-list {
@@ -1930,7 +1949,7 @@ button.preset-btn.active {
 }
 
 #complexitySvg {
-  height: 320px;
+  height: 420px;
 }
 
 #intervalSvg,
@@ -1999,13 +2018,13 @@ svg text {
   .workspace-grid {
     grid-template-areas:
       "graph"
+      "complexity"
       "depth"
       "stack"
       "cycle"
       "code"
       "explain"
       "history"
-      "complexity"
       "scan"
       "interval";
   }
