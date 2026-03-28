@@ -1378,21 +1378,35 @@ button.preset-btn.active {
   display: grid;
   gap: 10px;
   min-height: 180px;
+  min-width: 0;
 }
 
 .stack-frame {
   display: flex;
+  align-items: center;
   justify-content: space-between;
   gap: 12px;
-  padding: 12px 14px;
+  min-width: 0;
+  padding: 10px 12px;
   border-radius: 16px;
   border: 1px solid rgba(255, 213, 173, 0.12);
   background: rgba(255, 255, 255, 0.04);
   font-family: "SFMono-Regular", Consolas, monospace;
+  font-size: 0.84rem;
+  line-height: 1.45;
+}
+
+.stack-frame span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .stack-frame small {
+  flex: 0 0 auto;
   color: var(--muted);
+  font-size: 0.74rem;
+  text-align: right;
 }
 
 .dag-summary,
