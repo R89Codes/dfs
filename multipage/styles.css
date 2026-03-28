@@ -42,6 +42,75 @@ button, input, select, textarea { font: inherit; }
   margin: 14px auto 26px;
 }
 
+.floating-tools {
+  position: fixed;
+  top: 14px;
+  right: 14px;
+  z-index: 1200;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 10px;
+}
+
+.tutorial-launcher {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  width: auto;
+  padding: 10px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 177, 108, 0.26);
+  background: rgba(27, 19, 15, 0.92);
+  box-shadow: 0 16px 28px rgba(0, 0, 0, 0.34);
+}
+
+.tutorial-launcher-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(255, 177, 108, 0.16);
+}
+
+.tutorial-launcher svg {
+  width: 16px;
+  height: 16px;
+  fill: #ffd166;
+}
+
+.filter-launcher svg {
+  fill: var(--brand-soft);
+}
+
+.filter-menu {
+  display: none;
+  width: min(360px, calc(100vw - 24px));
+  padding: 16px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 177, 108, 0.18);
+  background: linear-gradient(180deg, rgba(58, 38, 30, 0.98), rgba(24, 17, 13, 0.98));
+  box-shadow: 0 24px 44px rgba(0, 0, 0, 0.42);
+}
+
+.filter-menu.open {
+  display: block;
+}
+
+.filter-menu-head strong {
+  display: block;
+  margin-bottom: 6px;
+}
+
+.filter-menu-head p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.55;
+  font-size: 0.84rem;
+}
+
 .guide-hero,
 .page-hero,
 .guide-panel,
@@ -129,7 +198,15 @@ h1 {
 }
 
 .button-row {
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+}
+
+.filter-actions,
+.filter-grid {
+  display: grid;
+  gap: 10px;
+  margin-top: 12px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .diagram-layout {
@@ -245,6 +322,23 @@ button.secondary {
   background: rgba(255, 255, 255, 0.05);
 }
 
+.filter-chip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--muted);
+  font-size: 0.84rem;
+}
+
+.filter-chip input {
+  width: auto;
+  accent-color: var(--brand);
+}
+
 .status-pill,
 .mini-panel {
   border: 1px solid var(--line);
@@ -328,8 +422,73 @@ button.secondary {
   font-size: 0.76rem;
 }
 
+.tour-target {
+  position: relative;
+  z-index: 1100;
+  border-radius: 18px;
+  box-shadow: 0 0 0 2px rgba(255, 209, 102, 0.38), 0 0 0 10px rgba(255, 209, 102, 0.08), 0 18px 34px rgba(0, 0, 0, 0.38);
+}
+
+.tour-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(17, 10, 7, 0.74);
+  z-index: 1050;
+  display: none;
+}
+
+.tour-overlay.open {
+  display: block;
+}
+
+.tour-card {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  width: min(360px, calc(100vw - 24px));
+  padding: 18px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 177, 108, 0.26);
+  background: linear-gradient(180deg, rgba(58, 38, 30, 0.98), rgba(24, 17, 13, 0.98));
+  box-shadow: 0 24px 44px rgba(0, 0, 0, 0.42);
+}
+
+.tour-step {
+  margin: 0 0 8px;
+  color: var(--brand-soft);
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+}
+
+.tour-card h3 {
+  margin: 0 0 8px;
+}
+
+.tour-card p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.62;
+}
+
+.tour-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.tour-actions button {
+  width: auto;
+  min-width: 92px;
+}
+
 .full-span {
   grid-column: 1 / -1;
+}
+
+.is-hidden-filter {
+  display: none !important;
 }
 
 .axis-label {
@@ -362,9 +521,20 @@ svg text {
     margin: 8px auto 20px;
   }
 
+  .tutorial-launcher {
+    padding: 9px 12px;
+  }
+
+  .floating-tools {
+    top: 10px;
+    right: 10px;
+  }
+
   .two-up,
   .status-grid,
-  .button-row {
+  .button-row,
+  .filter-actions,
+  .filter-grid {
     grid-template-columns: 1fr;
   }
 
