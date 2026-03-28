@@ -3,10 +3,18 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Topological Sort Guide</title>
+  <title>Graph Algorithms Studio - Multi Page Topological Sort</title>
+  <link rel="stylesheet" href="brand.css">
   <link rel="stylesheet" href="guide-styles.css">
 </head>
-<body class="guide-page" data-mode="topo">
+<body class="guide-page with-app-back" data-mode="topo">
+  <a class="app-back-link" href="index.html" aria-label="Return to home screen">
+    <svg viewBox="0 0 24 24" role="img" focusable="false" aria-hidden="true">
+      <path d="M10 6L4 12l6 6"></path>
+      <path d="M4 12h9a7 7 0 0 0 7-7"></path>
+    </svg>
+    <span>Home</span>
+  </a>
   <div class="floating-tools">
     <button id="topTutorialBtn" class="tutorial-launcher" type="button" aria-label="Open tutorial">
       <span class="tutorial-launcher-icon" aria-hidden="true">
@@ -46,11 +54,12 @@
     <header class="page-hero">
       <div>
         <p class="guide-kicker">Graph Algorithms Studio</p>
+        <p class="mode-pill">Multi Page Mode</p>
         <h1>Topological Sort</h1>
         <p class="guide-copy">This page focuses on finish times, reverse-order output, and why topological order unlocks dynamic programming on DAGs.</p>
       </div>
       <nav class="guide-nav">
-        <a href="guide.html">Home</a>
+        <a href="guide.html">Overview</a>
         <a href="dfs.html">DFS</a>
         <a href="topo.html" class="active">Topo</a>
         <a href="cycle.html">Cycle</a>

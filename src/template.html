@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>DFS, Topological Sort, and Cycle Detection Visualizer</title>
   <style>
+__INLINE_BRAND__
 __INLINE_STYLE__
   </style>
 </head>
@@ -48,61 +49,69 @@ __INLINE_STYLE__
     </div>
   </div>
 
+  <div class="floating-playback" id="floatingPlayback" aria-label="Floating playback controls">
+    <div class="floating-playback-handle" id="floatingPlaybackHandle">
+      <span>Playback</span>
+      <small>Drag</small>
+    </div>
+    <div class="floating-playback-actions">
+      <button id="floatStepBackBtn" class="secondary" type="button">Back</button>
+      <button id="floatStepBtn" type="button">Step</button>
+      <button id="floatPlayBtn" type="button">Play</button>
+      <button id="floatPauseBtn" class="secondary" type="button">Pause</button>
+      <button id="floatResetBtn" class="danger" type="button">Reset</button>
+    </div>
+  </div>
+
   <div class="shell">
     <header class="hero">
       <div class="hero-copy-block">
-        <p class="eyebrow">BCS 309 Interactive Teaching Tool</p>
+        <p class="eyebrow">Graph Algorithms Studio</p>
+        <div class="hero-mode-row">
+          <span class="mode-pill">Standalone Submission</span>
+        </div>
         <h1>DFS, Topological Sort, and Cycle Detection</h1>
         <p class="hero-copy">
-          One DFS engine, three connected ideas: search deeply, classify edges, detect cycles,
-          and produce a topological order when the graph is a DAG.
+          One self-contained teaching tool for depth-first search, finish-order reasoning, topological sorting, and
+          cycle proof. The controls stay visible on the left while the full visualization workspace remains on the right.
         </p>
       </div>
       <div class="hero-meta">
         <div class="hero-badges">
-          <span>Pure HTML/CSS/JS</span>
-          <span>Single-file deploy target</span>
+          <span>Single-file artifact</span>
+          <span>DFS + Topo + Cycle</span>
           <span>GitHub Pages ready</span>
         </div>
         <div class="hero-stats">
           <div class="hero-stat">
-            <span>Teaching modes</span>
-            <strong>3 linked views</strong>
+            <span>Mode</span>
+            <strong>Standalone teaching tool</strong>
           </div>
           <div class="hero-stat">
-            <span>Live focus</span>
-            <strong>search, ordering, proof</strong>
+            <span>Focus</span>
+            <strong>search, complexity, DP on DAGs</strong>
           </div>
         </div>
       </div>
     </header>
 
     <main class="dashboard">
-      <aside class="panel controls-panel">
+      <div class="controls-dock" id="controlsDock">
+        <button id="controlsToggleBtn" class="controls-tab" type="button" aria-expanded="false" aria-controls="controlsPanel">
+          <span class="controls-tab-label">Controls</span>
+          <span class="controls-tab-state" id="controlsTabState">Open</span>
+        </button>
+
+        <aside class="panel controls-panel" id="controlsPanel">
         <div class="panel-head">
           <h2>Controls</h2>
           <p>Build a graph, choose the lesson mode, and drive DFS step by step without losing the teaching context.</p>
         </div>
 
         <div class="controls-body">
-          <section class="control-section">
-            <div class="section-label">Mode Selection</div>
+          <section class="control-section control-section-emphasis">
+            <div class="section-label">Session Controls</div>
             <div class="mode-row" id="modeRow"></div>
-          </section>
-
-          <section class="control-section">
-            <div class="section-label">Graph Setup</div>
-            <div class="field">
-              <label for="graphInput">Directed graph adjacency list</label>
-              <textarea id="graphInput" spellcheck="false"></textarea>
-              <p class="field-note">Format: <code>Node: Neighbor1 Neighbor2</code>. One node per line.</p>
-            </div>
-
-            <div class="field">
-              <label>Preset graphs</label>
-              <div class="preset-grid" id="presetGrid"></div>
-              <div class="preset-note" id="presetNote"></div>
-            </div>
 
             <div class="split control-split">
               <div class="field">
@@ -114,40 +123,56 @@ __INLINE_STYLE__
                 <select id="startNode"></select>
               </div>
             </div>
-          </section>
 
-          <section class="control-section">
-            <div class="section-label">Playback Actions</div>
-            <div class="button-grid">
+            <div class="button-grid button-grid-primary">
               <button id="buildBtn">Build Steps</button>
-              <button id="stepBackBtn" class="secondary">Step Back</button>
               <button id="stepBtn">Step</button>
               <button id="playBtn">Play</button>
               <button id="pauseBtn" class="secondary">Pause</button>
-              <button id="skipBtn" class="secondary">Skip End</button>
               <button id="resetBtn" class="danger">Reset</button>
             </div>
-          </section>
 
-          <section class="control-section">
-            <div class="section-label">Guided Support</div>
-            <div class="assist-row">
-              <button id="startPracticeBtn" class="secondary" type="button">Guided Practice</button>
+            <div class="button-grid button-grid-secondary">
+              <button id="stepBackBtn" class="secondary">Step Back</button>
+              <button id="skipBtn" class="secondary">Skip End</button>
+            </div>
+
+            <p class="control-note">The required controls stay in the first row. Extra navigation helpers remain below without changing the main playback flow.</p>
+
+            <div class="assist-inline">
+              <div class="assist-copy">
+                <strong>Guided practice</strong>
+                <span>Walk the interface step by step without leaving the single-page view.</span>
+              </div>
+              <button id="startPracticeBtn" class="secondary" type="button">Start</button>
             </div>
           </section>
 
-          <section class="control-section">
-            <div class="section-label">Live Metrics</div>
-            <div class="stats-grid">
-              <div class="stat-pill"><span>Step</span><strong id="stepCounter">0 / 0</strong></div>
-              <div class="stat-pill"><span>Status</span><strong id="statusText">Idle</strong></div>
-              <div class="stat-pill"><span>Nodes Visited</span><strong id="nodesVisited">0</strong></div>
-              <div class="stat-pill"><span>Edges Explored</span><strong id="edgesExplored">0</strong></div>
-              <div class="stat-pill"><span>Tree Edges</span><strong id="treeEdges">0</strong></div>
-              <div class="stat-pill"><span>Back Edges</span><strong id="backEdges">0</strong></div>
-              <div class="stat-pill"><span>Components</span><strong id="componentCount">0</strong></div>
-              <div class="stat-pill"><span>Timer</span><strong id="timerValue">0</strong></div>
+          <section class="control-section control-section-input">
+            <div class="section-label">Graph Setup</div>
+            <div class="field">
+              <label for="graphInput">Directed graph adjacency list</label>
+              <textarea id="graphInput" spellcheck="false"></textarea>
+              <p class="field-note">Format: <code>Node: Neighbor1 Neighbor2</code>. Also accepts <code>Node -&gt; Neighbor</code> or <code>Node connected to Neighbor</code>. One source per line.</p>
             </div>
+
+            <div class="field">
+              <label>Preset graphs</label>
+              <div class="preset-grid" id="presetGrid"></div>
+              <div class="preset-note" id="presetNote"></div>
+            </div>
+          </section>
+
+          <section class="control-section control-section-values">
+            <div class="section-label">Branch Values</div>
+            <div class="priority-mode-row">
+              <button id="priorityRandomBtn" class="secondary" type="button">Random Each Build</button>
+              <button id="priorityManualBtn" class="secondary" type="button">Use My Values</button>
+            </div>
+            <p class="field-note" id="priorityModeNote">
+              DFS chooses between outgoing edges, so the editable values below apply to directed edge choices like <code>A -&gt; B</code>.
+            </p>
+            <div class="priority-editor" id="priorityEditor"></div>
           </section>
 
           <section class="control-section overview-section">
@@ -155,7 +180,10 @@ __INLINE_STYLE__
             <div class="overview" id="overview"></div>
           </section>
         </div>
-      </aside>
+        </aside>
+      </div>
+
+      <button id="controlsScrim" class="controls-scrim" type="button" aria-label="Close controls panel"></button>
 
       <section class="workspace">
         <section class="panel viz-panel">
@@ -172,8 +200,34 @@ __INLINE_STYLE__
           </div>
 
           <div class="viz-dashboard">
-            <div class="viz-top-grid">
-              <section class="viz-hero-card">
+            <section class="workspace-summary">
+              <div class="workspace-status-card">
+                <div class="workspace-summary-head">
+                  <span class="workspace-summary-label">Live Session</span>
+                  <p>Keep the current run state visible while you read the graph, code, and history together.</p>
+                </div>
+                <div class="workspace-status-grid">
+                  <div class="stat-pill stat-pill-emphasis"><span>Step</span><strong id="stepCounter">0 / 0</strong></div>
+                  <div class="stat-pill stat-pill-emphasis"><span>Status</span><strong id="statusText">Idle</strong></div>
+                </div>
+                <div class="workspace-status-detail">
+                  <span>Current step detail</span>
+                  <p id="statusDetail">Build steps to prepare the walkthrough.</p>
+                </div>
+              </div>
+
+              <div class="workspace-metrics-grid">
+                <div class="stat-pill"><span>Nodes Visited</span><strong id="nodesVisited">0</strong></div>
+                <div class="stat-pill"><span>Edges Explored</span><strong id="edgesExplored">0</strong></div>
+                <div class="stat-pill"><span>Tree Edges</span><strong id="treeEdges">0</strong></div>
+                <div class="stat-pill"><span>Back Edges</span><strong id="backEdges">0</strong></div>
+                <div class="stat-pill"><span>Components</span><strong id="componentCount">0</strong></div>
+                <div class="stat-pill"><span>Timer</span><strong id="timerValue">0</strong></div>
+              </div>
+            </section>
+
+            <div class="workspace-grid">
+              <section class="viz-hero-card graph-card">
                 <div class="legend-strip">
                   <div class="legend">
                     <span><i class="swatch node-white"></i>WHITE</span>
@@ -188,13 +242,21 @@ __INLINE_STYLE__
                     <span><strong>1-5</strong> = branch priority</span>
                   </div>
 
-                  <div class="field-note viz-note">
+                  <div class="field-note viz-note" id="branchRuleNote">
                     DFS selection rule for this teaching view: each build assigns randomized branch priorities <code>1-5</code>, orders <code>Adj[u]</code> by that priority, then DFS recurses into the first neighbor that is still WHITE.
                   </div>
                 </div>
 
-                <div class="graph-stage">
-                  <svg id="graphSvg" viewBox="0 0 900 470" preserveAspectRatio="xMidYMid meet" aria-label="Directed graph visualization">
+                <div class="graph-stage" id="graphStage">
+                  <div class="graph-tools">
+                    <span class="graph-tools-label">Scroll to zoom and drag to pan.</span>
+                    <div class="graph-tool-actions">
+                      <button id="graphZoomOutBtn" class="secondary graph-tool-btn" type="button" aria-label="Zoom out">-</button>
+                      <button id="graphZoomResetBtn" class="secondary graph-tool-btn graph-tool-btn-wide" type="button">Reset View</button>
+                      <button id="graphZoomInBtn" class="graph-tool-btn" type="button" aria-label="Zoom in">+</button>
+                    </div>
+                  </div>
+                  <svg id="graphSvg" viewBox="0 0 1160 620" preserveAspectRatio="xMidYMid meet" aria-label="Directed graph visualization">
                     <defs>
                       <marker id="arrow-default" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
                         <polygon points="0 0, 10 4, 0 8"></polygon>
@@ -219,159 +281,187 @@ __INLINE_STYLE__
                 </div>
               </section>
 
-              <div class="viz-side-rail">
-                <div class="info-grid side-stack" id="topologyCluster">
-                  <div class="subpanel" id="topoPanel">
-                    <div class="subpanel-head">
-                      <h3>Topological Order</h3>
+              <section class="subpanel companion-panel" id="depthPanel">
+                <div class="subpanel-head">
+                  <h3>Depth Map</h3>
+                  <p id="depthSummary">The x-axis shows recursion depth. The y-axis shows discovery order.</p>
+                </div>
+                <div class="panel-frame depth-frame panel-frame-tight">
+                  <svg id="depthSvg" viewBox="0 0 620 320" preserveAspectRatio="xMidYMid meet"></svg>
+                </div>
+                <div class="companion-context hidden" id="topologyCluster">
+                  <div class="panel-frame context-frame hidden" id="topoPanel">
+                    <div class="context-head">
+                      <h4>Topological Order</h4>
                       <p>Vertices are added to the front as they finish.</p>
                     </div>
                     <div class="topo-row" id="topoRow"></div>
                   </div>
 
-                  <div class="subpanel" id="cyclePanel">
-                    <div class="subpanel-head">
-                      <h3>Cycle Detection Proof</h3>
-                      <p>A directed cycle exists exactly when DFS finds a back edge to a GRAY ancestor.</p>
+                  <div class="panel-frame context-frame dag-panel hidden" id="dagPanel">
+                    <div class="context-head">
+                      <h4>Dynamic Programming on a DAG</h4>
+                      <p>CLO-3: topological order creates a safe processing order for one-pass dynamic programming.</p>
                     </div>
-                    <div class="callout" id="cycleCallout">No back edge has been found yet.</div>
+                    <div class="dag-summary" id="dagSummary">Run topological sort on a DAG to populate this panel.</div>
+                    <div class="dag-table-wrap">
+                      <table class="dag-table">
+                        <thead>
+                          <tr>
+                            <th>Step</th>
+                            <th>Node</th>
+                            <th>Best Dist.</th>
+                            <th>Parent</th>
+                            <th>Why It Changed</th>
+                          </tr>
+                        </thead>
+                        <tbody id="dagTableBody"></tbody>
+                      </table>
+                    </div>
+                    <div class="callout dag-callout" id="dagCallout">
+                      Dynamic programming works here because every node is processed only after all of its incoming prerequisites have already been considered.
+                    </div>
                   </div>
                 </div>
+              </section>
 
-                <div class="subpanel dag-panel" id="dagPanel">
-                  <div class="subpanel-head">
-                    <h3>DAG Dynamic Programming</h3>
-                    <p>Topological order lets us solve longest path on a DAG by processing prerequisites first.</p>
-                  </div>
-                  <div class="dag-summary" id="dagSummary">Run topological sort on a DAG to populate this panel.</div>
+              <section class="subpanel support-card" id="stackPanel">
+                <div class="subpanel-head">
+                  <h3>DFS Recursion Stack</h3>
+                  <p id="stackDepthLabel">Depth 0</p>
                 </div>
-              </div>
-            </div>
-
-            <div class="analysis-grid">
-              <div class="info-grid duo-grid" id="stackDepthCluster">
-                <div class="subpanel" id="stackPanel">
-                  <div class="subpanel-head">
-                    <h3>DFS Recursion Stack</h3>
-                    <p id="stackDepthLabel">Depth 0</p>
-                  </div>
+                <div class="panel-frame">
                   <div class="stack-list" id="stackList"></div>
                 </div>
+              </section>
 
-                <div class="subpanel" id="depthPanel">
-                  <div class="subpanel-head">
-                    <h3>Depth Map</h3>
-                    <p id="depthSummary">The x-axis shows recursion depth. The y-axis shows discovery order.</p>
-                  </div>
-                  <svg id="depthSvg" viewBox="0 0 420 240" preserveAspectRatio="xMidYMid meet"></svg>
+              <section class="subpanel support-card" id="cyclePanel">
+                <div class="subpanel-head">
+                  <h3>Cycle Detection Proof</h3>
+                  <p>A directed cycle exists exactly when DFS finds a back edge to a GRAY ancestor.</p>
                 </div>
-              </div>
+                <div class="panel-frame">
+                  <div class="callout" id="cycleCallout">No back edge has been found yet.</div>
+                </div>
+              </section>
 
-              <div class="info-grid duo-grid" id="scanIntervalCluster">
-                <div class="subpanel" id="scanPanel">
-                  <div class="subpanel-head">
-                    <h3>Adjacency Scan</h3>
-                    <p>DFS picks the first WHITE neighbor in adjacency-list order, then recurses immediately.</p>
-                  </div>
+              <section class="subpanel support-card" id="scanPanel">
+                <div class="subpanel-head">
+                  <h3>Adjacency Scan</h3>
+                  <p>DFS picks the first WHITE neighbor in adjacency-list order, then recurses immediately.</p>
+                </div>
+                <div class="panel-frame">
                   <div class="scan-summary" id="scanSummary">Build steps to inspect the active adjacency list.</div>
                   <div class="scan-row" id="scanRow"></div>
-                </div>
-
-                <div class="subpanel" id="intervalPanel">
-                  <div class="subpanel-head">
-                    <h3>Parenthesis Theorem</h3>
-                    <p>Intervals are either nested or disjoint. They never partially overlap.</p>
+                  <div class="search-impact" id="searchImpact">
+                    DFS is a searching strategy: changing adjacency order can change the DFS tree, timestamps, and when a cycle witness appears, but it does not change the reachability facts already present in the graph.
                   </div>
+                </div>
+              </section>
+
+              <section class="subpanel support-card" id="intervalPanel">
+                <div class="subpanel-head">
+                  <h3>Parenthesis Theorem</h3>
+                  <p>Intervals are either nested or disjoint. They never partially overlap.</p>
+                </div>
+                <div class="panel-frame panel-frame-tight">
                   <svg id="intervalSvg" viewBox="0 0 420 220" preserveAspectRatio="xMidYMid meet"></svg>
                 </div>
-              </div>
-            </div>
+              </section>
 
-            <div class="code-layout" id="codeExplainCluster">
-              <div class="subpanel code-panel" id="codePanel">
+              <section class="subpanel support-card code-panel" id="codePanel">
                 <div class="subpanel-head">
                   <h3>Pseudocode</h3>
                   <p id="codeHoverTip">Hover a line for the teaching note. The active line is highlighted during playback.</p>
                 </div>
-                <div class="pseudocode" id="pseudocode"></div>
-              </div>
-              <div class="subpanel explanation-panel" id="explainPanel">
+                <div class="panel-frame">
+                  <div class="pseudocode" id="pseudocode"></div>
+                </div>
+              </section>
+
+              <section class="subpanel support-card explanation-panel" id="explainPanel">
                 <div class="subpanel-head">
                   <h3>Step Explanation</h3>
                   <p>Plain-English explanation with the actual values from the current step.</p>
                 </div>
-                <div class="explanation" id="explanationBox">Build steps to begin.</div>
-              </div>
+                <div class="panel-frame">
+                  <div class="explanation" id="explanationBox">Build steps to begin.</div>
+                </div>
+              </section>
+              
+              <section class="panel history-panel" id="historySection">
+                <div class="panel-head">
+                  <h2>Step History</h2>
+                  <p>Last 25 steps. Click any row to jump directly to that saved state.</p>
+                </div>
+                <div class="panel-frame history-frame">
+                  <div class="history-wrap">
+                    <table class="history-table">
+                      <thead>
+                        <tr>
+                          <th>#</th>
+                          <th>Type</th>
+                          <th>Focus</th>
+                          <th>Explanation</th>
+                        </tr>
+                      </thead>
+                      <tbody id="historyBody"></tbody>
+                    </table>
+                  </div>
+                </div>
+              </section>
+
+              <section class="panel complexity-panel" id="complexitySection">
+                <div class="panel-head">
+                  <h2>Complexity Analysis</h2>
+                  <p>CLO-1: show why DFS stays linear in the size of the graph, and compare its growth with BFS.</p>
+                </div>
+
+                <div class="panel-frame complexity-frame">
+                  <div class="complexity-body">
+                    <div class="split chart-controls">
+                      <div class="field">
+                        <label for="vertexSlider">Vertices V <span id="vertexLabel">8</span></label>
+                        <input id="vertexSlider" type="range" min="2" max="32" value="8">
+                      </div>
+                      <div class="field">
+                        <label for="edgeSlider">Edges E <span id="edgeLabel">10</span></label>
+                        <input id="edgeSlider" type="range" min="1" max="120" value="10">
+                      </div>
+                    </div>
+
+                    <div class="chart-frame">
+                      <svg id="complexitySvg" viewBox="0 0 960 280" preserveAspectRatio="xMidYMid meet"></svg>
+                    </div>
+
+                    <div class="complexity-grid">
+                      <div class="subpanel">
+                        <div class="subpanel-head">
+                          <h3>Current Estimates</h3>
+                          <p>Based on the sliders above.</p>
+                        </div>
+                        <div class="metric-list" id="complexityMetrics"></div>
+                      </div>
+                      <div class="subpanel">
+                        <div class="subpanel-head">
+                          <h3>Cases, Space, and Why This Matters</h3>
+                          <p>Use this section for CLO-1 and CLO-2: complexity, search-order impact, and the DP/topological connection.</p>
+                        </div>
+                        <div class="complexity-note" id="complexityTheory">
+                          DFS marks each vertex once and scans each adjacency list once, so its work is <code>O(V + E)</code>.
+                          BFS does the same counting with a queue, so it is also <code>O(V + E)</code>. What changes is the search order,
+                          the frontier structure, and the order in which timestamps, DFS trees, and topo output appear.
+                        </div>
+                        <div class="complexity-case-grid" id="complexityCaseGrid"></div>
+                        <div class="callout" id="worstCaseNote">Load the worst-case preset to connect the dense graph shape to the largest edge-scan count.</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </section>
             </div>
           </div>
         </section>
-
-        <div class="workspace-footer">
-          <section class="panel history-panel" id="historySection">
-            <div class="panel-head">
-              <h2>Step History</h2>
-              <p>Last 25 steps. Click any row to jump directly to that saved state.</p>
-            </div>
-            <div class="history-wrap">
-              <table class="history-table">
-                <thead>
-                  <tr>
-                    <th>#</th>
-                    <th>Type</th>
-                    <th>Focus</th>
-                    <th>Explanation</th>
-                  </tr>
-                </thead>
-                <tbody id="historyBody"></tbody>
-              </table>
-            </div>
-          </section>
-
-          <section class="panel complexity-panel" id="complexitySection">
-            <div class="panel-head">
-              <h2>Complexity Analysis</h2>
-              <p>CLO-1: show why DFS stays linear in the size of the graph, and compare its growth with BFS.</p>
-            </div>
-
-            <div class="complexity-body">
-              <div class="split chart-controls">
-                <div class="field">
-                  <label for="vertexSlider">Vertices V <span id="vertexLabel">8</span></label>
-                  <input id="vertexSlider" type="range" min="2" max="32" value="8">
-                </div>
-                <div class="field">
-                  <label for="edgeSlider">Edges E <span id="edgeLabel">10</span></label>
-                  <input id="edgeSlider" type="range" min="1" max="120" value="10">
-                </div>
-              </div>
-
-              <div class="chart-frame">
-                <svg id="complexitySvg" viewBox="0 0 960 280" preserveAspectRatio="xMidYMid meet"></svg>
-              </div>
-
-              <div class="complexity-grid">
-                <div class="subpanel">
-                  <div class="subpanel-head">
-                    <h3>Current Estimates</h3>
-                    <p>Based on the sliders above.</p>
-                  </div>
-                  <div class="metric-list" id="complexityMetrics"></div>
-                </div>
-                <div class="subpanel">
-                  <div class="subpanel-head">
-                    <h3>Why DFS and BFS Match Asymptotically</h3>
-                    <p>They scan the same vertices and edges, but maintain different frontier structures.</p>
-                  </div>
-                  <div class="complexity-note">
-                    DFS marks each vertex once and scans each adjacency list once, so its work is <code>O(V + E)</code>.
-                    BFS does the same counting with a queue, so it is also <code>O(V + E)</code>. The difference is not growth order;
-                    it is the search pattern and the frontier data structure.
-                  </div>
-                </div>
-              </div>
-            </div>
-          </section>
-        </div>
       </section>
     </main>
   </div>

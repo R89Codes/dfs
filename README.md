@@ -1,16 +1,18 @@
 # DFS, Topological Sort, and Cycle Detection Tool
 
-This project keeps the source readable in small files but produces the required single-file deliverable for GitHub Pages.
+This project keeps the source readable in small files while deploying one branded GitHub Pages app with a shared home screen, a single-page mode, and a multi-page mode.
 
 ## Files
 
-- `src/template.html`: page structure and inline placeholders
-- `src/styles.css`: styling for the dark two-column teaching UI
+- `src/template.html`: page structure and inline placeholders for `single.html`
+- `src/styles.css`: styling for the single-page teaching UI
 - `src/content.js`: presets, pseudocode, and educational content
 - `src/app.js`: graph parsing, DFS step engine, rendering, and controls
-- `scripts/build-single-html.sh`: assembles the final single `index.html`
+- `brand.css`: shared brand tokens and back-navigation shell
+- `scripts/build-single-html.sh`: assembles the final `single.html`
 - `scripts/sync-multipage-root.sh`: copies the multi-page guide into root-level GitHub Pages files
-- `index.html`: generated deploy target
+- `index.html`: shared home / welcome screen
+- `single.html`: generated single-page mode
 - `multipage/`: alternate multi-page version with separate DFS, topo, and cycle pages
 - `guide.html`, `dfs.html`, `topo.html`, `cycle.html`: root-level multi-page guide entry points for GitHub Pages
 
@@ -33,7 +35,7 @@ node tests/smoke-test.js
 
 ## Run
 
-Single-page version:
+Home screen:
 
 ```bash
 python3 -m http.server 8000
@@ -45,7 +47,13 @@ Then open:
 cmd.exe /C start http://localhost:8000/index.html
 ```
 
-Multi-page version:
+Single-page mode:
+
+```bash
+cmd.exe /C start http://localhost:8000/single.html
+```
+
+Multi-page source version:
 
 ```bash
 cmd.exe /C start http://localhost:8000/multipage/index.html
@@ -66,10 +74,11 @@ cmd.exe /C start http://localhost:8000/guide.html
 ## Deploy on GitHub Pages
 
 1. Push the project to a GitHub repository.
-2. Keep the generated `index.html` at the repository root for the single-page version.
-3. Keep `guide.html`, `dfs.html`, `topo.html`, `cycle.html`, `guide-styles.css`, `guide-data.js`, and `guide-app.js` at the repository root for the multi-page version.
-4. In GitHub, open `Settings -> Pages`.
-5. Set the source to deploy from the main branch root.
+2. Keep `index.html` at the repository root as the shared landing page.
+3. Keep the generated `single.html` at the repository root for the single-page mode.
+4. Keep `guide.html`, `dfs.html`, `topo.html`, `cycle.html`, `guide-styles.css`, `guide-data.js`, and `guide-app.js` at the repository root for the multi-page mode.
+5. In GitHub, open `Settings -> Pages`.
+6. Set the source to deploy from the main branch root.
 
 ## Teaching Checklist
 

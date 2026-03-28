@@ -236,7 +236,7 @@ const APP_CONTENT = {
       },
       {
         id: 'code',
-        target: '#codeExplainCluster',
+        target: '#codePanel',
         title: 'Connect State to Pseudocode',
         body: 'The pseudocode highlight and the explanation box are synced to the current DFS step. Use them when students ask what the algorithm is doing right now.'
       }
@@ -360,10 +360,22 @@ const APP_CONTENT = {
             "<div class=\"detail-body\"><p>DFS is <strong>O(V + E)</strong> because each vertex is discovered once and each directed edge is examined once from its adjacency list. Discovery and finish times create intervals <code>[d[u], f[u]]</code> that are either nested or disjoint. That is the parenthesis theorem.</p></div>"
         },
         {
+          title: "CLO-2: DFS as Searching",
+          open: false,
+          body:
+            "<div class=\"detail-body\"><p>DFS is not just recursion for its own sake. It is a <strong>depth-first searching strategy</strong>: when the current node has several outgoing choices, DFS commits to one branch, keeps going deeper, and only backtracks when no WHITE neighbor remains.</p><p>Changing adjacency order can change the DFS forest, discovery/finish times, and the order in which evidence appears. What does <strong>not</strong> change is the graph itself, the reachability facts, or the proof rule that a GRAY back edge witnesses a cycle.</p></div>"
+        },
+        {
           title: "Worked Example",
           open: false,
           body:
             "<div class=\"detail-body\"><p>Use the <strong>CLRS 22.4</strong> preset and step through it. Watch how <code>[d[v], f[v]]</code> sits inside <code>[d[u], f[u]]</code> when <code>u</code> is an ancestor of <code>v</code>.</p></div>"
+        },
+        {
+          title: "Common Mistakes",
+          open: false,
+          body:
+            "<div class=\"detail-body\"><p>Do not confuse <strong>GRAY</strong> with finished. GRAY means the node is still active on the recursion stack. Also do not assume timestamps are decoration: they are exactly what makes interval nesting and edge classification explainable.</p></div>"
         }
       ],
       topo: [
@@ -374,16 +386,28 @@ const APP_CONTENT = {
             "<div class=\"detail-body\"><p><strong>Topological sort</strong> outputs vertices in reverse finish-time order. If the graph is a DAG, every edge <code>u -> v</code> goes from an earlier vertex in the ordering to a later one.</p></div>"
         },
         {
-          title: "CLO-3: Design Paradigm",
+          title: "CLO-3: Dynamic Programming on DAGs",
           open: false,
           body:
-            "<div class=\"detail-body\"><p>DFS decomposes the graph into dependency-respecting pieces. Once you have a topological order, dynamic programming on a DAG becomes natural because every state is processed after its prerequisites. This tool shows that with longest path on a DAG.</p></div>"
+            "<div class=\"detail-body\"><p>The explicit paradigm here is <strong>dynamic programming on a DAG</strong>. DFS gives a topological order, and that order lets the tool process each node only after every prerequisite that can improve it has already been handled. The longest-path table is not an extra factoid; it is the CLO-3 paradigm demonstration.</p></div>"
         },
         {
           title: "Important Restriction",
           open: false,
           body:
             "<div class=\"detail-body\"><p>Topological sort only makes sense on a DAG. If DFS discovers a back edge, the graph has a directed cycle and no valid topological order exists.</p></div>"
+        },
+        {
+          title: "Worked Example",
+          open: false,
+          body:
+            "<div class=\"detail-body\"><p>Use the <strong>DAG / Topo</strong> preset. Build the DFS order first, then read the dynamic-programming panel row by row. Notice that each best distance is computed only after the nodes that feed into it are already settled.</p></div>"
+        },
+        {
+          title: "Common Mistakes",
+          open: false,
+          body:
+            "<div class=\"detail-body\"><p>A common mistake is to treat the topological order as the final goal. For CLO-3, the important point is <strong>why</strong> that order matters: it turns the DAG into a valid one-pass dynamic-programming schedule. In a cyclic graph, this schedule does not exist.</p></div>"
         }
       ],
       cycle: [
@@ -404,6 +428,12 @@ const APP_CONTENT = {
           open: false,
           body:
             "<div class=\"detail-body\"><p>Use the <strong>Has Cycle</strong> preset. When DFS reaches <code>D -> A</code>, vertex <code>A</code> is still GRAY, so the tool can show the proof path <code>A -> B -> D -> A</code>.</p></div>"
+        },
+        {
+          title: "Common Mistakes",
+          open: false,
+          body:
+            "<div class=\"detail-body\"><p>Do not call every edge to an already seen vertex a cycle. A cycle proof needs a <strong>back edge to a GRAY ancestor</strong>. Forward and cross edges point to BLACK vertices and do not by themselves prove a directed cycle.</p></div>"
         }
       ]
     };

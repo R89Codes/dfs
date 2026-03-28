@@ -3,10 +3,18 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Cycle Detection Guide</title>
+  <title>Graph Algorithms Studio - Multi Page Cycle Detection</title>
+  <link rel="stylesheet" href="../brand.css">
   <link rel="stylesheet" href="styles.css">
 </head>
-<body class="guide-page" data-mode="cycle">
+<body class="guide-page with-app-back" data-mode="cycle">
+  <a class="app-back-link" href="../index.html" aria-label="Return to home screen">
+    <svg viewBox="0 0 24 24" role="img" focusable="false" aria-hidden="true">
+      <path d="M10 6L4 12l6 6"></path>
+      <path d="M4 12h9a7 7 0 0 0 7-7"></path>
+    </svg>
+    <span>Home</span>
+  </a>
   <div class="floating-tools">
     <button id="topTutorialBtn" class="tutorial-launcher" type="button" aria-label="Open tutorial">
       <span class="tutorial-launcher-icon" aria-hidden="true">
@@ -46,11 +54,12 @@
     <header class="page-hero">
       <div>
         <p class="guide-kicker">Graph Algorithms Studio</p>
+        <p class="mode-pill">Multi Page Mode</p>
         <h1>Cycle Detection</h1>
         <p class="guide-copy">This page focuses on the back-edge proof: an edge to a GRAY ancestor closes a directed cycle on the active stack.</p>
       </div>
       <nav class="guide-nav">
-        <a href="index.html">Home</a>
+        <a href="index.html">Overview</a>
         <a href="dfs.html">DFS</a>
         <a href="topo.html">Topo</a>
         <a href="cycle.html" class="active">Cycle</a>
