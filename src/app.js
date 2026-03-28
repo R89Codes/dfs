@@ -5,6 +5,27 @@
   const MAX_HISTORY = 25;
   const NODE_RADIUS = 24;
   const PLAY_BASE_MS = 900;
+  const FILTER_STORAGE_KEY = 'dfs-single-filters-v1';
+  const FILTER_TARGETS = {
+    overview: ['#overview'],
+    topology: ['#topologyCluster'],
+    stackDepth: ['#stackDepthCluster'],
+    scanInterval: ['#scanIntervalCluster'],
+    dag: ['#dagPanel'],
+    codeExplain: ['#codeExplainCluster'],
+    history: ['#historySection'],
+    complexity: ['#complexitySection']
+  };
+  const ESSENTIAL_FILTERS = {
+    overview: false,
+    topology: true,
+    stackDepth: true,
+    scanInterval: true,
+    dag: false,
+    codeExplain: true,
+    history: false,
+    complexity: false
+  };
 
   const state = {
     mode: 'dfs',
@@ -18,7 +39,35 @@
     history: [],
     status: 'Idle',
     codeHoverTip: 'Hover a line for the teaching note. The active line is highlighted during playback.',
-    visuals: createEmptyVisuals()
+    visuals: createEmptyVisuals(),
+    panelFilters: {
+      overview: true,
+      topology: true,
+      stackDepth: true,
+      scanInterval: true,
+      dag: true,
+      codeExplain: true,
+      history: true,
+      complexity: true
+    },
+    tour: {
+      steps: [],
+      index: 0,
+      active: false,
+      mode: 'idle',
+      actionSatisfied: false,
+      overlay: null,
+      spotlight: null,
+      card: null,
+      title: null,
+      body: null,
+      counter: null,
+      nextBtn: null,
+      backBtn: null,
+      skipBtn: null,
+      highlighted: null,
+      masks: {}
+    }
   };
 
   const dom = {
@@ -36,6 +85,14 @@
     pauseBtn: document.getElementById('pauseBtn'),
     skipBtn: document.getElementById('skipBtn'),
     resetBtn: document.getElementById('resetBtn'),
+    topTutorialBtn: document.getElementById('topTutorialBtn'),
+    topFilterBtn: document.getElementById('topFilterBtn'),
+    topFilterMenu: document.getElementById('topFilterMenu'),
+    startTourBtn: document.getElementById('startTourBtn'),
+    startPracticeBtn: document.getElementById('startPracticeBtn'),
+    showEssentialsBtn: document.getElementById('showEssentialsBtn'),
+    showAllBtn: document.getElementById('showAllBtn'),
+    filterGrid: document.getElementById('filterGrid'),
     overview: document.getElementById('overview'),
     graphSvg: document.getElementById('graphSvg'),
     topoPanel: document.getElementById('topoPanel'),
@@ -147,12 +204,15 @@
     buildModeButtons();
     buildPresetButtons();
     bindEvents();
+    initializeFilters();
+    initializeTour();
     loadPreset(APP_CONTENT.presets[0].id, true);
     renderOverview();
     renderPseudocode();
     updateSpeedLabel();
     drawComplexityChart();
     buildSteps();
+    showTourWelcome();
   }
 
   function buildModeButtons() {
@@ -187,6 +247,33 @@
     dom.pauseBtn.addEventListener('click', pause);
     dom.skipBtn.addEventListener('click', skipToEnd);
     dom.resetBtn.addEventListener('click', resetPlayback);
+    if (dom.topTutorialBtn) {
+      dom.topTutorialBtn.addEventListener('click', showTourWelcome);
+    }
+    if (dom.topFilterBtn) {
+      dom.topFilterBtn.addEventListener('click', (event) => {
+        event.stopPropagation();
+        setFilterMenuOpen(!isFilterMenuOpen());
+      });
+    }
+    if (dom.topFilterMenu) {
+      dom.topFilterMenu.addEventListener('click', (event) => event.stopPropagation());
+    }
+    if (dom.startTourBtn) {
+      dom.startTourBtn.addEventListener('click', showTourWelcome);
+    }
+    if (dom.startPracticeBtn) {
+      dom.startPracticeBtn.addEventListener('click', () => startPractice(true));
+    }
+    if (dom.showEssentialsBtn) {
+      dom.showEssentialsBtn.addEventListener('click', () => {
+        applyFilterPreset(ESSENTIAL_FILTERS);
+        notifyTourAction('filter:essentials');
+      });
+    }
+    if (dom.showAllBtn) {
+      dom.showAllBtn.addEventListener('click', () => applyFilterPreset(allFilters(true)));
+    }
     dom.speed.addEventListener('input', updateSpeedLabel);
     dom.vertexSlider.addEventListener('input', drawComplexityChart);
     dom.edgeSlider.addEventListener('input', drawComplexityChart);
@@ -196,10 +283,455 @@
       dom.presetNote.textContent = 'Custom graph detected. Build steps when you are ready.';
       syncStartNodesFromText();
     });
+    if (typeof document.addEventListener === 'function') {
+      document.addEventListener('click', handleDocumentClick);
+      document.addEventListener('keydown', handleDocumentKeydown);
+    }
+  }
+
+  function initializeFilters() {
+    const stored = safeReadJSON(FILTER_STORAGE_KEY);
+    if (stored) {
+      state.panelFilters = { ...state.panelFilters, ...stored };
+    }
+
+    const labels = dom.filterGrid ? Array.from(dom.filterGrid.children) : [];
+    labels.forEach((label) => {
+      const input = label.children && label.children[0];
+      if (!input || !input.dataset || !input.dataset.filterKey) {
+        return;
+      }
+      const key = input.dataset.filterKey;
+      input.checked = state.panelFilters[key] !== false;
+      input.addEventListener('change', () => {
+        state.panelFilters[key] = input.checked;
+        applyFilters();
+      });
+    });
+
+    applyFilters();
+  }
+
+  function applyFilterPreset(preset) {
+    state.panelFilters = { ...state.panelFilters, ...preset };
+    const labels = dom.filterGrid ? Array.from(dom.filterGrid.children) : [];
+    labels.forEach((label) => {
+      const input = label.children && label.children[0];
+      if (!input || !input.dataset || !input.dataset.filterKey) {
+        return;
+      }
+      input.checked = state.panelFilters[input.dataset.filterKey] !== false;
+    });
+    applyFilters();
+  }
+
+  function applyFilters() {
+    Object.entries(FILTER_TARGETS).forEach(([key, selectors]) => {
+      const shouldShow = state.panelFilters[key] !== false;
+      selectors.forEach((selector) => {
+        const target = document.querySelector ? document.querySelector(selector) : null;
+        if (target) {
+          target.classList.toggle('is-hidden-filter', !shouldShow);
+        }
+      });
+    });
+
+    safeWriteJSON(FILTER_STORAGE_KEY, state.panelFilters);
+  }
+
+  function initializeTour() {
+    if (!document.body) {
+      return;
+    }
+
+    const overlay = document.createElement('div');
+    overlay.className = 'tour-overlay';
+    overlay.innerHTML = `
+      <div class="tour-mask" id="tourMaskTop"></div>
+      <div class="tour-mask" id="tourMaskRight"></div>
+      <div class="tour-mask" id="tourMaskBottom"></div>
+      <div class="tour-mask" id="tourMaskLeft"></div>
+      <div class="tour-spotlight" id="tourSpotlight"></div>
+      <div class="tour-card" role="dialog" aria-modal="true" aria-live="polite">
+        <p class="tour-step" id="tourStepCount">Guided Tour</p>
+        <h3 id="tourTitle">Tour</h3>
+        <p id="tourBody">Walk through the interface step by step.</p>
+        <div class="tour-actions">
+          <button type="button" id="tourBackBtn" class="secondary">Back</button>
+          <button type="button" id="tourNextBtn">Next</button>
+          <button type="button" id="tourSkipBtn" class="secondary">Skip</button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(overlay);
+
+    state.tour.overlay = overlay;
+    state.tour.card = overlay.querySelector('.tour-card');
+    state.tour.spotlight = overlay.querySelector('#tourSpotlight');
+    state.tour.counter = overlay.querySelector('#tourStepCount');
+    state.tour.title = overlay.querySelector('#tourTitle');
+    state.tour.body = overlay.querySelector('#tourBody');
+    state.tour.backBtn = overlay.querySelector('#tourBackBtn');
+    state.tour.nextBtn = overlay.querySelector('#tourNextBtn');
+    state.tour.skipBtn = overlay.querySelector('#tourSkipBtn');
+    state.tour.masks = {
+      top: overlay.querySelector('#tourMaskTop'),
+      right: overlay.querySelector('#tourMaskRight'),
+      bottom: overlay.querySelector('#tourMaskBottom'),
+      left: overlay.querySelector('#tourMaskLeft')
+    };
+
+    state.tour.backBtn.addEventListener('click', previousTourStep);
+    state.tour.nextBtn.addEventListener('click', nextTourStep);
+    state.tour.skipBtn.addEventListener('click', stopTour);
+    window.addEventListener('scroll', handleTourViewportChange, { passive: true });
+    window.addEventListener('resize', handleTourViewportChange);
+  }
+
+  function getTourSteps() {
+    return [
+      ...APP_CONTENT.tours.common,
+      ...(APP_CONTENT.tours[state.mode] || [])
+    ];
+  }
+
+  function getPracticeSteps() {
+    return [
+      ...APP_CONTENT.practice.common,
+      ...(APP_CONTENT.practice[state.mode] || [])
+    ];
+  }
+
+  function startTour(forceRestart) {
+    if (!state.tour.overlay) {
+      return;
+    }
+    setFilterMenuOpen(false);
+    applyFilterPreset(allFilters(true));
+    state.tour.steps = getTourSteps();
+    state.tour.index = 0;
+    state.tour.active = true;
+    state.tour.mode = 'tour';
+    state.tour.actionSatisfied = false;
+    state.tour.overlay.classList.add('open');
+    renderTourStep();
+  }
+
+  function startPractice(forceRestart) {
+    if (!state.tour.overlay) {
+      return;
+    }
+    setFilterMenuOpen(false);
+    applyFilterPreset(ESSENTIAL_FILTERS);
+    state.tour.steps = getPracticeSteps();
+    state.tour.index = 0;
+    state.tour.active = true;
+    state.tour.mode = 'practice';
+    state.tour.actionSatisfied = false;
+    state.tour.overlay.classList.add('open');
+    renderTourStep();
+  }
+
+  function showTourWelcome() {
+    if (!state.tour.overlay) {
+      return;
+    }
+    setFilterMenuOpen(false);
+    state.tour.active = true;
+    state.tour.mode = 'welcome';
+    state.tour.overlay.classList.add('open');
+    clearSpotlight();
+    state.tour.counter.textContent = 'Welcome';
+    state.tour.title.textContent = 'Quick Tour or Explore?';
+    state.tour.body.textContent = 'Choose Quick Tour if you want the interface explained step by step. Choose Explore if you want to use the page freely and start the tour later from the Tutorial button in the top-right corner.';
+    state.tour.backBtn.style.display = 'none';
+    state.tour.nextBtn.textContent = 'Quick Tour';
+    state.tour.skipBtn.textContent = 'I Want to Explore';
+  }
+
+  function stopTour() {
+    if (!state.tour.overlay) {
+      return;
+    }
+    if (state.tour.highlighted) {
+      state.tour.highlighted.classList.remove('tour-target-active');
+    }
+    state.tour.active = false;
+    state.tour.mode = 'idle';
+    state.tour.actionSatisfied = false;
+    state.tour.highlighted = null;
+    state.tour.overlay.classList.remove('open');
+    clearSpotlight();
+    if (dom.topTutorialBtn) {
+      dom.topTutorialBtn.focus();
+    } else if (dom.startTourBtn) {
+      dom.startTourBtn.focus();
+    }
+  }
+
+  function nextTourStep() {
+    if (!state.tour.active) {
+      return;
+    }
+    if (state.tour.mode === 'welcome') {
+      state.tour.backBtn.style.display = '';
+      state.tour.skipBtn.textContent = 'Skip';
+      startTour(false);
+      return;
+    }
+    if (state.tour.mode === 'practice') {
+      const step = state.tour.steps[state.tour.index];
+      if (step && step.action && !state.tour.actionSatisfied) {
+        return;
+      }
+    }
+    if (state.tour.index >= state.tour.steps.length - 1) {
+      stopTour();
+      return;
+    }
+    state.tour.index += 1;
+    state.tour.actionSatisfied = false;
+    renderTourStep();
+  }
+
+  function previousTourStep() {
+    if (!state.tour.active || state.tour.mode !== 'tour') {
+      return;
+    }
+    state.tour.index = Math.max(0, state.tour.index - 1);
+    renderTourStep();
+  }
+
+  function renderTourStep() {
+    const step = state.tour.steps[state.tour.index];
+    if (!step) {
+      stopTour();
+      return;
+    }
+
+    if (state.tour.highlighted) {
+      state.tour.highlighted.classList.remove('tour-target-active');
+      state.tour.highlighted = null;
+    }
+
+    const target = resolveTourTarget(step.target);
+    if (target) {
+      prepareTourTarget(target);
+      state.tour.highlighted = target;
+      target.classList.add('tour-target-active');
+      ensureTargetVisible(target);
+      window.setTimeout(handleTourViewportChange, 0);
+      window.setTimeout(handleTourViewportChange, 120);
+    } else {
+      state.tour.highlighted = null;
+      clearSpotlight();
+    }
+
+    state.tour.counter.textContent = `Step ${state.tour.index + 1} of ${state.tour.steps.length}`;
+    state.tour.title.textContent = step.title;
+    if (state.tour.mode === 'practice' && step.action) {
+      state.tour.body.textContent = state.tour.actionSatisfied
+        ? (step.doneText || step.body)
+        : `${step.body} ${step.waitingText || ''}`.trim();
+    } else {
+      state.tour.body.textContent = step.body;
+    }
+    state.tour.backBtn.disabled = state.tour.index === 0;
+    state.tour.backBtn.style.display = '';
+    state.tour.skipBtn.textContent = 'Skip';
+    state.tour.nextBtn.textContent = state.tour.index === state.tour.steps.length - 1 ? 'Done' : 'Next';
+    state.tour.nextBtn.disabled = state.tour.mode === 'practice' && step.action && !state.tour.actionSatisfied;
+  }
+
+  function ensureTargetVisible(target) {
+    if (typeof target.getBoundingClientRect !== 'function' || typeof target.scrollIntoView !== 'function') {
+      return;
+    }
+    const rect = target.getBoundingClientRect();
+    const marginTop = 90;
+    const marginBottom = 140;
+    const viewportHeight = window.innerHeight || 900;
+    if (rect.top < marginTop || rect.bottom > viewportHeight - marginBottom) {
+      target.scrollIntoView({ block: 'center', behavior: 'auto' });
+    }
+  }
+
+  function prepareTourTarget(target) {
+    if (!target || typeof target.closest !== 'function') {
+      return;
+    }
+    const filterMenu = target.closest('#topFilterMenu');
+    if (filterMenu) {
+      setFilterMenuOpen(true);
+    }
+  }
+
+  function updateSpotlight(target) {
+    if (!state.tour.spotlight || typeof target.getBoundingClientRect !== 'function') {
+      return;
+    }
+    const rect = target.getBoundingClientRect();
+    const padding = 12;
+    const viewportWidth = window.innerWidth || document.documentElement.clientWidth || 1280;
+    const viewportHeight = window.innerHeight || document.documentElement.clientHeight || 720;
+    const left = Math.max(8, Math.round(rect.left - padding));
+    const top = Math.max(8, Math.round(rect.top - padding));
+    const right = Math.min(viewportWidth - 8, Math.round(rect.right + padding));
+    const bottom = Math.min(viewportHeight - 8, Math.round(rect.bottom + padding));
+
+    state.tour.spotlight.style.left = `${left}px`;
+    state.tour.spotlight.style.top = `${top}px`;
+    state.tour.spotlight.style.width = `${Math.max(24, right - left)}px`;
+    state.tour.spotlight.style.height = `${Math.max(24, bottom - top)}px`;
+    state.tour.spotlight.classList.add('open');
+
+    if (!state.tour.masks) {
+      return;
+    }
+
+    const topMask = state.tour.masks.top;
+    const rightMask = state.tour.masks.right;
+    const bottomMask = state.tour.masks.bottom;
+    const leftMask = state.tour.masks.left;
+
+    if (topMask) {
+      topMask.style.left = '0px';
+      topMask.style.top = '0px';
+      topMask.style.width = `${viewportWidth}px`;
+      topMask.style.height = `${Math.max(0, top)}px`;
+    }
+    if (bottomMask) {
+      bottomMask.style.left = '0px';
+      bottomMask.style.top = `${bottom}px`;
+      bottomMask.style.width = `${viewportWidth}px`;
+      bottomMask.style.height = `${Math.max(0, viewportHeight - bottom)}px`;
+    }
+    if (leftMask) {
+      leftMask.style.left = '0px';
+      leftMask.style.top = `${top}px`;
+      leftMask.style.width = `${Math.max(0, left)}px`;
+      leftMask.style.height = `${Math.max(0, bottom - top)}px`;
+    }
+    if (rightMask) {
+      rightMask.style.left = `${right}px`;
+      rightMask.style.top = `${top}px`;
+      rightMask.style.width = `${Math.max(0, viewportWidth - right)}px`;
+      rightMask.style.height = `${Math.max(0, bottom - top)}px`;
+    }
+  }
+
+  function clearSpotlight() {
+    if (state.tour.spotlight) {
+      state.tour.spotlight.classList.remove('open');
+    }
+    if (!state.tour.masks) {
+      return;
+    }
+    Object.values(state.tour.masks).forEach((mask) => {
+      if (!mask) {
+        return;
+      }
+      mask.style.width = '0px';
+      mask.style.height = '0px';
+    });
+  }
+
+  function handleTourViewportChange() {
+    if (!state.tour.active || !state.tour.highlighted || !state.tour.spotlight) {
+      return;
+    }
+    updateSpotlight(state.tour.highlighted);
+  }
+
+  function resolveTourTarget(selector) {
+    if (!selector) {
+      return null;
+    }
+    if (selector.startsWith('#')) {
+      return document.getElementById(selector.slice(1));
+    }
+    return document.querySelector ? document.querySelector(selector) : null;
+  }
+
+  function safeWriteJSON(key, value) {
+    try {
+      if (window.localStorage) {
+        window.localStorage.setItem(key, JSON.stringify(value));
+      }
+    } catch (_error) {
+      // Ignore storage failures.
+    }
+  }
+
+  function safeReadJSON(key) {
+    try {
+      if (!window.localStorage) {
+        return null;
+      }
+      const raw = window.localStorage.getItem(key);
+      return raw ? JSON.parse(raw) : null;
+    } catch (_error) {
+      return null;
+    }
+  }
+
+  function isFilterMenuOpen() {
+    return !!(dom.topFilterMenu && dom.topFilterMenu.classList.contains('open'));
+  }
+
+  function setFilterMenuOpen(open) {
+    if (!dom.topFilterMenu) {
+      return;
+    }
+    dom.topFilterMenu.classList.toggle('open', open);
+    if (dom.topFilterBtn) {
+      dom.topFilterBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    }
+  }
+
+  function handleDocumentClick(event) {
+    if (!isFilterMenuOpen()) {
+      return;
+    }
+    const target = event.target;
+    if (dom.topFilterMenu && dom.topFilterMenu.contains(target)) {
+      return;
+    }
+    if (dom.topFilterBtn && dom.topFilterBtn.contains(target)) {
+      return;
+    }
+    setFilterMenuOpen(false);
+  }
+
+  function handleDocumentKeydown(event) {
+    if (event.key === 'Escape') {
+      setFilterMenuOpen(false);
+    }
+  }
+
+  function allFilters(value) {
+    return Object.keys(FILTER_TARGETS).reduce((acc, key) => {
+      acc[key] = value;
+      return acc;
+    }, {});
   }
 
   function updateSpeedLabel() {
     dom.speedLabel.textContent = `${Number(dom.speed.value).toFixed(2)}x`;
+  }
+
+  function notifyTourAction(actionName) {
+    if (!state.tour.active || state.tour.mode !== 'practice') {
+      return;
+    }
+    const step = state.tour.steps[state.tour.index];
+    if (!step || !step.action) {
+      return;
+    }
+    if (step.action === actionName) {
+      state.tour.actionSatisfied = true;
+      renderTourStep();
+    }
   }
 
   function setMode(modeId) {
@@ -207,6 +739,7 @@
       return;
     }
     state.mode = modeId;
+    notifyTourAction(`mode:${modeId}`);
     buildModeButtons();
     renderOverview();
     renderPseudocode();
@@ -490,6 +1023,7 @@
     state.status = `Built ${state.steps.length} steps for ${APP_CONTENT.modes[state.mode].label}`;
     updateStats();
     drawComplexityChart();
+    notifyTourAction('build');
   }
 
   function generateSteps(graph, mode, requestedStartNode) {
@@ -1633,6 +2167,7 @@
     }
 
     applyStep(state.stepIndex + 1);
+    notifyTourAction('step');
   }
 
   function stepBack() {

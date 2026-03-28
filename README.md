@@ -33,14 +33,26 @@ node tests/smoke-test.js
 Single-page version:
 
 ```bash
-explorer.exe index.html
+python3 -m http.server 8000
+```
+
+Then open:
+
+```bash
+cmd.exe /C start http://localhost:8000/index.html
 ```
 
 Multi-page version:
 
 ```bash
-explorer.exe multipage/index.html
+cmd.exe /C start http://localhost:8000/multipage/index.html
 ```
+
+## New UX Features
+
+- Guided tour overlays with `Next`, `Back`, and `Skip`
+- Single-page readability filters with `Show Essentials` and `Show All`
+- Branch-choice explanation panels showing why DFS selected the current neighbor
 
 ## Deploy on GitHub Pages
 

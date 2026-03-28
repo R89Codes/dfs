@@ -7,6 +7,41 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body class="guide-page" data-mode="topo">
+  <div class="floating-tools">
+    <button id="topTutorialBtn" class="tutorial-launcher" type="button" aria-label="Open tutorial">
+      <span class="tutorial-launcher-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" role="img" focusable="false">
+          <path d="M5 4.5C5 3.67 5.67 3 6.5 3H19v16H8a3 3 0 0 0-3 3V4.5Zm2.5.5A1.5 1.5 0 0 0 6 6.5V18.3A4.45 4.45 0 0 1 8 18h9V5H7.5ZM4 20a2 2 0 0 1 2-2h11v2H6a1 1 0 1 0 0 2h11v2H6a3 3 0 0 1-2-3Z"></path>
+        </svg>
+      </span>
+      <span>Tutorial</span>
+    </button>
+    <button id="topFilterBtn" class="tutorial-launcher filter-launcher" type="button" aria-expanded="false" aria-controls="topFilterMenu">
+      <span class="tutorial-launcher-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" role="img" focusable="false">
+          <path d="M4 6.5A1.5 1.5 0 0 1 5.5 5h13A1.5 1.5 0 0 1 20 6.5v1A1.5 1.5 0 0 1 18.5 9H13v10.5a.5.5 0 0 1-.8.4l-2-1.5a.5.5 0 0 1-.2-.4V9H5.5A1.5 1.5 0 0 1 4 7.5v-1Z"></path>
+        </svg>
+      </span>
+      <span>Filters</span>
+    </button>
+    <div id="topFilterMenu" class="filter-menu" aria-label="Layout filters">
+      <div class="filter-menu-head">
+        <strong>Readable Layout</strong>
+        <p>Hide sections you do not need on this page.</p>
+      </div>
+      <div class="filter-actions">
+        <button id="showEssentialsBtn" class="secondary" type="button">Show Essentials</button>
+        <button id="showAllBtn" class="secondary" type="button">Show All</button>
+      </div>
+      <div class="filter-grid" id="filterGrid">
+        <label class="filter-chip"><input type="checkbox" data-filter-key="controls" checked>Controls</label>
+        <label class="filter-chip"><input type="checkbox" data-filter-key="graph" checked>Graph View</label>
+        <label class="filter-chip"><input type="checkbox" data-filter-key="support" checked>Support Panels</label>
+        <label class="filter-chip"><input type="checkbox" data-filter-key="diagram" checked>Diagram Section</label>
+        <label class="filter-chip"><input type="checkbox" data-filter-key="timestamps" checked>Timestamps</label>
+      </div>
+    </div>
+  </div>
   <div class="guide-shell">
     <header class="page-hero">
       <div>
@@ -23,10 +58,16 @@
     </header>
 
     <main class="page-layout">
-      <section class="guide-panel controls-col">
+      <section class="guide-panel controls-col" id="controlsSection">
         <div class="panel-title">
           <h2>Controls</h2>
           <p>Choose a DAG and build the finish-order walkthrough.</p>
+        </div>
+        <div class="control-block">
+          <div class="two-up">
+            <button id="startTourBtn" class="secondary" type="button">Start Tour</button>
+            <button id="startPracticeBtn" class="secondary" type="button">Guided Practice</button>
+          </div>
         </div>
         <div class="control-block">
           <label for="presetSelect">Preset graph</label>
@@ -62,7 +103,7 @@
         <div class="guide-note" id="modeNote"></div>
       </section>
 
-      <section class="guide-panel main-col">
+      <section class="guide-panel main-col" id="graphSection">
         <div class="panel-title">
           <h2>Graph View</h2>
           <p>Follow the DFS that produces the reverse finish-time ordering.</p>
@@ -77,7 +118,7 @@
             <marker id="arrow-active" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><polygon points="0 0,10 4,0 8"></polygon></marker>
           </defs>
         </svg>
-        <div class="two-up panel-gap">
+        <div class="two-up panel-gap" id="supportSection">
           <section class="mini-panel">
             <h3>Topological Order</h3>
             <div id="topoStrip" class="topo-strip"></div>
@@ -89,7 +130,7 @@
         </div>
       </section>
 
-      <section class="guide-panel full-span">
+      <section class="guide-panel full-span" id="diagramSection">
         <div class="panel-title">
           <h2 id="diagramTitle">Finish-Time Conveyor</h2>
           <p id="diagramText">Each completed vertex moves to the front of the final ordering.</p>
@@ -102,7 +143,7 @@
               <div id="scanSummary" class="guide-note">Complete the traversal on a DAG to compute the longest path.</div>
               <div id="scanRow" class="scan-row"></div>
             </div>
-            <div class="mini-panel">
+            <div class="mini-panel" id="stampPanel">
               <h3>Timestamps</h3>
               <table class="stamp-table">
                 <thead>
