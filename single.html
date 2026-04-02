@@ -568,13 +568,248 @@ code {
   line-height: 1.4;
 }
 
+/* Learn-first theory section */
+.theory-section {
+  margin-top: 22px;
+}
+
+.theory-shell {
+  display: grid;
+  gap: 20px;
+  padding: 24px;
+}
+
+.theory-head {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) auto;
+  gap: 22px;
+  align-items: start;
+}
+
+.theory-copy {
+  display: grid;
+  gap: 12px;
+}
+
+.theory-kicker {
+  margin: 0;
+  color: var(--accent-strong);
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.theory-title-row {
+  display: grid;
+  gap: 10px;
+}
+
+.theory-title-row h2 {
+  margin: 0;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(1.6rem, 2.4vw, 2.25rem);
+  line-height: 1.08;
+}
+
+.theory-title-row p {
+  margin: 0;
+  color: var(--muted-strong);
+  line-height: 1.7;
+  max-width: 76ch;
+}
+
+.theory-actions,
+.theory-footer-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.theory-actions {
+  justify-content: flex-end;
+}
+
+.theory-actions button,
+.theory-footer-actions button {
+  width: auto;
+  min-width: 188px;
+}
+
+.theory-cards {
+  display: grid;
+  gap: 12px;
+}
+
+.theory-card {
+  min-width: 0;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background:
+    linear-gradient(180deg, rgba(58, 38, 30, 0.88), rgba(24, 17, 13, 0.9));
+  overflow: hidden;
+}
+
+.theory-card summary {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 18px;
+  cursor: pointer;
+}
+
+.theory-card summary::-webkit-details-marker {
+  display: none;
+}
+
+.theory-card summary::after {
+  content: "+";
+  flex: 0 0 auto;
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 177, 108, 0.22);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--accent-strong);
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.theory-card[open] summary {
+  border-bottom: 1px solid var(--line-soft);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.theory-card[open] summary::after {
+  content: "−";
+}
+
+.theory-card-title {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.theory-card-title strong {
+  color: var(--text-strong);
+  font-size: 1rem;
+  line-height: 1.35;
+}
+
+.theory-card-title span {
+  color: var(--muted);
+  font-size: 0.82rem;
+  line-height: 1.55;
+}
+
+.theory-card-body {
+  display: grid;
+  gap: 14px;
+  padding: 16px 18px 18px;
+}
+
+.theory-points {
+  margin: 0;
+  padding-left: 18px;
+  display: grid;
+  gap: 10px;
+  color: var(--muted-strong);
+  line-height: 1.7;
+}
+
+.theory-points li {
+  min-width: 0;
+}
+
+.theory-points code,
+.theory-note code {
+  color: var(--accent-strong);
+}
+
+.theory-note-grid {
+  display: grid;
+  gap: 10px;
+}
+
+.theory-note {
+  display: grid;
+  gap: 6px;
+  padding: 12px 14px;
+  border: 1px solid rgba(255, 213, 173, 0.1);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.theory-note strong {
+  color: var(--text);
+  font-size: 0.84rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.theory-note p {
+  margin: 0;
+  color: var(--muted-strong);
+  line-height: 1.62;
+  font-size: 0.84rem;
+}
+
+.theory-note-mistake {
+  border-color: rgba(255, 107, 107, 0.16);
+  background: rgba(255, 107, 107, 0.08);
+}
+
+.theory-note-notice {
+  border-color: rgba(255, 209, 102, 0.16);
+  background: rgba(255, 209, 102, 0.08);
+}
+
+.theory-footer {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 18px;
+  align-items: center;
+  padding: 18px 20px;
+  border: 1px solid rgba(255, 213, 173, 0.12);
+  border-radius: 20px;
+  background:
+    linear-gradient(180deg, rgba(68, 44, 35, 0.64), rgba(28, 19, 14, 0.72));
+}
+
+.theory-footer-copy {
+  display: grid;
+  gap: 6px;
+}
+
+.theory-footer-copy strong {
+  color: var(--text);
+  font-size: 0.96rem;
+}
+
+.theory-footer-copy p {
+  margin: 0;
+  color: var(--muted-strong);
+  line-height: 1.65;
+}
+
 .dashboard {
+  --controls-width: minmax(392px, 420px);
   position: relative;
   display: grid;
-  grid-template-columns: minmax(392px, 420px) minmax(0, 1fr);
+  grid-template-columns: var(--controls-width) minmax(0, 1fr);
   align-items: start;
   gap: 24px;
   margin-top: 24px;
+  transition: grid-template-columns 0.28s ease, gap 0.28s ease;
+}
+
+.dashboard.controls-collapsed {
+  --controls-width: 84px;
 }
 
 .workspace {
@@ -607,26 +842,152 @@ code {
 }
 
 .controls-dock {
-  position: relative;
+  position: sticky;
+  top: 16px;
+  display: grid;
+  gap: 12px;
+  align-self: start;
   min-width: 0;
+  min-height: 0;
+  z-index: 30;
+  transition: width 0.28s ease, transform 0.28s ease;
 }
 
 .controls-tab {
-  display: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 54px;
+  padding: 11px 14px;
+  border-radius: 18px;
+  border: 1px solid rgba(255, 177, 108, 0.22);
+  background:
+    linear-gradient(180deg, rgba(58, 38, 30, 0.94), rgba(24, 17, 13, 0.94));
+  box-shadow: var(--shadow-sm);
+  color: var(--text);
+  position: relative;
+  overflow: hidden;
+}
+
+.controls-tab::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.04), transparent 58%),
+    linear-gradient(180deg, transparent, rgba(255, 255, 255, 0.02));
+  pointer-events: none;
+}
+
+.controls-tab-copy {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+  text-align: left;
+}
+
+.controls-tab-label,
+.controls-tab-state {
+  position: relative;
+  z-index: 1;
+}
+
+.controls-tab-label {
+  font-size: 0.84rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.controls-tab-state {
+  color: var(--muted);
+  font-size: 0.74rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+.controls-tab-icon {
+  position: relative;
+  z-index: 1;
+  flex: 0 0 auto;
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 177, 108, 0.2);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.controls-tab-icon::before {
+  content: "›";
+  color: var(--accent-strong);
+  font-size: 1.1rem;
+  font-weight: 700;
+  line-height: 1;
+  transform: translateX(1px);
+  transition: transform 0.2s ease;
+}
+
+.controls-dock.open .controls-tab-icon::before {
+  transform: rotate(180deg) translateX(1px);
 }
 
 .controls-panel {
-  position: sticky;
-  top: 16px;
+  position: relative;
+  top: auto;
   width: auto;
   display: flex;
   flex-direction: column;
   min-height: 0;
-  max-height: calc(100vh - 32px);
+  max-height: calc(100vh - 94px);
   animation: none;
   transform: none;
   opacity: 1;
   pointer-events: auto;
+  transform-origin: top left;
+  transition:
+    opacity 0.24s ease,
+    transform 0.24s ease,
+    max-height 0.24s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.controls-dock:not(.open) {
+  gap: 0;
+}
+
+.controls-dock:not(.open) .controls-panel {
+  max-height: 0;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(-18px) scale(0.98);
+  overflow: hidden;
+  border-color: transparent;
+  box-shadow: none;
+}
+
+.controls-dock:not(.open) .controls-tab {
+  min-height: 144px;
+  padding: 12px 10px;
+  justify-content: center;
+}
+
+.controls-dock:not(.open) .controls-tab-copy {
+  justify-items: center;
+}
+
+.controls-dock:not(.open) .controls-tab-label {
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  letter-spacing: 0.14em;
+}
+
+.controls-dock:not(.open) .controls-tab-state {
+  display: none;
 }
 
 .controls-scrim {
@@ -1257,12 +1618,8 @@ button.preset-btn.active {
 .workspace-grid {
   display: grid;
   grid-template-columns: repeat(12, minmax(0, 1fr));
-  grid-template-areas:
-    "graph graph graph graph graph graph graph graph graph graph graph graph"
-    "complexity complexity complexity complexity complexity complexity complexity complexity complexity complexity complexity complexity"
-    "depth depth depth depth depth depth stack stack stack cycle cycle cycle"
-    "code code code code code code code explain explain explain explain explain"
-    "history history history history history history scan scan scan interval interval interval";
+  grid-auto-flow: row dense;
+  grid-auto-rows: minmax(160px, auto);
   gap: 18px;
   align-items: stretch;
 }
@@ -1374,7 +1731,6 @@ button.preset-btn.active {
 }
 
 .companion-panel {
-  grid-area: depth;
   min-width: 0;
   min-height: 0;
 }
@@ -1383,14 +1739,69 @@ button.preset-btn.active {
   min-width: 0;
 }
 
-#stackPanel { grid-area: stack; }
-#cyclePanel { grid-area: cycle; }
-#scanPanel { grid-area: scan; }
-#intervalPanel { grid-area: interval; }
-#codePanel { grid-area: code; }
-#explainPanel { grid-area: explain; }
-#historySection { grid-area: history; }
-#complexitySection { grid-area: complexity; }
+/* Dense auto-placement keeps the workspace compact when filters hide panels */
+.graph-card {
+  order: 10;
+  grid-column: 1 / -1;
+}
+
+#complexitySection {
+  order: 20;
+  grid-column: 1 / -1;
+}
+
+#depthPanel {
+  order: 30;
+  grid-column: span 6;
+}
+
+#stackPanel {
+  order: 40;
+  grid-column: span 3;
+}
+
+#cyclePanel {
+  order: 45;
+  grid-column: span 3;
+}
+
+#codePanel {
+  order: 50;
+  grid-column: span 6;
+}
+
+#explainPanel {
+  order: 55;
+  grid-column: span 6;
+}
+
+#intervalPanel {
+  order: 60;
+  grid-column: span 8;
+}
+
+#scanPanel {
+  order: 65;
+  grid-column: span 4;
+}
+
+#historySection {
+  order: 70;
+  grid-column: 1 / -1;
+}
+
+#stackPanel.is-wide,
+#cyclePanel.is-wide {
+  grid-column: span 6;
+}
+
+#codePanel.is-wide,
+#explainPanel.is-wide,
+#scanPanel.is-wide,
+#intervalPanel.is-wide,
+#depthPanel.is-wide {
+  grid-column: 1 / -1;
+}
 
 #depthPanel,
 #stackPanel,
@@ -1439,6 +1850,25 @@ button.preset-btn.active {
 #complexitySection {
   height: auto;
   min-height: clamp(560px, 64vh, 760px);
+}
+
+/* Promote the interval panel so the theorem visualization has enough room */
+#intervalPanel {
+  min-height: clamp(420px, 48vh, 560px);
+}
+
+#intervalPanel .subpanel-head {
+  background:
+    linear-gradient(180deg, rgba(255, 209, 102, 0.1), rgba(255, 255, 255, 0));
+}
+
+#intervalPanel .subpanel-head h3 {
+  font-size: 1.08rem;
+}
+
+#intervalPanel .subpanel-head p {
+  color: var(--muted-strong);
+  font-size: 0.86rem;
 }
 
 .panel-frame {
@@ -1975,10 +2405,15 @@ button.preset-btn.active {
   display: none !important;
 }
 
+/* Tour stacking order:
+   1. dim masks
+   2. spotlight
+   3. highlighted target
+   4. tutorial card above all tour visuals and floating UI */
 .tour-overlay {
   position: fixed;
   inset: 0;
-  z-index: 1050;
+  z-index: 1400;
   display: none;
   pointer-events: none;
 }
@@ -1990,7 +2425,7 @@ button.preset-btn.active {
 .tour-mask {
   position: fixed;
   background: rgba(17, 10, 7, 0.74);
-  z-index: 1050;
+  z-index: 1400;
   pointer-events: none;
 }
 
@@ -2002,7 +2437,7 @@ button.preset-btn.active {
     0 0 0 1px rgba(255, 255, 255, 0.08),
     0 0 0 12px rgba(255, 183, 97, 0.08),
     0 20px 34px rgba(0, 0, 0, 0.38);
-  z-index: 1055;
+  z-index: 1405;
   pointer-events: none;
   display: none;
 }
@@ -2016,19 +2451,24 @@ button.preset-btn.active {
   right: 18px;
   top: 74px;
   width: min(372px, calc(100vw - 24px));
+  max-height: min(520px, calc(100vh - 20px));
+  display: grid;
+  grid-template-rows: auto auto minmax(0, 1fr) auto;
+  gap: 0;
   padding: 20px;
   border-radius: 22px;
   border: 1px solid rgba(255, 177, 108, 0.26);
   background: linear-gradient(180deg, rgba(58, 38, 30, 0.98), rgba(24, 17, 13, 0.98));
   box-shadow: var(--shadow-lg);
   color: var(--text);
-  z-index: 1060;
+  z-index: 1420;
   pointer-events: auto;
+  overflow: hidden;
 }
 
 .tour-target-active {
   position: relative;
-  z-index: 1062;
+  z-index: 1410;
   box-shadow:
     0 0 0 2px rgba(255, 183, 97, 0.4),
     0 0 0 10px rgba(255, 183, 97, 0.08),
@@ -2054,6 +2494,17 @@ button.preset-btn.active {
   margin: 0;
   color: var(--muted-strong);
   line-height: 1.65;
+}
+
+.tour-card p strong {
+  color: var(--text);
+}
+
+#tourBody {
+  min-height: 0;
+  overflow-y: auto;
+  padding-right: 4px;
+  overscroll-behavior: contain;
 }
 
 .tour-actions,
@@ -2127,7 +2578,7 @@ button.preset-btn.active {
 }
 
 #intervalSvg {
-  min-height: 260px;
+  min-height: 380px;
 }
 
 #graphSvg circle,
@@ -2179,21 +2630,7 @@ svg text {
 
 @media (max-width: 1220px) {
   .workspace-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .workspace-grid {
-    grid-template-areas:
-      "graph"
-      "complexity"
-      "depth"
-      "stack"
-      "cycle"
-      "code"
-      "explain"
-      "history"
-      "scan"
-      "interval";
+    grid-template-columns: repeat(6, minmax(0, 1fr));
   }
 
   .workspace-summary {
@@ -2227,8 +2664,21 @@ svg text {
 }
 
 @media (max-width: 980px) {
+  .theory-head,
+  .theory-footer {
+    grid-template-columns: 1fr;
+  }
+
+  .theory-actions {
+    justify-content: flex-start;
+  }
+
   .dashboard {
     grid-template-columns: 1fr;
+  }
+
+  .dashboard.controls-collapsed {
+    --controls-width: 1fr;
   }
 
   .mode-row,
@@ -2255,10 +2705,70 @@ svg text {
     grid-template-columns: 1fr;
   }
 
-  .controls-panel {
+  /* Mobile and tablet drawer behavior for the controls dock */
+  .controls-dock {
     position: relative;
     top: auto;
+    width: fit-content;
+    max-width: 100%;
+    z-index: 80;
+  }
+
+  .controls-tab {
+    width: auto;
+    min-width: 156px;
+  }
+
+  .controls-dock:not(.open) .controls-tab {
+    min-height: 54px;
+    padding: 11px 14px;
+    justify-content: space-between;
+  }
+
+  .controls-dock:not(.open) .controls-tab-label {
+    writing-mode: initial;
+    transform: none;
+    letter-spacing: 0.08em;
+  }
+
+  .controls-dock:not(.open) .controls-tab-state {
+    display: inline;
+  }
+
+  .controls-panel {
     max-height: none;
+  }
+
+  .workspace-grid {
+    grid-template-columns: 1fr;
+    grid-auto-rows: auto;
+  }
+
+  .workspace-grid > * {
+    grid-column: 1 / -1 !important;
+  }
+
+  .controls-dock.open {
+    position: fixed;
+    top: 76px;
+    left: 12px;
+    bottom: 12px;
+    width: min(420px, calc(100vw - 24px));
+    max-width: calc(100vw - 24px);
+    z-index: 1185;
+  }
+
+  .controls-dock.open .controls-panel {
+    max-height: calc(100vh - 144px);
+  }
+
+  .controls-scrim.open {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 1175;
+    border: 0;
+    background: rgba(17, 10, 7, 0.66);
   }
 }
 
@@ -2275,6 +2785,10 @@ svg text {
 
   .hero {
     padding: 22px 20px;
+  }
+
+  .theory-shell {
+    padding: 20px 18px;
   }
 
   .hero-stats,
@@ -2309,6 +2823,11 @@ svg text {
     width: 100%;
   }
 
+  .theory-actions button,
+  .theory-footer-actions button {
+    width: 100%;
+  }
+
   .floating-tools {
     top: 10px;
     right: 10px;
@@ -2334,6 +2853,10 @@ svg text {
 
   #complexitySvg {
     height: 280px;
+  }
+
+  #intervalSvg {
+    min-height: 300px;
   }
 }
 
@@ -2425,11 +2948,42 @@ svg text {
       </div>
     </header>
 
+    <!-- Learn-first theory section -->
+    <section class="panel theory-section" id="theorySection" aria-labelledby="theoryTitle">
+      <div class="theory-shell">
+        <div class="theory-head" id="theoryTourIntro">
+          <div class="theory-copy">
+            <p class="theory-kicker" id="theoryEyebrow">Learn First</p>
+            <div class="theory-title-row">
+              <h2 id="theoryTitle">Theory Before the Workspace</h2>
+              <div id="theoryIntro"></div>
+            </div>
+          </div>
+          <div class="theory-actions">
+            <button id="theoryJumpTopBtn" type="button">Open Visualization</button>
+          </div>
+        </div>
+        <div class="theory-cards" id="theoryCards"></div>
+        <div class="theory-footer">
+          <div class="theory-footer-copy">
+            <strong id="theoryFooterTitle">Connect the proofs to the run</strong>
+            <p id="theoryFooterNote"></p>
+          </div>
+          <div class="theory-footer-actions">
+            <button id="theoryJumpBottomBtn" class="secondary" type="button">Jump to Workspace</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <main class="dashboard">
       <div class="controls-dock" id="controlsDock">
         <button id="controlsToggleBtn" class="controls-tab" type="button" aria-expanded="false" aria-controls="controlsPanel">
-          <span class="controls-tab-label">Controls</span>
-          <span class="controls-tab-state" id="controlsTabState">Open</span>
+          <span class="controls-tab-copy">
+            <span class="controls-tab-label">Controls</span>
+            <span class="controls-tab-state" id="controlsTabState">Hide</span>
+          </span>
+          <span class="controls-tab-icon" aria-hidden="true"></span>
         </button>
 
         <aside class="panel controls-panel" id="controlsPanel">
@@ -2478,7 +3032,7 @@ svg text {
             </div>
           </section>
 
-          <section class="control-section control-section-input">
+          <section class="control-section control-section-input" id="graphSetupSection">
             <div class="section-label">Graph Setup</div>
             <div class="field">
               <label for="graphInput">Directed graph adjacency list</label>
@@ -2506,7 +3060,7 @@ svg text {
           </section>
 
           <section class="control-section overview-section">
-            <div class="section-label">Concept Guide</div>
+            <div class="section-label">Quick Recall</div>
             <div class="overview" id="overview"></div>
           </section>
         </div>
@@ -2515,7 +3069,7 @@ svg text {
 
       <button id="controlsScrim" class="controls-scrim" type="button" aria-label="Close controls panel"></button>
 
-      <section class="workspace">
+      <section class="workspace" id="interactiveWorkspace">
         <section class="panel viz-panel">
           <div class="panel-head panel-head-split">
             <div>
@@ -2692,10 +3246,10 @@ svg text {
               <section class="subpanel support-card" id="intervalPanel">
                 <div class="subpanel-head">
                   <h3>Parenthesis Theorem</h3>
-                  <p>Intervals are either nested or disjoint. They never partially overlap.</p>
+                  <p>Discovery and finish intervals expose ancestor nesting, finished separation, and the timing structure behind DFS correctness.</p>
                 </div>
                 <div class="panel-frame panel-frame-tight">
-                  <svg id="intervalSvg" viewBox="0 0 420 220" preserveAspectRatio="xMidYMid meet"></svg>
+                  <svg id="intervalSvg" viewBox="0 0 760 320" preserveAspectRatio="xMidYMid meet"></svg>
                 </div>
               </section>
 
@@ -2986,58 +3540,85 @@ const APP_CONTENT = {
   tours: {
     common: [
       {
+        id: 'theory',
+        target: '#theoryTourIntro',
+        title: 'Theory Sets the Rules',
+        body: 'Use the learn-first section when you need the invariants before the animation: colors, timestamps, edge types, cycle proof, and finish-order reasoning are all defined there before the tool starts moving.',
+        theoryRef: 'Topic Overview; States and Backtracking; Timestamps and Parenthesis Theorem'
+      },
+      {
         id: 'controls',
-        target: '#graphInput',
+        target: '#graphSetupSection',
         title: 'Start With the Graph',
-        body: 'Paste a directed adjacency list here or load a preset. Every build starts from this graph text, so this is the first place to change the lesson.'
+        body: 'Paste a directed adjacency list here or load a preset. Every build starts from this graph text, so the representation and edge set you choose determine the traversal story the workspace can show.',
+        theoryRef: 'Topic Overview; Complexity and Representation'
       },
       {
         id: 'mode',
         target: '#modeRow',
         title: 'Choose the Goal',
-        body: 'The same DFS engine powers all three modes. Switch here when you want to emphasize search, topological order, or cycle proof.'
+        body: 'The same DFS engine powers all three modes. Switch here when you want to emphasize search behavior, finish-order reasoning, or explicit cycle proof.',
+        theoryRef: 'DFS Core Idea; Topological Sort; Cycle Detection'
       },
       {
         id: 'build',
         target: '#buildBtn',
         title: 'Build the Walkthrough',
-        body: 'Build creates the full sequence of DFS states. Then Step, Step Back, Play, Pause, and Skip End let you control how fast you teach it.'
-      },
-      {
-        id: 'filters',
-        target: '#topFilterBtn',
-        title: 'Make the Page Readable',
-        body: 'Open the Filters menu here when you want a cleaner teaching view. The Essentials preset hides the supporting panels that are not needed for a focused walkthrough.'
+        body: 'Build creates the full DFS timeline in advance. That includes outer-loop roots, discovery events, edge scans, recursion, finish events, and any final topo or cycle conclusion.',
+        watchFor: 'The first component root, the first GRAY vertex, and the first tree edge all come from this generated sequence.',
+        theoryRef: 'DFS Core Idea; States and Backtracking'
       },
       {
         id: 'graph',
         target: '#graphSvg',
         title: 'Read the Main Graph',
-        body: 'Nodes change WHITE, GRAY, and BLACK. The top tag shows depth level Lk. The lower labels show discovery and finish time as d/f.'
+        body: 'Nodes change WHITE, GRAY, and BLACK. The top tag shows depth level Lk. The lower labels show discovery and finish time as d/f, so the graph itself becomes a live proof surface.',
+        watchFor: 'A node turning GRAY means its call is active right now; BLACK means all outgoing edges have already been scanned.',
+        theoryRef: 'States and Backtracking; Timestamps and Parenthesis Theorem'
       },
       {
         id: 'scan',
         target: '#scanPanel',
         title: 'Why This Branch?',
-        body: 'This panel explains the branch choice. Each build assigns randomized priorities 1 to 5, orders Adj[u] by that priority, and DFS chooses the first WHITE neighbor in that ordered list.'
+        body: 'This panel explains the branch choice. Each build orders Adj[u], then DFS scans that list and chooses the first WHITE neighbor in that order.',
+        watchFor: 'This is where local adjacency scanning becomes visible. Across the full run, those scans account for the E term in O(V + E).',
+        theoryRef: 'DFS Core Idea; Complexity and Representation'
       },
       {
         id: 'stack',
         target: '#stackPanel',
         title: 'Track Recursion',
-        body: 'The recursion stack shows the active branch from root to current node. If a back edge points to a GRAY node in this stack, you have found a cycle.'
+        body: 'The recursion stack shows the active branch from root to current node. If a back edge points to a GRAY node in this stack, the cycle proof becomes explicit instead of verbal.',
+        watchFor: 'GRAY means active on the stack, so this panel is the concrete version of the color invariant.',
+        theoryRef: 'States and Backtracking; Cycle Detection'
       },
       {
         id: 'depth',
         target: '#depthPanel',
         title: 'See Depth as a Diagram',
-        body: 'This chart turns the recursive search tree into coordinates. X is depth level and Y is discovery order, so moving right means going deeper.'
+        body: 'This chart turns the recursive search tree into coordinates. X is depth level and Y is discovery order, so moving right means going deeper while the outer loop can still start later trees elsewhere.',
+        theoryRef: 'DFS Core Idea; Correctness and Use Cases'
+      },
+      {
+        id: 'interval',
+        target: '#intervalPanel',
+        title: 'Read the Time Intervals',
+        body: 'This promoted panel shows the parenthesis theorem directly. Discovery and finish intervals are either nested or disjoint, which is why timestamps encode ancestor structure rather than raw chronology.',
+        watchFor: 'When a vertex finishes, its interval closes. Nested intervals certify ancestry; separated intervals show finished branches.',
+        theoryRef: 'Timestamps and Parenthesis Theorem'
       },
       {
         id: 'code',
         target: '#codePanel',
         title: 'Connect State to Pseudocode',
-        body: 'The pseudocode highlight and the explanation box are synced to the current DFS step. Use them when students ask what the algorithm is doing right now.'
+        body: 'The pseudocode highlight and the explanation box are synced to the current DFS step. Use them to connect each visual event to the exact rule that justified it.',
+        theoryRef: 'Quick Revision'
+      },
+      {
+        id: 'filters',
+        target: '#topFilterBtn',
+        title: 'Make the Page Readable',
+        body: 'Open the Filters menu here when you want a cleaner teaching view. Hidden panels now repack more cleanly, so the workspace can stay focused without looking broken.'
       }
     ],
     dfs: [
@@ -3045,13 +3626,16 @@ const APP_CONTENT = {
         id: 'history',
         target: '#historySection',
         title: 'Revisit Important Moments',
-        body: 'The history table keeps recent states clickable. This is useful when you want to go back to the first tree edge or the exact moment a branch was chosen.'
+        body: 'The history table keeps recent states clickable. This is useful when you want to go back to the first tree edge, the outer-loop start of a new DFS tree, or the exact moment a branch was chosen.',
+        theoryRef: 'Edge Classification; Correctness and Use Cases'
       },
       {
         id: 'complexity',
         target: '#complexitySection',
         title: 'Close With Complexity',
-        body: 'Finish the story by showing why DFS is O(V + E): vertices are discovered once, and adjacency scans examine each edge once.'
+        body: 'Finish the story by showing why DFS is O(V + E): vertices are discovered once, and adjacency scans examine each edge once when the graph is stored as adjacency lists.',
+        watchFor: 'The slider model and measured graph note help distinguish vertex work, edge work, and representation choices.',
+        theoryRef: 'Complexity and Representation'
       }
     ],
     topo: [
@@ -3059,13 +3643,16 @@ const APP_CONTENT = {
         id: 'topo',
         target: '#topoPanel',
         title: 'Watch the Topological Order Grow',
-        body: 'Vertices are added to the front when they finish. That is why reverse finish time becomes a valid topological order on a DAG.'
+        body: 'Vertices are added to the front when they finish. That is why reverse finish time becomes a valid topological order on a DAG.',
+        watchFor: 'Finish time is doing real dependency work here: a node appears only after the DFS work below it has closed.',
+        theoryRef: 'Topological Sort; Timestamps and Parenthesis Theorem'
       },
       {
         id: 'dag',
         target: '#dagPanel',
         title: 'Connect It to Dynamic Programming',
-        body: 'This panel shows how topological order supports longest path on a DAG. Dependencies come first, so later states can reuse earlier results.'
+        body: 'This panel shows how topological order supports longest path on a DAG. Dependencies come first, so later states can reuse earlier results.',
+        theoryRef: 'Topological Sort; Correctness and Use Cases'
       }
     ],
     cycle: [
@@ -3073,7 +3660,9 @@ const APP_CONTENT = {
         id: 'cycle',
         target: '#cyclePanel',
         title: 'Use the Proof Panel',
-        body: 'When DFS sees an edge to a GRAY ancestor, this panel explains the exact cycle path using the current recursion stack.'
+        body: 'When DFS sees an edge to a GRAY ancestor, this panel explains the exact cycle path using the current recursion stack.',
+        watchFor: 'The decisive event is not “visited before”; it is a back edge to a GRAY ancestor that is still active.',
+        theoryRef: 'Cycle Detection; States and Backtracking'
       }
     ]
   },
@@ -3087,7 +3676,9 @@ const APP_CONTENT = {
         body: 'Click Build Steps now. Guided Practice waits for the real action before continuing.',
         action: 'build',
         waitingText: 'Waiting for you to click Build Steps.',
-        doneText: 'Build detected. The DFS timeline is ready.'
+        doneText: 'Build detected. The DFS timeline is ready, including outer-loop roots, edge scans, and finish events.',
+        theoryRef: 'DFS Core Idea',
+        watchFor: 'The timeline now contains the future GRAY states, tree edges, finish times, and any component changes.'
       },
       {
         id: 'practice-step',
@@ -3096,7 +3687,19 @@ const APP_CONTENT = {
         body: 'Click Step once so the tool advances to the next DFS state.',
         action: 'step',
         waitingText: 'Waiting for you to click Step.',
-        doneText: 'Step detected. You can now see how one DFS action updates the graph.'
+        doneText: 'Step detected. You can now inspect the live DFS state that just changed.',
+        theoryRef: 'States and Backtracking',
+        watchFor: 'At the start of a run, this usually reveals the first GRAY active vertex and the beginning of the first DFS tree.'
+      },
+      {
+        id: 'practice-interval',
+        target: '#intervalPanel',
+        title: 'Watch the Interval Evidence',
+        body: 'Click Step again and compare the graph with the interval panel so you can see discovery and finish structure build over time.',
+        action: 'step',
+        waitingText: 'Waiting for you to step once more.',
+        doneText: 'Second step detected. Use the interval panel to connect timestamps to ancestry instead of memorizing them as raw counters.',
+        theoryRef: 'Timestamps and Parenthesis Theorem'
       }
     ],
     dfs: [
@@ -3104,10 +3707,11 @@ const APP_CONTENT = {
         id: 'practice-filter',
         target: '#showEssentialsBtn',
         title: 'Reduce Visual Noise',
-        body: 'Click Show Essentials so the page switches into a cleaner presenter view.',
+        body: 'Click Filters in the top-right corner, then click Show Essentials in that menu so the workspace switches into a cleaner presenter view.',
         action: 'filter:essentials',
-        waitingText: 'Waiting for you to click Show Essentials.',
-        doneText: 'Essentials view applied.'
+        waitingText: 'Waiting for you to open Filters and click Show Essentials.',
+        doneText: 'Essentials view applied.',
+        theoryRef: 'Quick Revision'
       }
     ],
     topo: [
@@ -3118,7 +3722,8 @@ const APP_CONTENT = {
         body: 'Click the Topo Sort mode button.',
         action: 'mode:topo',
         waitingText: 'Waiting for you to switch to Topo Sort mode.',
-        doneText: 'Topo Sort mode detected.'
+        doneText: 'Topo Sort mode detected.',
+        theoryRef: 'Topological Sort'
       },
       {
         id: 'practice-build-topo',
@@ -3127,7 +3732,9 @@ const APP_CONTENT = {
         body: 'Click Build Steps again so the topological-order walkthrough is generated.',
         action: 'build',
         waitingText: 'Waiting for you to click Build Steps in Topo mode.',
-        doneText: 'Topo build detected.'
+        doneText: 'Topo build detected.',
+        watchFor: 'Finish events now feed the topological strip, so reverse finish order is visible as it forms.',
+        theoryRef: 'Topological Sort; Timestamps and Parenthesis Theorem'
       }
     ],
     cycle: [
@@ -3138,7 +3745,143 @@ const APP_CONTENT = {
         body: 'Click the Cycle Detect mode button.',
         action: 'mode:cycle',
         waitingText: 'Waiting for you to switch to Cycle Detect mode.',
-        doneText: 'Cycle Detect mode detected.'
+        doneText: 'Cycle Detect mode detected.',
+        theoryRef: 'Cycle Detection'
+      }
+    ]
+  },
+
+  /* Learn-first theory content for the pre-tool section */
+  theorySection: {
+    eyebrow: 'Learn First',
+    title: 'Theory Before the Workspace',
+    intro: [
+      'Use this section to build the algorithmic picture before touching the simulator. The workspace below is strongest when each color change, timestamp, edge label, and finish-order update already has a mathematical meaning.',
+      'The cards stay compact on purpose: each one isolates a proof idea, a modeling choice, or a common misconception that often appears in oral defense, written explanation, and exam settings.'
+    ],
+    footerTitle: 'Connect the proofs to the run',
+    footerNote: 'After these cards, open the visualization and watch the graph, recursion stack, interval panel, and pseudocode together. The goal is not to memorize labels, but to see why each invariant forces the next DFS action.',
+    topCtaLabel: 'Open Visualization',
+    bottomCtaLabel: 'Jump to Workspace',
+    cards: [
+      {
+        title: 'Topic Overview',
+        summary: 'Model the graph first, then read DFS as a structural analysis tool.',
+        points: [
+          'A graph is written as <code>G = (V, E)</code>, where <code>V</code> is the vertex set and <code>E</code> is the edge set. The representation determines what DFS can inspect efficiently.',
+          'Directed and undirected graphs share the traversal idea, but not the same interpretation of edges and cycles. Connected graphs produce one DFS tree; disconnected graphs produce a DFS forest.',
+          'DFS gives more than a visit order: it records parents, discovery/finish times, stack-active vertices, edge types, cycle evidence, and finish-order information that later supports topological sorting.',
+          'For DAGs, the same traversal that explores the graph can also expose a dependency-safe order. For cyclic directed graphs, it instead exposes the reason that such an order cannot exist.'
+        ],
+        mistake: 'Treating DFS as “just the list of visited vertices” throws away the parent structure, timing structure, and correctness evidence that make the algorithm useful.',
+        notice: 'In the tool, the graph view, recursion stack, interval view, and topo/cycle panels all come from the same DFS state rather than from separate algorithms.'
+      },
+      {
+        title: 'DFS Core Idea',
+        summary: 'Depth-first means commit to one branch, recurse, and backtrack only when forced.',
+        points: [
+          'DFS is a graph traversal strategy that repeatedly chooses an outgoing unexplored direction, goes deeper immediately, and postpones sibling branches until backtracking returns control.',
+          'The algorithm can be implemented recursively or with an explicit stack. The logic is the same: the active path is stored, extended, and unwound as exploration progresses.',
+          '“Depth-first” is the opposite of wide frontier expansion. DFS follows one partial path as far as it can before it examines competing branches at the same level.',
+          'An outer loop over all vertices is required. Without that loop, DFS explores only the component reachable from the chosen start vertex and leaves disconnected components untouched.'
+        ],
+        mistake: 'Do not confuse the preferred start node with full graph coverage. The start node chooses the first DFS tree, but the outer loop is what guarantees global coverage.',
+        notice: 'The tool exposes both ideas: the start-node selector changes the first root, while the final component count reveals whether extra DFS trees were needed.'
+      },
+      {
+        title: 'States and Backtracking',
+        summary: 'The color invariant is the cleanest way to reason about what DFS knows right now.',
+        points: [
+          '<strong>WHITE</strong> means the vertex has not been discovered yet. No DFS tree has claimed it, so encountering it creates a tree edge and a new recursive descent.',
+          '<strong>GRAY</strong> means discovered and still active on the recursion stack. DFS has entered the vertex, but not all outgoing edges have been processed yet.',
+          '<strong>BLACK</strong> means fully processed. Every outgoing edge has already been scanned, so the vertex can never again serve as an active ancestor.',
+          'GRAY is the key invariant because it marks exactly the vertices whose recursive calls are still open. Backtracking occurs when the current GRAY vertex has no WHITE neighbor left to recurse into.'
+        ],
+        mistake: 'GRAY does not mean “almost done”; it means “currently active.” That distinction is what makes cycle proofs and edge classification work.',
+        notice: 'Watch the graph colors and the recursion stack together: every GRAY vertex should appear on the active stack until it turns BLACK.'
+      },
+      {
+        title: 'Timestamps and Parenthesis Theorem',
+        summary: 'Discovery and finish times encode ancestry, not just chronology.',
+        points: [
+          'When DFS first enters a vertex <code>u</code>, it records the discovery time <code>d[u]</code>. When DFS finishes scanning all outgoing edges of <code>u</code>, it records the finish time <code>f[u]</code>.',
+          'The interval <code>[d[u], f[u]]</code> captures the full lifetime of the recursive call for <code>u</code>. A descendant is discovered after its ancestor and must finish before the ancestor finishes.',
+          'The parenthesis theorem states that DFS intervals are either nested or disjoint; they never partially overlap. That is why timestamps reveal ancestor-descendant structure.',
+          'Timestamps therefore encode structural information: they support interval reasoning, justify edge classifications, and explain why reverse finish order can solve topological sorting on DAGs.'
+        ],
+        mistake: 'Discovery and finish times are not decorative counters. If you remove them conceptually, you lose a precise language for arguing ancestry and finish-order properties.',
+        notice: 'The interval panel below the simulator is the direct geometric view of the parenthesis theorem.'
+      },
+      {
+        title: 'Edge Classification',
+        summary: 'The same directed edge means different things depending on when it is seen.',
+        points: [
+          'A <strong>tree edge</strong> goes to a WHITE vertex and becomes part of the DFS forest. It corresponds to first discovery through the current vertex.',
+          'A <strong>back edge</strong> goes to a GRAY ancestor that is still active on the recursion stack. In directed graphs, this is the decisive cycle witness.',
+          'A <strong>forward edge</strong> goes to a BLACK descendant that was already finished earlier, while a <strong>cross edge</strong> goes across finished branches or subtrees without an ancestor-descendant relationship.',
+          'The classification depends on traversal state and structural relationship, not on the static edge alone. The same graph can produce different non-tree classifications under different DFS orders.'
+        ],
+        mistake: 'Do not classify edges from the drawing alone. The correct label depends on the DFS state at the exact moment the edge is examined.',
+        notice: 'The history table and adjacency-scan panel are useful here because they freeze the exact moment when an edge was inspected.'
+      },
+      {
+        title: 'Cycle Detection',
+        summary: 'Directed cycle proof is tied to the active recursion stack.',
+        points: [
+          'A directed cycle exists exactly when DFS encounters a back edge to a GRAY ancestor. The recursion stack already contains a directed path from that ancestor to the current vertex.',
+          'Adding the back edge closes the loop, so the cycle is not guessed; it is witnessed by an explicit ancestor-to-descendant stack path plus one returning edge.',
+          'Not every edge to an already visited vertex proves a cycle. Edges to BLACK vertices may be forward or cross edges and do not, by themselves, certify a directed cycle.',
+          'The word that matters is <strong>GRAY</strong>. The ancestor must still be active, which means the partial path needed to close the cycle is currently open.'
+        ],
+        mistake: '“Visited before” is too weak. The proof requires “currently active on the stack,” which is why GRAY matters and BLACK does not.',
+        notice: 'In cycle mode, the proof panel explains the exact back edge and reconstructs the cycle path from the current recursion stack.'
+      },
+      {
+        title: 'Topological Sort',
+        summary: 'Finish order becomes scheduling order only when the graph is acyclic.',
+        points: [
+          'Topological sorting is defined only for a DAG. If a directed cycle exists, then at least one dependency chain loops back on itself, so no linear dependency order can satisfy all edges.',
+          'In DFS-based topological sorting, vertices are placed in reverse finish order. A vertex finishes only after all DFS work reachable from it has been resolved.',
+          'This finish-order logic respects dependencies because descendants and downstream requirements are processed before the current vertex is closed and inserted into the order.',
+          'The output is therefore not a random DFS artifact; it is the ordering induced by finish times on an acyclic dependency graph.'
+        ],
+        mistake: 'Do not claim that DFS always returns a topological order. It returns finish times for any directed graph, but those finish times define a valid topo order only on DAGs.',
+        notice: 'In topo mode, the order strip grows exactly when vertices finish, so the topological list is visibly tied to finish events.'
+      },
+      {
+        title: 'Complexity and Representation',
+        summary: 'DFS complexity is inseparable from how the graph is stored.',
+        points: [
+          'With an adjacency list, DFS runs in <code>O(V + E)</code>: initialization and vertex bookkeeping contribute the <code>O(V)</code> term, and scanning adjacency lists contributes the <code>O(E)</code> term.',
+          'Each vertex is discovered once and finished once, so the vertex-side bookkeeping is linear in the number of vertices. Each directed edge is inspected at most once from its source adjacency list.',
+          'Auxiliary space is <code>O(V)</code> for colors, parents, timestamps, and the recursion stack or explicit stack representation.',
+          'If the graph is stored as an adjacency matrix, the neighbor scan for one vertex becomes <code>O(V)</code>, so full DFS becomes <code>O(V^2)</code>. The representation changes the cost model even when the high-level algorithm stays the same.'
+        ],
+        mistake: 'Stating only “DFS is linear” is incomplete. Linear in what representation? Adjacency-list analysis and adjacency-matrix analysis are not interchangeable.',
+        notice: 'The complexity panel already contrasts vertex work and edge work; this theory card supplies the representation-level justification behind that display.'
+      },
+      {
+        title: 'Correctness and Use Cases',
+        summary: 'Correctness comes from invariants; tool choice comes from problem structure.',
+        points: [
+          'DFS is correct because every reachable WHITE neighbor is eventually explored, and no vertex is permanently skipped once it becomes eligible for discovery from an active DFS call.',
+          'The outer loop extends that guarantee from one reachable region to the entire graph, covering disconnected components and producing a full DFS forest rather than a partial traversal.',
+          'DFS is the right tool when you care about recursive structure, ancestor relationships, timestamps, cycle proofs in directed graphs, connected-component style decomposition, or topological preprocessing.',
+          'BFS is better when the main question is shortest path length in an unweighted graph, level structure, or minimum-edge-distance layering from a source. Edge cases to watch include isolated vertices, self-loops, parallel edges, disconnected graphs, and representation mismatches.'
+        ],
+        mistake: 'Do not oversell DFS as universally better. DFS and BFS solve different classes of “search” questions well, and the right choice depends on the property being measured.',
+        notice: 'This tool is strongest for structural questions: why a cycle is proved, why intervals nest, why finish order matters, and how branch choices alter the DFS forest.'
+      },
+      {
+        title: 'Quick Revision',
+        summary: 'Compress the full argument into a final checklist before using the simulator.',
+        points: [
+          'DFS in one view: initialize all vertices, start a new DFS tree from each WHITE vertex, go deep first, backtrack on exhaustion, and record discovery/finish structure as the search unfolds.',
+          'Key invariant: <strong>GRAY means active on the recursion stack</strong>. That single fact drives cycle detection, explains backtracking, and anchors edge classification.',
+          'Core formulas and facts: adjacency-list DFS is <code>O(V + E)</code>, auxiliary space is <code>O(V)</code>, intervals <code>[d[u], f[u]]</code> are nested or disjoint, and reverse finish order is a topological order only for DAGs.',
+          'Final reminder: correctness is not a memorized story about “visiting nodes.” It is a disciplined argument about states, structure, and why each invariant remains true after every DFS step.'
+        ],
+        notice: 'A good final check in the workspace is to ask, at every step: which vertices are GRAY, what interval just changed, and what fact about correctness became visible?'
       }
     ]
   },
@@ -3238,8 +3981,8 @@ const APP_CONTENT = {
     };
 
     return blocks[mode]
-      .map((block) => {
-        const openAttr = block.open ? " open" : "";
+      .map((block, index) => {
+        const openAttr = block.open && index === 0 ? " open" : "";
         return `<details${openAttr}><summary>${block.title}</summary>${block.body}</details>`;
       })
       .join("");
@@ -3372,6 +4115,16 @@ const APP_CONTENT = {
   };
 
   const dom = {
+    theorySection: document.getElementById('theorySection'),
+    theoryEyebrow: document.getElementById('theoryEyebrow'),
+    theoryTitle: document.getElementById('theoryTitle'),
+    theoryIntro: document.getElementById('theoryIntro'),
+    theoryCards: document.getElementById('theoryCards'),
+    theoryFooterTitle: document.getElementById('theoryFooterTitle'),
+    theoryFooterNote: document.getElementById('theoryFooterNote'),
+    theoryJumpTopBtn: document.getElementById('theoryJumpTopBtn'),
+    theoryJumpBottomBtn: document.getElementById('theoryJumpBottomBtn'),
+    dashboard: document.querySelector('.dashboard'),
     modeRow: document.getElementById('modeRow'),
     graphInput: document.getElementById('graphInput'),
     presetGrid: document.getElementById('presetGrid'),
@@ -3409,9 +4162,18 @@ const APP_CONTENT = {
     branchRuleNote: document.getElementById('branchRuleNote'),
     graphStage: document.getElementById('graphStage'),
     graphSvg: document.getElementById('graphSvg'),
+    workspaceGrid: document.querySelector('.workspace-grid'),
     graphZoomOutBtn: document.getElementById('graphZoomOutBtn'),
     graphZoomResetBtn: document.getElementById('graphZoomResetBtn'),
     graphZoomInBtn: document.getElementById('graphZoomInBtn'),
+    depthPanel: document.getElementById('depthPanel'),
+    stackPanel: document.getElementById('stackPanel'),
+    cyclePanel: document.getElementById('cyclePanel'),
+    scanPanel: document.getElementById('scanPanel'),
+    intervalPanel: document.getElementById('intervalPanel'),
+    codePanel: document.getElementById('codePanel'),
+    explainPanel: document.getElementById('explainPanel'),
+    historySection: document.getElementById('historySection'),
     topologyCluster: document.getElementById('topologyCluster'),
     topoPanel: document.getElementById('topoPanel'),
     topoRow: document.getElementById('topoRow'),
@@ -3449,6 +4211,7 @@ const APP_CONTENT = {
     backEdges: document.getElementById('backEdges'),
     componentCount: document.getElementById('componentCount'),
     timerValue: document.getElementById('timerValue'),
+    interactiveWorkspace: document.getElementById('interactiveWorkspace'),
     controlsDock: document.getElementById('controlsDock'),
     controlsPanel: document.getElementById('controlsPanel'),
     controlsToggleBtn: document.getElementById('controlsToggleBtn'),
@@ -3539,6 +4302,7 @@ const APP_CONTENT = {
     initializeFilters();
     initializeTour();
     loadPreset(APP_CONTENT.presets[0].id, true);
+    renderTheorySection();
     renderOverview();
     renderPseudocode();
     updateSpeedLabel();
@@ -3573,6 +4337,12 @@ const APP_CONTENT = {
   }
 
   function bindEvents() {
+    if (dom.theoryJumpTopBtn) {
+      dom.theoryJumpTopBtn.addEventListener('click', scrollTheoryToWorkspace);
+    }
+    if (dom.theoryJumpBottomBtn) {
+      dom.theoryJumpBottomBtn.addEventListener('click', scrollTheoryToWorkspace);
+    }
     dom.buildBtn.addEventListener('click', buildSteps);
     dom.stepBackBtn.addEventListener('click', stepBack);
     dom.stepBtn.addEventListener('click', stepForward);
@@ -3684,6 +4454,97 @@ const APP_CONTENT = {
     applyFilters();
   }
 
+  /* Render the pre-tool theory section from APP_CONTENT */
+  function renderTheorySection() {
+    if (!dom.theoryCards || !dom.theoryIntro) {
+      return;
+    }
+
+    const config = APP_CONTENT.theorySection;
+    if (dom.theoryEyebrow) {
+      dom.theoryEyebrow.textContent = config.eyebrow;
+    }
+    if (dom.theoryTitle) {
+      dom.theoryTitle.textContent = config.title;
+    }
+    if (dom.theoryFooterTitle) {
+      dom.theoryFooterTitle.textContent = config.footerTitle;
+    }
+    if (dom.theoryFooterNote) {
+      dom.theoryFooterNote.textContent = config.footerNote;
+    }
+    if (dom.theoryJumpTopBtn) {
+      dom.theoryJumpTopBtn.textContent = config.topCtaLabel;
+    }
+    if (dom.theoryJumpBottomBtn) {
+      dom.theoryJumpBottomBtn.textContent = config.bottomCtaLabel;
+    }
+
+    dom.theoryIntro.innerHTML = config.intro
+      .map((paragraph) => `<p>${paragraph}</p>`)
+      .join('');
+
+    dom.theoryCards.innerHTML = config.cards
+      .map((card, index) => {
+        const points = card.points
+          .map((point) => `<li>${point}</li>`)
+          .join('');
+        const noteParts = [];
+        if (card.mistake) {
+          noteParts.push(
+            `<div class="theory-note theory-note-mistake">` +
+            `<strong>Common Mistake</strong>` +
+            `<p>${card.mistake}</p>` +
+            `</div>`
+          );
+        }
+        if (card.notice) {
+          noteParts.push(
+            `<div class="theory-note theory-note-notice">` +
+            `<strong>What To Notice In The Tool</strong>` +
+            `<p>${card.notice}</p>` +
+            `</div>`
+          );
+        }
+        const notes = noteParts.length
+          ? `<div class="theory-note-grid">${noteParts.join('')}</div>`
+          : '';
+        const openAttr = index < 2 ? ' open' : '';
+        return (
+          `<details class="theory-card"${openAttr}>` +
+          `<summary>` +
+          `<div class="theory-card-title">` +
+          `<strong>${card.title}</strong>` +
+          `<span>${card.summary}</span>` +
+          `</div>` +
+          `</summary>` +
+          `<div class="theory-card-body">` +
+          `<ul class="theory-points">${points}</ul>` +
+          `${notes}` +
+          `</div>` +
+          `</details>`
+        );
+      })
+      .join('');
+  }
+
+  /* Smooth jump from theory into the interactive workspace */
+  function scrollTheoryToWorkspace() {
+    const target = dom.interactiveWorkspace || document.querySelector('.workspace');
+    if (!target || typeof target.scrollIntoView !== 'function') {
+      return;
+    }
+    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function scrollToTheorySection() {
+    const target = dom.theorySection;
+    if (!target || typeof target.scrollIntoView !== 'function') {
+      return;
+    }
+    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
   function initializeGraphInteraction() {
     if (!dom.graphStage || !dom.graphSvg) {
       return;
@@ -3762,23 +4623,35 @@ const APP_CONTENT = {
 
   function initializeControlsDock() {
     const stored = safeReadJSON(CONTROLS_DOCK_STORAGE_KEY);
-    const shouldOpen = !!(stored && stored.open === true);
+    const defaultOpen = !isCompactViewport();
+    const shouldOpen = stored && typeof stored.open === 'boolean'
+      ? stored.open
+      : defaultOpen;
     setControlsDockOpen(shouldOpen, false);
   }
 
+  /* Finish the existing controls dock scaffold with open/closed layout states */
   function setControlsDockOpen(open, persistState) {
     state.controlsOpen = !!open;
     if (dom.controlsDock) {
       dom.controlsDock.classList.toggle('open', state.controlsOpen);
+    }
+    if (dom.dashboard) {
+      dom.dashboard.classList.toggle('controls-collapsed', !state.controlsOpen);
     }
     if (dom.controlsScrim) {
       dom.controlsScrim.classList.toggle('open', state.controlsOpen);
     }
     if (dom.controlsToggleBtn) {
       dom.controlsToggleBtn.setAttribute('aria-expanded', state.controlsOpen ? 'true' : 'false');
+      dom.controlsToggleBtn.setAttribute(
+        'aria-label',
+        state.controlsOpen ? 'Collapse controls panel' : 'Expand controls panel'
+      );
+      dom.controlsToggleBtn.title = state.controlsOpen ? 'Collapse controls panel' : 'Expand controls panel';
     }
     if (dom.controlsTabState) {
-      dom.controlsTabState.textContent = state.controlsOpen ? 'Close' : 'Open';
+      dom.controlsTabState.textContent = state.controlsOpen ? 'Hide' : 'Show';
     }
     if (persistState !== false) {
       safeWriteJSON(CONTROLS_DOCK_STORAGE_KEY, { open: state.controlsOpen });
@@ -3809,7 +4682,42 @@ const APP_CONTENT = {
       });
     });
 
+    syncWorkspaceLayout();
     safeWriteJSON(FILTER_STORAGE_KEY, state.panelFilters);
+  }
+
+  /* Expand surviving workspace panels when filters hide their companions */
+  function syncWorkspaceLayout() {
+    const isVisible = (element) => !!(element && !element.classList.contains('is-hidden-filter'));
+
+    const codeVisible = isVisible(dom.codePanel);
+    const explainVisible = isVisible(dom.explainPanel);
+    const stackVisible = isVisible(dom.stackPanel);
+    const cycleVisible = isVisible(dom.cyclePanel);
+    const scanVisible = isVisible(dom.scanPanel);
+    const intervalVisible = isVisible(dom.intervalPanel);
+
+    if (dom.codePanel) {
+      dom.codePanel.classList.toggle('is-wide', codeVisible && !explainVisible);
+    }
+    if (dom.explainPanel) {
+      dom.explainPanel.classList.toggle('is-wide', explainVisible && !codeVisible);
+    }
+    if (dom.stackPanel) {
+      dom.stackPanel.classList.toggle('is-wide', stackVisible && !cycleVisible);
+    }
+    if (dom.cyclePanel) {
+      dom.cyclePanel.classList.toggle('is-wide', cycleVisible && !stackVisible);
+    }
+    if (dom.scanPanel) {
+      dom.scanPanel.classList.toggle('is-wide', scanVisible && !intervalVisible);
+    }
+    if (dom.intervalPanel) {
+      dom.intervalPanel.classList.toggle('is-wide', intervalVisible && !scanVisible);
+    }
+    if (dom.depthPanel) {
+      dom.depthPanel.classList.toggle('is-wide', isVisible(dom.depthPanel) && !stackVisible && !cycleVisible);
+    }
   }
 
   function initializeTour() {
@@ -3856,7 +4764,7 @@ const APP_CONTENT = {
 
     state.tour.backBtn.addEventListener('click', previousTourStep);
     state.tour.nextBtn.addEventListener('click', nextTourStep);
-    state.tour.skipBtn.addEventListener('click', stopTour);
+    state.tour.skipBtn.addEventListener('click', handleTourSkip);
     window.addEventListener('scroll', handleTourViewportChange, { passive: true });
     window.addEventListener('resize', handleTourViewportChange);
   }
@@ -3918,20 +4826,35 @@ const APP_CONTENT = {
       return;
     }
     setFilterMenuOpen(false);
+    if (state.tour.highlighted) {
+      state.tour.highlighted.classList.remove('tour-target-active');
+      state.tour.highlighted = null;
+    }
     state.tour.savedControlsOpen = state.controlsOpen;
     state.tour.active = true;
     state.tour.mode = 'welcome';
+    state.tour.steps = [];
+    state.tour.index = 0;
+    state.tour.actionSatisfied = false;
     if (document.body) {
       document.body.classList.add('tour-active');
     }
     state.tour.overlay.classList.add('open');
     clearSpotlight();
-    state.tour.counter.textContent = 'Welcome';
-    state.tour.title.textContent = 'Quick Tour or Explore?';
-    state.tour.body.textContent = 'Choose Quick Tour if you want the interface explained step by step. Choose Explore if you want to use the page freely and start the tour later from the Tutorial button in the top-right corner.';
-    state.tour.backBtn.style.display = 'none';
-    state.tour.nextBtn.textContent = 'Quick Tour';
-    state.tour.skipBtn.textContent = 'I Want to Explore';
+    state.tour.counter.textContent = 'Choose a Path';
+    state.tour.title.textContent = 'Learn First, Tour, or Practice?';
+    state.tour.body.innerHTML =
+      'Choose <strong>Learn First</strong> to jump back to the theory section, ' +
+      '<strong>Guided Tool Tour</strong> to walk the interface with theory-aware prompts, ' +
+      'or <strong>Practice Mode</strong> if you want action-gated reinforcement in the live simulator.';
+    state.tour.backBtn.style.display = '';
+    state.tour.backBtn.disabled = false;
+    state.tour.backBtn.textContent = 'Learn First';
+    state.tour.nextBtn.disabled = false;
+    state.tour.nextBtn.textContent = 'Guided Tool Tour';
+    state.tour.skipBtn.disabled = false;
+    state.tour.skipBtn.textContent = 'Practice Mode';
+    positionTourCard(null);
   }
 
   function stopTour() {
@@ -3983,8 +4906,27 @@ const APP_CONTENT = {
     renderTourStep();
   }
 
+  function handleTourSkip() {
+    if (!state.tour.active) {
+      return;
+    }
+    if (state.tour.mode === 'welcome') {
+      startPractice(false);
+      return;
+    }
+    stopTour();
+  }
+
   function previousTourStep() {
-    if (!state.tour.active || state.tour.mode !== 'tour') {
+    if (!state.tour.active) {
+      return;
+    }
+    if (state.tour.mode === 'welcome') {
+      stopTour();
+      window.setTimeout(scrollToTheorySection, 0);
+      return;
+    }
+    if (state.tour.mode !== 'tour') {
       return;
     }
     state.tour.index = Math.max(0, state.tour.index - 1);
@@ -4019,17 +4961,34 @@ const APP_CONTENT = {
     state.tour.counter.textContent = `Step ${state.tour.index + 1} of ${state.tour.steps.length}`;
     state.tour.title.textContent = step.title;
     if (state.tour.mode === 'practice' && step.action) {
-      state.tour.body.textContent = state.tour.actionSatisfied
+      const practiceText = state.tour.actionSatisfied
         ? (step.doneText || step.body)
         : `${step.body} ${step.waitingText || ''}`.trim();
+      state.tour.body.innerHTML = formatTourBody(
+        step,
+        practiceText
+      );
     } else {
-      state.tour.body.textContent = step.body;
+      state.tour.body.innerHTML = formatTourBody(step, step.body);
     }
     state.tour.backBtn.disabled = state.tour.index === 0;
     state.tour.backBtn.style.display = '';
+    state.tour.backBtn.textContent = 'Back';
     state.tour.skipBtn.textContent = 'Skip';
     state.tour.nextBtn.textContent = state.tour.index === state.tour.steps.length - 1 ? 'Done' : 'Next';
     state.tour.nextBtn.disabled = state.tour.mode === 'practice' && step.action && !state.tour.actionSatisfied;
+    positionTourCard(target);
+  }
+
+  function formatTourBody(step, primaryText) {
+    const parts = [primaryText];
+    if (step.watchFor) {
+      parts.push(`<strong>Watch live:</strong> ${step.watchFor}`);
+    }
+    if (step.theoryRef) {
+      parts.push(`<strong>Related theory:</strong> ${step.theoryRef}`);
+    }
+    return parts.join('<br><br>');
   }
 
   function ensureTargetVisible(target) {
@@ -4042,6 +5001,57 @@ const APP_CONTENT = {
     const viewportHeight = window.innerHeight || 900;
     if (rect.top < marginTop || rect.bottom > viewportHeight - marginBottom) {
       target.scrollIntoView({ block: 'center', behavior: 'auto' });
+    }
+  }
+
+  /* Keep the tutorial card in a viewport-safe position near, but not over, the target */
+  function positionTourCard(target) {
+    if (!state.tour.card) {
+      return;
+    }
+
+    const card = state.tour.card;
+    const viewportWidth = getViewportWidth();
+    const viewportHeight = getViewportHeight();
+    const margin = viewportWidth <= 760 ? 10 : 18;
+    const topSafe = viewportWidth <= 760 ? 14 : 18;
+
+    card.style.left = '';
+    card.style.right = `${margin}px`;
+    card.style.top = `${topSafe}px`;
+    card.style.bottom = 'auto';
+
+    if (!target || typeof target.getBoundingClientRect !== 'function') {
+      return;
+    }
+
+    const rect = target.getBoundingClientRect();
+    const cardRect = card.getBoundingClientRect();
+    const cardWidth = cardRect.width || Math.min(372, viewportWidth - margin * 2);
+    const cardHeight = cardRect.height || 260;
+    const spaceRight = viewportWidth - rect.right - margin;
+    const spaceLeft = rect.left - margin;
+    const clampedTop = Math.max(
+      topSafe,
+      Math.min(rect.top, viewportHeight - cardHeight - margin)
+    );
+    const preferSafeCorner = rect.top < 180 || rect.height > viewportHeight * 0.58 || viewportWidth <= 980;
+
+    if (preferSafeCorner) {
+      return;
+    }
+
+    if (spaceRight >= cardWidth + 14) {
+      card.style.left = `${Math.min(rect.right + 14, viewportWidth - cardWidth - margin)}px`;
+      card.style.right = 'auto';
+      card.style.top = `${clampedTop}px`;
+      return;
+    }
+
+    if (spaceLeft >= cardWidth + 14) {
+      card.style.left = `${Math.max(margin, rect.left - cardWidth - 14)}px`;
+      card.style.right = 'auto';
+      card.style.top = `${clampedTop}px`;
     }
   }
 
@@ -4130,10 +5140,13 @@ const APP_CONTENT = {
   }
 
   function handleTourViewportChange() {
-    if (!state.tour.active || !state.tour.highlighted || !state.tour.spotlight) {
+    if (!state.tour.active || !state.tour.spotlight) {
       return;
     }
-    updateSpotlight(state.tour.highlighted);
+    if (state.tour.highlighted) {
+      updateSpotlight(state.tour.highlighted);
+    }
+    positionTourCard(state.tour.highlighted);
   }
 
   function resolveTourTarget(selector) {
@@ -4392,6 +5405,10 @@ const APP_CONTENT = {
       setFilterMenuOpen(false);
       setControlsDockOpen(false);
     }
+  }
+
+  function isCompactViewport() {
+    return getViewportWidth() <= 980;
   }
 
   function allFilters(value) {
@@ -5948,18 +6965,20 @@ const APP_CONTENT = {
     }
 
     const maxTime = Math.max(state.visuals.timer + 1, 2);
-    const width = 420;
-    const height = 220;
-    const left = 72;
-    const top = 24;
-    const usableWidth = width - left - 24;
-    const rowGap = Math.max(28, Math.floor((height - top - 18) / nodes.length));
+    const width = 760;
+    const height = 320;
+    const left = 96;
+    const right = 30;
+    const top = 36;
+    const bottom = 28;
+    const usableWidth = width - left - right;
+    const rowGap = Math.max(34, Math.floor((height - top - bottom) / nodes.length));
 
     const axis = svgEl('line', {
       x1: left,
-      y1: 18,
-      x2: width - 20,
-      y2: 18,
+      y1: 24,
+      x2: width - right,
+      y2: 24,
       stroke: VISUAL_THEME.axis,
       'stroke-width': 1.5
     });
@@ -5969,15 +6988,15 @@ const APP_CONTENT = {
       const x = left + (t / maxTime) * usableWidth;
       const tick = svgEl('line', {
         x1: x,
-        y1: 14,
+        y1: 18,
         x2: x,
-        y2: 22,
+        y2: 30,
         stroke: VISUAL_THEME.axis,
         'stroke-width': 1
       });
       const label = svgEl('text', {
         x,
-        y: 11,
+        y: 14,
         'text-anchor': 'middle',
         class: 'axis-label'
       });
@@ -5994,7 +7013,7 @@ const APP_CONTENT = {
       const x2 = left + (f / maxTime) * usableWidth;
 
       const name = svgEl('text', {
-        x: 18,
+        x: 28,
         y: y + 4,
         class: 'axis-label'
       });
