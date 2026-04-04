@@ -273,6 +273,7 @@
             topoOrder: [...visuals.dagDp.topoOrder],
             distances: { ...visuals.dagDp.distances },
             parents: { ...visuals.dagDp.parents },
+            trace: visuals.dagDp.trace.map((entry) => ({ ...entry })),
             bestEnd: visuals.dagDp.bestEnd,
             bestPath: [...visuals.dagDp.bestPath],
             bestDistance: visuals.dagDp.bestDistance

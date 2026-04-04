@@ -4284,6 +4284,7 @@ const APP_CONTENT = {
             topoOrder: [...visuals.dagDp.topoOrder],
             distances: { ...visuals.dagDp.distances },
             parents: { ...visuals.dagDp.parents },
+            trace: visuals.dagDp.trace.map((entry) => ({ ...entry })),
             bestEnd: visuals.dagDp.bestEnd,
             bestPath: [...visuals.dagDp.bestPath],
             bestDistance: visuals.dagDp.bestDistance
@@ -6638,6 +6639,30 @@ const APP_CONTENT = {
     dom.topoPanel.classList.toggle('hidden', !showTopo);
     dom.topoRow.innerHTML = '';
     if (!showTopo || !state.graph) {
+      return;
+    }
+
+    if (state.visuals.cycleFound) {
+      const message = document.createElement('div');
+      message.style.display = 'grid';
+      message.style.gap = '0.6rem';
+      message.style.padding = '1rem 1.1rem';
+      message.style.border = '1px solid rgba(255, 107, 107, 0.45)';
+      message.style.borderRadius = '14px';
+      message.style.background = 'rgba(107, 24, 24, 0.22)';
+
+      const title = document.createElement('strong');
+      title.textContent = 'Cycle detected — no valid topological ordering exists.';
+      title.style.color = '#ffd6d6';
+
+      const explanation = document.createElement('p');
+      explanation.textContent = 'A topological ordering requires a DAG (directed acyclic graph). Because this graph contains a cycle, no linear ordering can satisfy all edge directions.';
+      explanation.style.margin = '0';
+      explanation.style.color = '#f3d9d2';
+
+      message.appendChild(title);
+      message.appendChild(explanation);
+      dom.topoRow.appendChild(message);
       return;
     }
 
